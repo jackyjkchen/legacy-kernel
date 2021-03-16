@@ -1,0 +1,5159 @@
+diff --git a/Documentation/ABI/testing/sysfs-bus-pci b/Documentation/ABI/testing/sysfs-bus-pci
+index 349ecf26ce..34f51100f0 100644
+--- a/Documentation/ABI/testing/sysfs-bus-pci
++++ b/Documentation/ABI/testing/sysfs-bus-pci
+@@ -66,6 +66,24 @@ Description:
+ 		re-discover previously removed devices.
+ 		Depends on CONFIG_HOTPLUG.
+ 
++What:		/sys/bus/pci/devices/.../msi_irqs/
++Date:		September, 2011
++Contact:	Neil Horman <nhorman@tuxdriver.com>
++Description:
++		The /sys/devices/.../msi_irqs directory contains a variable set
++		of sub-directories, with each sub-directory being named after a
++		corresponding msi irq vector allocated to that device.  Each
++		numbered sub-directory N contains attributes of that irq.
++		Note that this directory is not created for device drivers which
++		do not support msi irqs
++
++What:		/sys/bus/pci/devices/.../msi_irqs/<N>/mode
++Date:		September 2011
++Contact:	Neil Horman <nhorman@tuxdriver.com>
++Description:
++		This attribute indicates the mode that the irq vector named by
++		the parent directory is in (msi vs. msix)
++
+ What:		/sys/bus/pci/devices/.../remove
+ Date:		January 2009
+ Contact:	Linux PCI developers <linux-pci@vger.kernel.org>
+diff --git a/Documentation/fb/00-INDEX b/Documentation/fb/00-INDEX
+index 30a70542e8..9b6a733d1e 100644
+--- a/Documentation/fb/00-INDEX
++++ b/Documentation/fb/00-INDEX
+@@ -21,6 +21,8 @@ ep93xx-fb.txt
+ 	- info on the driver for EP93xx LCD controller.
+ fbcon.txt
+ 	- intro to and usage guide for the framebuffer console (fbcon).
++fbcondecor.txt
++	- info on the Framebuffer Console Decoration
+ framebuffer.txt
+ 	- introduction to frame buffer devices.
+ gxfb.txt
+diff --git a/Documentation/fb/fbcondecor.txt b/Documentation/fb/fbcondecor.txt
+new file mode 100644
+index 0000000000..15889f3d11
+--- /dev/null
++++ b/Documentation/fb/fbcondecor.txt
+@@ -0,0 +1,207 @@
++What is it?
++-----------
++
++The framebuffer decorations are a kernel feature which allows displaying a 
++background picture on selected consoles.
++
++What do I need to get it to work?
++---------------------------------
++
++To get fbcondecor up-and-running you will have to:
++ 1) get a copy of splashutils [1] or a similar program
++ 2) get some fbcondecor themes
++ 3) build the kernel helper program
++ 4) build your kernel with the FB_CON_DECOR option enabled.
++
++To get fbcondecor operational right after fbcon initialization is finished, you
++will have to include a theme and the kernel helper into your initramfs image.
++Please refer to splashutils documentation for instructions on how to do that.
++
++[1] The splashutils package can be downloaded from:
++    http://dev.gentoo.org/~spock/projects/splashutils/
++
++The userspace helper
++--------------------
++
++The userspace fbcondecor helper (by default: /sbin/fbcondecor_helper) is called by the
++kernel whenever an important event occurs and the kernel needs some kind of
++job to be carried out. Important events include console switches and video
++mode switches (the kernel requests background images and configuration
++parameters for the current console). The fbcondecor helper must be accessible at
++all times. If it's not, fbcondecor will be switched off automatically.
++
++It's possible to set path to the fbcondecor helper by writing it to
++/proc/sys/kernel/fbcondecor.
++
++*****************************************************************************
++
++The information below is mostly technical stuff. There's probably no need to
++read it unless you plan to develop a userspace helper.
++
++The fbcondecor protocol
++-----------------------
++
++The fbcondecor protocol defines a communication interface between the kernel and
++the userspace fbcondecor helper.
++
++The kernel side is responsible for:
++
++ * rendering console text, using an image as a background (instead of a
++   standard solid color fbcon uses),
++ * accepting commands from the user via ioctls on the fbcondecor device,
++ * calling the userspace helper to set things up as soon as the fb subsystem 
++   is initialized.
++
++The userspace helper is responsible for everything else, including parsing
++configuration files, decompressing the image files whenever the kernel needs
++it, and communicating with the kernel if necessary.
++
++The fbcondecor protocol specifies how communication is done in both ways:
++kernel->userspace and userspace->helper.
++  
++Kernel -> Userspace
++-------------------
++
++The kernel communicates with the userspace helper by calling it and specifying
++the task to be done in a series of arguments.
++
++The arguments follow the pattern:
++<fbcondecor protocol version> <command> <parameters>
++
++All commands defined in fbcondecor protocol v2 have the following parameters:
++ virtual console
++ framebuffer number
++ theme
++
++Fbcondecor protocol v1 specified an additional 'fbcondecor mode' after the
++framebuffer number. Fbcondecor protocol v1 is deprecated and should not be used.
++
++Fbcondecor protocol v2 specifies the following commands:
++
++getpic
++------
++ The kernel issues this command to request image data. It's up to the 
++ userspace  helper to find a background image appropriate for the specified 
++ theme and the current resolution. The userspace helper should respond by 
++ issuing the FBIOCONDECOR_SETPIC ioctl.
++
++init
++----
++ The kernel issues this command after the fbcondecor device is created and
++ the fbcondecor interface is initialized. Upon receiving 'init', the userspace
++ helper should parse the kernel command line (/proc/cmdline) or otherwise
++ decide whether fbcondecor is to be activated.
++
++ To activate fbcondecor on the first console the helper should issue the
++ FBIOCONDECOR_SETCFG, FBIOCONDECOR_SETPIC and FBIOCONDECOR_SETSTATE commands,
++ in the above-mentioned order.
++
++ When the userspace helper is called in an early phase of the boot process
++ (right after the initialization of fbcon), no filesystems will be mounted.
++ The helper program should mount sysfs and then create the appropriate
++ framebuffer, fbcondecor and tty0 devices (if they don't already exist) to get
++ current display settings and to be able to communicate with the kernel side.
++ It should probably also mount the procfs to be able to parse the kernel
++ command line parameters.
++
++ Note that the console sem is not held when the kernel calls fbcondecor_helper
++ with the 'init' command. The fbcondecor helper should perform all ioctls with
++ origin set to FBCON_DECOR_IO_ORIG_USER.
++
++modechange
++----------
++ The kernel issues this command on a mode change. The helper's response should
++ be similar to the response to the 'init' command. Note that this time the
++ console sem is held and all ioctls must be performed with origin set to
++ FBCON_DECOR_IO_ORIG_KERNEL.
++
++
++Userspace -> Kernel
++-------------------
++
++Userspace programs can communicate with fbcondecor via ioctls on the
++fbcondecor device. These ioctls are to be used by both the userspace helper
++(called only by the kernel) and userspace configuration tools (run by the users).
++
++The fbcondecor helper should set the origin field to FBCON_DECOR_IO_ORIG_KERNEL
++when doing the appropriate ioctls. All userspace configuration tools should
++use FBCON_DECOR_IO_ORIG_USER. Failure to set the appropriate value in the origin
++field when performing ioctls from the kernel helper will most likely result
++in a console deadlock.
++
++FBCON_DECOR_IO_ORIG_KERNEL instructs fbcondecor not to try to acquire the console
++semaphore. Not surprisingly, FBCON_DECOR_IO_ORIG_USER instructs it to acquire
++the console sem.
++
++The framebuffer console decoration provides the following ioctls (all defined in 
++linux/fb.h):
++
++FBIOCONDECOR_SETPIC
++description: loads a background picture for a virtual console
++argument: struct fbcon_decor_iowrapper*; data: struct fb_image*
++notes: 
++If called for consoles other than the current foreground one, the picture data
++will be ignored.
++
++If the current virtual console is running in a 8-bpp mode, the cmap substruct
++of fb_image has to be filled appropriately: start should be set to 16 (first
++16 colors are reserved for fbcon), len to a value <= 240 and red, green and
++blue should point to valid cmap data. The transp field is ingored. The fields
++dx, dy, bg_color, fg_color in fb_image are ignored as well.
++
++FBIOCONDECOR_SETCFG
++description: sets the fbcondecor config for a virtual console
++argument: struct fbcon_decor_iowrapper*; data: struct vc_decor*
++notes: The structure has to be filled with valid data.
++
++FBIOCONDECOR_GETCFG
++description: gets the fbcondecor config for a virtual console
++argument: struct fbcon_decor_iowrapper*; data: struct vc_decor*
++
++FBIOCONDECOR_SETSTATE
++description: sets the fbcondecor state for a virtual console
++argument: struct fbcon_decor_iowrapper*; data: unsigned int*
++          values: 0 = disabled, 1 = enabled.
++
++FBIOCONDECOR_GETSTATE
++description: gets the fbcondecor state for a virtual console
++argument: struct fbcon_decor_iowrapper*; data: unsigned int*
++          values: as in FBIOCONDECOR_SETSTATE
++
++Info on used structures:
++
++Definition of struct vc_decor can be found in linux/console_decor.h. It's
++heavily commented. Note that the 'theme' field should point to a string
++no longer than FBCON_DECOR_THEME_LEN. When FBIOCONDECOR_GETCFG call is
++performed, the theme field should point to a char buffer of length
++FBCON_DECOR_THEME_LEN.
++
++Definition of struct fbcon_decor_iowrapper can be found in linux/fb.h.
++The fields in this struct have the following meaning:
++
++vc: 
++Virtual console number.
++
++origin: 
++Specifies if the ioctl is performed as a response to a kernel request. The
++fbcondecor helper should set this field to FBCON_DECOR_IO_ORIG_KERNEL, userspace
++programs should set it to FBCON_DECOR_IO_ORIG_USER. This field is necessary to
++avoid console semaphore deadlocks.
++
++data: 
++Pointer to a data structure appropriate for the performed ioctl. Type of
++the data struct is specified in the ioctls description.
++
++*****************************************************************************
++
++Credit
++------
++
++Original 'bootsplash' project & implementation by:
++  Volker Poplawski <volker@poplawski.de>, Stefan Reinauer <stepan@suse.de>,
++  Steffen Winterfeldt <snwint@suse.de>, Michael Schroeder <mls@suse.de>,
++  Ken Wimer <wimer@suse.de>.
++
++Fbcondecor, fbcondecor protocol design, current implementation & docs by:
++  Michal Januszewski <spock@gentoo.org>
++
+diff --git a/Kconfig b/Kconfig
+index c13f48d658..dd776157a8 100644
+--- a/Kconfig
++++ b/Kconfig
+@@ -8,4 +8,6 @@ config SRCARCH
+ 	string
+ 	option env="SRCARCH"
+ 
++source "distro/Kconfig"
++
+ source "arch/$SRCARCH/Kconfig"
+diff --git a/Makefile b/Makefile
+index 46779a6814..c78ba509ea 100644
+--- a/Makefile
++++ b/Makefile
+@@ -1,7 +1,7 @@
+ VERSION = 3
+ PATCHLEVEL = 2
+ SUBLEVEL = 102
+-EXTRAVERSION =
++EXTRAVERSION = -gentoo
+ NAME = Sleepy Otter
+ 
+ # *DOCUMENTATION*
+diff --git a/distro/Kconfig b/distro/Kconfig
+new file mode 100644
+index 0000000000..d0a7d82fe9
+--- /dev/null
++++ b/distro/Kconfig
+@@ -0,0 +1,110 @@
++menu "Gentoo Linux"
++
++config GENTOO_LINUX
++	bool "Gentoo Linux support"
++
++	default y
++
++	help
++		In order to boot Gentoo Linux a minimal set of config settings needs to
++		be enabled in the kernel; to avoid the users from having to enable them
++		manually as part of a Gentoo Linux installation or a new clean config,
++		we enable these config settings by default for convenience.
++
++		See the settings that become available for more details and fine-tuning.
++
++config GENTOO_LINUX_UDEV
++	bool "Linux dynamic and persistent device naming (userspace devfs) support"
++
++	depends on GENTOO_LINUX
++	default y if GENTOO_LINUX
++	
++	select DEVTMPFS
++	select TMPFS
++
++	select MMU
++	select HOTPLUG
++	select SHMEM
++
++	help
++		In order to boot Gentoo Linux a minimal set of config settings needs to
++		be enabled in the kernel; to avoid the users from having to enable them
++		manually as part of a Gentoo Linux installation or a new clean config,
++		we enable these config settings by default for convenience.
++
++		Currently this only selects TMPFS, DEVTMPFS and their dependencies.
++		TMPFS is enabled to maintain a tmpfs file system at /dev/shm, /run and
++		/sys/fs/cgroup; DEVTMPFS to maintain a devtmpfs file system at /dev.
++
++		Some of these are critical files that need to be available early in the
++		boot process; if not available, it causes sysfs and udev to malfunction.
++
++		To ensure Gentoo Linux boots, it is best to leave this setting enabled;
++		if you run a custom setup, you could consider whether to disable this. 
++
++menu "Support for init systems, system and service managers"
++	visible if GENTOO_LINUX
++
++config GENTOO_LINUX_INIT_SCRIPT
++	bool "OpenRC, runit and other script based systems and managers"
++
++	default y if GENTOO_LINUX
++
++	depends on GENTOO_LINUX
++
++	select BINFMT_SCRIPT
++
++	help
++		The init system is the first thing that loads after the kernel booted.
++
++		These config settings allow you to select which init systems to support;
++		instead of having to select all the individual settings all over the
++		place, these settings allows you to select all the settings at once.
++
++		This particular setting enables all the known requirements for OpenRC,
++		runit and similar script based systems and managers.
++
++		If you are unsure about this, it is best to leave this setting enabled.
++
++config GENTOO_LINUX_INIT_SYSTEMD
++	bool "systemd"
++
++	default n
++
++	depends on GENTOO_LINUX && GENTOO_LINUX_UDEV
++
++	select AUTOFS4_FS
++	select BLK_DEV_BSG
++	select CGROUPS
++	select EPOLL
++	select FANOTIFY
++	select FHANDLE
++	select HOTPLUG
++	select INOTIFY_USER
++	select NET
++	select NET_NS
++	select PROC_FS
++	select SIGNALFD
++	select SYSFS
++	select TIMERFD
++
++	select ANON_INODES
++	select BLOCK
++	select EVENTFD
++	select FSNOTIFY
++	select INET
++	select NLATTR
++
++	help
++		The init system is the first thing that loads after the kernel booted.
++
++		These config settings allow you to select which init systems to support;
++		instead of having to select all the individual settings all over the
++		place, these settings allows you to select all the settings at once.
++
++		This particular setting enables all the known requirements for systemd;
++		it also enables suggested optional settings, as the package suggests to.
++
++endmenu
++
++endmenu
+diff --git a/drivers/Makefile b/drivers/Makefile
+index 3c7bd30f10..34bc4fdf2c 100644
+--- a/drivers/Makefile
++++ b/drivers/Makefile
+@@ -11,6 +11,10 @@ obj-y				+= gpio/
+ obj-$(CONFIG_PCI)		+= pci/
+ obj-$(CONFIG_PARISC)		+= parisc/
+ obj-$(CONFIG_RAPIDIO)		+= rapidio/
++# tty/ comes before char/ so that the VT console is the boot-time
++# default.
++obj-y				+= tty/
++obj-y				+= char/
+ obj-y				+= video/
+ obj-y				+= idle/
+ obj-$(CONFIG_ACPI)		+= acpi/
+@@ -29,11 +33,6 @@ obj-$(CONFIG_XEN)		+= xen/
+ # regulators early, since some subsystems rely on them to initialize
+ obj-$(CONFIG_REGULATOR)		+= regulator/
+ 
+-# tty/ comes before char/ so that the VT console is the boot-time
+-# default.
+-obj-y				+= tty/
+-obj-y				+= char/
+-
+ # gpu/ comes after char for AGP vs DRM startup
+ obj-y				+= gpu/
+ 
+diff --git a/drivers/acpi/blacklist.c b/drivers/acpi/blacklist.c
+index cb9629638d..6c242edd39 100644
+--- a/drivers/acpi/blacklist.c
++++ b/drivers/acpi/blacklist.c
+@@ -193,6 +193,13 @@ static int __init dmi_disable_osi_win7(const struct dmi_system_id *d)
+ 	return 0;
+ }
+ 
++static int __init dmi_disable_osi_win8(const struct dmi_system_id *d)
++{
++	printk(KERN_NOTICE PREFIX "DMI detected: %s\n", d->ident);
++	acpi_osi_setup("!Windows 2012");
++	return 0;
++}
++
+ static struct dmi_system_id acpi_osi_dmi_table[] __initdata = {
+ 	{
+ 	.callback = dmi_disable_osi_vista,
+@@ -268,6 +275,61 @@ static struct dmi_system_id acpi_osi_dmi_table[] __initdata = {
+ 		},
+ 	},
+ 
++	/*
++	 * The following Lenovo models have a broken workaround in the
++	 * acpi_video backlight implementation to meet the Windows 8
++	 * requirement of 101 backlight levels. Reverting to pre-Win8
++	 * behavior fixes the problem.
++	 */
++	{
++	.callback = dmi_disable_osi_win8,
++	.ident = "Lenovo ThinkPad L430",
++	.matches = {
++		     DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
++		     DMI_MATCH(DMI_PRODUCT_VERSION, "ThinkPad L430"),
++		},
++	},
++	{
++	.callback = dmi_disable_osi_win8,
++	.ident = "Lenovo ThinkPad T430s",
++	.matches = {
++		     DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
++		     DMI_MATCH(DMI_PRODUCT_VERSION, "ThinkPad T430s"),
++		},
++	},
++	{
++	.callback = dmi_disable_osi_win8,
++	.ident = "Lenovo ThinkPad T530",
++	.matches = {
++		     DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
++		     DMI_MATCH(DMI_PRODUCT_VERSION, "ThinkPad T530"),
++		},
++	},
++	{
++	.callback = dmi_disable_osi_win8,
++	.ident = "Lenovo ThinkPad W530",
++	.matches = {
++		     DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
++		     DMI_MATCH(DMI_PRODUCT_VERSION, "ThinkPad W530"),
++		},
++	},
++	{
++	.callback = dmi_disable_osi_win8,
++	.ident = "Lenovo ThinkPad X1 Carbon",
++	.matches = {
++		     DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
++		     DMI_MATCH(DMI_PRODUCT_VERSION, "ThinkPad X1 Carbon"),
++		},
++	},
++	{
++	.callback = dmi_disable_osi_win8,
++	.ident = "Lenovo ThinkPad X230",
++	.matches = {
++		     DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
++		     DMI_MATCH(DMI_PRODUCT_VERSION, "ThinkPad X230"),
++		},
++	},
++
+ 	/*
+ 	 * BIOS invocation of _OSI(Linux) is almost always a BIOS bug.
+ 	 * Linux ignores it, except for the machines enumerated below.
+diff --git a/drivers/char/Kconfig b/drivers/char/Kconfig
+index 1ba79a6d76..3dd2d8ae2e 100644
+--- a/drivers/char/Kconfig
++++ b/drivers/char/Kconfig
+@@ -6,6 +6,8 @@ menu "Character devices"
+ 
+ source "drivers/tty/Kconfig"
+ 
++source "drivers/char/kcopy/Kconfig"
++
+ config DEVKMEM
+ 	bool "/dev/kmem virtual device support"
+ 	default y
+diff --git a/drivers/char/Makefile b/drivers/char/Makefile
+index 32762ba769..1d8dc07a72 100644
+--- a/drivers/char/Makefile
++++ b/drivers/char/Makefile
+@@ -65,3 +65,4 @@ obj-$(CONFIG_JS_RTC)		+= js-rtc.o
+ js-rtc-y = rtc.o
+ 
+ obj-$(CONFIG_TILE_SROM)		+= tile-srom.o
++obj-$(CONFIG_KCOPY)		+= kcopy/
+diff --git a/drivers/char/kcopy/Kconfig b/drivers/char/kcopy/Kconfig
+new file mode 100644
+index 0000000000..404e8eded7
+--- /dev/null
++++ b/drivers/char/kcopy/Kconfig
+@@ -0,0 +1,17 @@
++#
++# KCopy character device configuration
++#
++
++menu "KCopy"
++
++config KCOPY
++       tristate "Memory-to-memory copies using kernel assist"
++       default m
++       ---help---
++         High-performance inter-process memory copies.  Can often save a
++         memory copy to shared memory in the application.   Useful at least
++         for MPI applications where the point-to-point nature of vmsplice
++         and pipes can be a limiting factor in performance.
++
++endmenu
++
+diff --git a/drivers/char/kcopy/Makefile b/drivers/char/kcopy/Makefile
+new file mode 100644
+index 0000000000..73966b3997
+--- /dev/null
++++ b/drivers/char/kcopy/Makefile
+@@ -0,0 +1,4 @@
++#
++# Makefile for the kernel character device drivers.
++#
++obj-$(CONFIG_KCOPY)    += kcopy.o
+diff --git a/drivers/char/kcopy/kcopy.c b/drivers/char/kcopy/kcopy.c
+new file mode 100644
+index 0000000000..2fe905f293
+--- /dev/null
++++ b/drivers/char/kcopy/kcopy.c
+@@ -0,0 +1,646 @@
++#include <linux/module.h>
++#include <linux/fs.h>
++#include <linux/cdev.h>
++#include <linux/device.h>
++#include <linux/mutex.h>
++#include <linux/mman.h>
++#include <linux/highmem.h>
++#include <linux/spinlock.h>
++#include <linux/sched.h>
++#include <linux/rbtree.h>
++#include <linux/rcupdate.h>
++#include <linux/uaccess.h>
++#include <linux/slab.h>
++
++MODULE_LICENSE("GPL");
++MODULE_AUTHOR("Arthur Jones <arthur.jones@qlogic.com>");
++MODULE_DESCRIPTION("QLogic kcopy driver");
++
++#define KCOPY_ABI              1
++#define KCOPY_MAX_MINORS       64
++
++struct kcopy_device {
++       struct cdev cdev;
++       struct class *class;
++       struct device *devp[KCOPY_MAX_MINORS];
++       dev_t dev;
++
++       struct kcopy_file *kf[KCOPY_MAX_MINORS];
++       struct mutex open_lock;
++};
++
++static struct kcopy_device kcopy_dev;
++
++/* per file data / one of these is shared per minor */
++struct kcopy_file {
++       int count;
++
++       /* pid indexed */
++       struct rb_root live_map_tree;
++
++       struct mutex map_lock;
++};
++
++struct kcopy_map_entry {
++       int    count;
++       struct task_struct *task;
++       pid_t  pid;
++       struct kcopy_file *file; /* file backpointer */
++
++       struct list_head list; /* free map list */
++       struct rb_node   node; /* live map tree */
++};
++
++#define KCOPY_GET_SYSCALL 1
++#define KCOPY_PUT_SYSCALL 2
++#define KCOPY_ABI_SYSCALL 3
++
++struct kcopy_syscall {
++       __u32 tag;
++       pid_t pid;
++       __u64 n;
++       __u64 src;
++       __u64 dst;
++};
++
++static const void __user *kcopy_syscall_src(const struct kcopy_syscall *ks)
++{
++       return (const void __user *) (unsigned long) ks->src;
++}
++
++static void __user *kcopy_syscall_dst(const struct kcopy_syscall *ks)
++{
++       return (void __user *) (unsigned long) ks->dst;
++}
++
++static unsigned long kcopy_syscall_n(const struct kcopy_syscall *ks)
++{
++       return (unsigned long) ks->n;
++}
++
++static struct kcopy_map_entry *kcopy_create_entry(struct kcopy_file *file)
++{
++       struct kcopy_map_entry *kme =
++               kmalloc(sizeof(struct kcopy_map_entry), GFP_KERNEL);
++
++       if (!kme)
++               return NULL;
++
++       kme->count = 1;
++       kme->file = file;
++       kme->task = current;
++       kme->pid = current->tgid;
++       INIT_LIST_HEAD(&kme->list);
++
++       return kme;
++}
++
++static struct kcopy_map_entry *
++kcopy_lookup_pid(struct rb_root *root, pid_t pid)
++{
++       struct rb_node *node = root->rb_node;
++
++       while (node) {
++               struct kcopy_map_entry *kme =
++                       container_of(node, struct kcopy_map_entry, node);
++
++               if (pid < kme->pid)
++                       node = node->rb_left;
++               else if (pid > kme->pid)
++                       node = node->rb_right;
++               else
++                       return kme;
++       }
++
++       return NULL;
++}
++
++static int kcopy_insert(struct rb_root *root, struct kcopy_map_entry *kme)
++{
++       struct rb_node **new = &(root->rb_node);
++       struct rb_node *parent = NULL;
++
++       while (*new) {
++               struct kcopy_map_entry *tkme =
++                       container_of(*new, struct kcopy_map_entry, node);
++
++               parent = *new;
++               if (kme->pid < tkme->pid)
++                       new = &((*new)->rb_left);
++               else if (kme->pid > tkme->pid)
++                       new = &((*new)->rb_right);
++               else {
++                       printk(KERN_INFO "!!! debugging: bad rb tree !!!\n");
++                       return -EINVAL;
++               }
++       }
++
++       rb_link_node(&kme->node, parent, new);
++       rb_insert_color(&kme->node, root);
++
++       return 0;
++}
++
++static int kcopy_open(struct inode *inode, struct file *filp)
++{
++       int ret;
++       const int minor = iminor(inode);
++       struct kcopy_file *kf = NULL;
++       struct kcopy_map_entry *kme;
++       struct kcopy_map_entry *okme;
++
++       if (minor < 0 || minor >= KCOPY_MAX_MINORS)
++               return -ENODEV;
++
++       mutex_lock(&kcopy_dev.open_lock);
++
++       if (!kcopy_dev.kf[minor]) {
++               kf = kmalloc(sizeof(struct kcopy_file), GFP_KERNEL);
++
++               if (!kf) {
++                       ret = -ENOMEM;
++                       goto bail;
++               }
++
++               kf->count = 1;
++               kf->live_map_tree = RB_ROOT;
++               mutex_init(&kf->map_lock);
++               kcopy_dev.kf[minor] = kf;
++       } else {
++               if (filp->f_flags & O_EXCL) {
++                       ret = -EBUSY;
++                       goto bail;
++               }
++               kcopy_dev.kf[minor]->count++;
++       }
++
++       kme = kcopy_create_entry(kcopy_dev.kf[minor]);
++       if (!kme) {
++               ret = -ENOMEM;
++               goto err_free_kf;
++       }
++
++       kf = kcopy_dev.kf[minor];
++
++       mutex_lock(&kf->map_lock);
++
++       okme = kcopy_lookup_pid(&kf->live_map_tree, kme->pid);
++       if (okme) {
++               /* pid already exists... */
++               okme->count++;
++               kfree(kme);
++               kme = okme;
++       } else
++               ret = kcopy_insert(&kf->live_map_tree, kme);
++
++       mutex_unlock(&kf->map_lock);
++
++       filp->private_data = kme;
++
++       ret = 0;
++       goto bail;
++
++err_free_kf:
++       if (kf) {
++               kcopy_dev.kf[minor] = NULL;
++               kfree(kf);
++       }
++bail:
++       mutex_unlock(&kcopy_dev.open_lock);
++       return ret;
++}
++
++static int kcopy_flush(struct file *filp, fl_owner_t id)
++{
++       struct kcopy_map_entry *kme = filp->private_data;
++       struct kcopy_file *kf = kme->file;
++
++       if (file_count(filp) == 1) {
++               mutex_lock(&kf->map_lock);
++               kme->count--;
++
++               if (!kme->count) {
++                       rb_erase(&kme->node, &kf->live_map_tree);
++                       kfree(kme);
++               }
++               mutex_unlock(&kf->map_lock);
++       }
++
++       return 0;
++}
++
++static int kcopy_release(struct inode *inode, struct file *filp)
++{
++       const int minor = iminor(inode);
++
++       mutex_lock(&kcopy_dev.open_lock);
++       kcopy_dev.kf[minor]->count--;
++       if (!kcopy_dev.kf[minor]->count) {
++               kfree(kcopy_dev.kf[minor]);
++               kcopy_dev.kf[minor] = NULL;
++       }
++       mutex_unlock(&kcopy_dev.open_lock);
++
++       return 0;
++}
++
++static void kcopy_put_pages(struct page **pages, int npages)
++{
++       int j;
++
++       for (j = 0; j < npages; j++)
++               put_page(pages[j]);
++}
++
++static int kcopy_validate_task(struct task_struct *p)
++{
++       return p && ((current_euid() == task_euid(p)) || (current_euid() == task_uid(p)));
++}
++
++static int kcopy_get_pages(struct kcopy_file *kf, pid_t pid,
++                          struct page **pages, void __user *addr,
++                          int write, size_t npages)
++{
++       int err;
++       struct mm_struct *mm;
++       struct kcopy_map_entry *rkme;
++
++       mutex_lock(&kf->map_lock);
++
++       rkme = kcopy_lookup_pid(&kf->live_map_tree, pid);
++       if (!rkme || !kcopy_validate_task(rkme->task)) {
++               err = -EINVAL;
++               goto bail_unlock;
++       }
++
++       mm = get_task_mm(rkme->task);
++       if (unlikely(!mm)) {
++               err = -ENOMEM;
++               goto bail_unlock;
++       }
++
++       down_read(&mm->mmap_sem);
++       err = get_user_pages(rkme->task, mm,
++                            (unsigned long) addr, npages, write, 0,
++                            pages, NULL);
++
++       if (err < npages && err > 0) {
++               kcopy_put_pages(pages, err);
++               err = -ENOMEM;
++       } else if (err == npages)
++               err = 0;
++
++       up_read(&mm->mmap_sem);
++
++       mmput(mm);
++
++bail_unlock:
++       mutex_unlock(&kf->map_lock);
++
++       return err;
++}
++
++static unsigned long kcopy_copy_pages_from_user(void __user *src,
++                                               struct page **dpages,
++                                               unsigned doff,
++                                               unsigned long n)
++{
++       struct page *dpage = *dpages;
++       char *daddr = kmap(dpage);
++       int ret = 0;
++
++       while (1) {
++               const unsigned long nleft = PAGE_SIZE - doff;
++               const unsigned long nc = (n < nleft) ? n : nleft;
++
++               /* if (copy_from_user(daddr + doff, src, nc)) { */
++               if (__copy_from_user_nocache(daddr + doff, src, nc)) {
++                       ret = -EFAULT;
++                       goto bail;
++               }
++
++               n -= nc;
++               if (n == 0)
++                       break;
++
++               doff += nc;
++               doff &= ~PAGE_MASK;
++               if (doff == 0) {
++                       kunmap(dpage);
++                       dpages++;
++                       dpage = *dpages;
++                       daddr = kmap(dpage);
++               }
++
++               src += nc;
++       }
++
++bail:
++       kunmap(dpage);
++
++       return ret;
++}
++
++static unsigned long kcopy_copy_pages_to_user(void __user *dst,
++                                             struct page **spages,
++                                             unsigned soff,
++                                             unsigned long n)
++{
++       struct page *spage = *spages;
++       const char *saddr = kmap(spage);
++       int ret = 0;
++
++       while (1) {
++               const unsigned long nleft = PAGE_SIZE - soff;
++               const unsigned long nc = (n < nleft) ? n : nleft;
++
++               if (copy_to_user(dst, saddr + soff, nc)) {
++                       ret = -EFAULT;
++                       goto bail;
++               }
++
++               n -= nc;
++               if (n == 0)
++                       break;
++
++               soff += nc;
++               soff &= ~PAGE_MASK;
++               if (soff == 0) {
++                       kunmap(spage);
++                       spages++;
++                       spage = *spages;
++                       saddr = kmap(spage);
++               }
++
++               dst += nc;
++       }
++
++bail:
++       kunmap(spage);
++
++       return ret;
++}
++
++static unsigned long kcopy_copy_to_user(void __user *dst,
++                                       struct kcopy_file *kf, pid_t pid,
++                                       void __user *src,
++                                       unsigned long n)
++{
++       struct page **pages;
++       const int pages_len = PAGE_SIZE / sizeof(struct page *);
++       int ret = 0;
++
++       pages = (struct page **) __get_free_page(GFP_KERNEL);
++       if (!pages) {
++               ret = -ENOMEM;
++               goto bail;
++       }
++
++       while (n) {
++               const unsigned long soff = (unsigned long) src & ~PAGE_MASK;
++               const unsigned long spages_left =
++                       (soff + n + PAGE_SIZE - 1) >> PAGE_SHIFT;
++               const unsigned long spages_cp =
++                       min_t(unsigned long, spages_left, pages_len);
++               const unsigned long sbytes =
++                       PAGE_SIZE - soff + (spages_cp - 1) * PAGE_SIZE;
++               const unsigned long nbytes = min_t(unsigned long, sbytes, n);
++
++               ret = kcopy_get_pages(kf, pid, pages, src, 0, spages_cp);
++               if (unlikely(ret))
++                       goto bail_free;
++
++               ret = kcopy_copy_pages_to_user(dst, pages, soff, nbytes);
++               kcopy_put_pages(pages, spages_cp);
++               if (ret)
++                       goto bail_free;
++               dst = (char *) dst + nbytes;
++               src = (char *) src + nbytes;
++
++               n -= nbytes;
++       }
++
++bail_free:
++       free_page((unsigned long) pages);
++bail:
++       return ret;
++}
++
++static unsigned long kcopy_copy_from_user(const void __user *src,
++                                         struct kcopy_file *kf, pid_t pid,
++                                         void __user *dst,
++                                         unsigned long n)
++{
++       struct page **pages;
++       const int pages_len = PAGE_SIZE / sizeof(struct page *);
++       int ret = 0;
++
++       pages = (struct page **) __get_free_page(GFP_KERNEL);
++       if (!pages) {
++               ret = -ENOMEM;
++               goto bail;
++       }
++
++       while (n) {
++               const unsigned long doff = (unsigned long) dst & ~PAGE_MASK;
++               const unsigned long dpages_left =
++                       (doff + n + PAGE_SIZE - 1) >> PAGE_SHIFT;
++               const unsigned long dpages_cp =
++                       min_t(unsigned long, dpages_left, pages_len);
++               const unsigned long dbytes =
++                       PAGE_SIZE - doff + (dpages_cp - 1) * PAGE_SIZE;
++               const unsigned long nbytes = min_t(unsigned long, dbytes, n);
++
++               ret = kcopy_get_pages(kf, pid, pages, dst, 1, dpages_cp);
++               if (unlikely(ret))
++                       goto bail_free;
++
++               ret = kcopy_copy_pages_from_user((void __user *) src,
++                                                pages, doff, nbytes);
++               kcopy_put_pages(pages, dpages_cp);
++               if (ret)
++                       goto bail_free;
++
++               dst = (char *) dst + nbytes;
++               src = (char *) src + nbytes;
++
++               n -= nbytes;
++       }
++
++bail_free:
++       free_page((unsigned long) pages);
++bail:
++       return ret;
++}
++
++static int kcopy_do_get(struct kcopy_map_entry *kme, pid_t pid,
++                       const void __user *src, void __user *dst,
++                       unsigned long n)
++{
++       struct kcopy_file *kf = kme->file;
++       int ret = 0;
++
++       if (n == 0) {
++               ret = -EINVAL;
++               goto bail;
++       }
++
++       ret = kcopy_copy_to_user(dst, kf, pid, (void __user *) src, n);
++
++bail:
++       return ret;
++}
++
++static int kcopy_do_put(struct kcopy_map_entry *kme, const void __user *src,
++                       pid_t pid, void __user *dst,
++                       unsigned long n)
++{
++       struct kcopy_file *kf = kme->file;
++       int ret = 0;
++
++       if (n == 0) {
++               ret = -EINVAL;
++               goto bail;
++       }
++
++       ret = kcopy_copy_from_user(src, kf, pid, (void __user *) dst, n);
++
++bail:
++       return ret;
++}
++
++static int kcopy_do_abi(u32 __user *dst)
++{
++       u32 val = KCOPY_ABI;
++       int err;
++
++       err = put_user(val, dst);
++       if (err)
++               return -EFAULT;
++
++       return 0;
++}
++
++ssize_t kcopy_write(struct file *filp, const char __user *data, size_t cnt,
++                   loff_t *o)
++{
++       struct kcopy_map_entry *kme = filp->private_data;
++       struct kcopy_syscall ks;
++       int err = 0;
++       const void __user *src;
++       void __user *dst;
++       unsigned long n;
++
++       if (cnt != sizeof(struct kcopy_syscall)) {
++               err = -EINVAL;
++               goto bail;
++       }
++
++       err = copy_from_user(&ks, data, cnt);
++       if (unlikely(err))
++               goto bail;
++
++       src = kcopy_syscall_src(&ks);
++       dst = kcopy_syscall_dst(&ks);
++       n = kcopy_syscall_n(&ks);
++       if (ks.tag == KCOPY_GET_SYSCALL)
++               err = kcopy_do_get(kme, ks.pid, src, dst, n);
++       else if (ks.tag == KCOPY_PUT_SYSCALL)
++               err = kcopy_do_put(kme, src, ks.pid, dst, n);
++       else if (ks.tag == KCOPY_ABI_SYSCALL)
++               err = kcopy_do_abi(dst);
++       else
++               err = -EINVAL;
++
++bail:
++       return err ? err : cnt;
++}
++
++static const struct file_operations kcopy_fops = {
++       .owner = THIS_MODULE,
++       .open = kcopy_open,
++       .release = kcopy_release,
++       .flush = kcopy_flush,
++       .write = kcopy_write,
++};
++
++static int __init kcopy_init(void)
++{
++       int ret;
++       const char *name = "kcopy";
++       int i;
++       int ninit = 0;
++
++       mutex_init(&kcopy_dev.open_lock);
++
++       ret = alloc_chrdev_region(&kcopy_dev.dev, 0, KCOPY_MAX_MINORS, name);
++       if (ret)
++               goto bail;
++
++       kcopy_dev.class = class_create(THIS_MODULE, (char *) name);
++
++       if (IS_ERR(kcopy_dev.class)) {
++               ret = PTR_ERR(kcopy_dev.class);
++               printk(KERN_ERR "kcopy: Could not create "
++                       "device class (err %d)\n", -ret);
++               goto bail_chrdev;
++       }
++
++       cdev_init(&kcopy_dev.cdev, &kcopy_fops);
++       ret = cdev_add(&kcopy_dev.cdev, kcopy_dev.dev, KCOPY_MAX_MINORS);
++       if (ret < 0) {
++               printk(KERN_ERR "kcopy: Could not add cdev (err %d)\n",
++                              -ret);
++               goto bail_class;
++       }
++
++       for (i = 0; i < KCOPY_MAX_MINORS; i++) {
++               char devname[8];
++               const int minor = MINOR(kcopy_dev.dev) + i;
++               const dev_t dev = MKDEV(MAJOR(kcopy_dev.dev), minor);
++
++               snprintf(devname, sizeof(devname), "kcopy%02d", i);
++               kcopy_dev.devp[i] =
++                       device_create(kcopy_dev.class, NULL,
++                               dev, NULL, devname);
++
++               if (IS_ERR(kcopy_dev.devp[i])) {
++                       ret = PTR_ERR(kcopy_dev.devp[i]);
++                       printk(KERN_ERR "kcopy: Could not create "
++                              "devp %d (err %d)\n", i, -ret);
++                       goto bail_cdev_add;
++               }
++
++               ninit++;
++       }
++
++       ret = 0;
++       goto bail;
++
++bail_cdev_add:
++       for (i = 0; i < ninit; i++)
++               device_unregister(kcopy_dev.devp[i]);
++
++       cdev_del(&kcopy_dev.cdev);
++bail_class:
++       class_destroy(kcopy_dev.class);
++bail_chrdev:
++       unregister_chrdev_region(kcopy_dev.dev, KCOPY_MAX_MINORS);
++bail:
++       return ret;
++}
++
++static void __exit kcopy_fini(void)
++{
++       int i;
++
++       for (i = 0; i < KCOPY_MAX_MINORS; i++)
++               device_unregister(kcopy_dev.devp[i]);
++
++       cdev_del(&kcopy_dev.cdev);
++       class_destroy(kcopy_dev.class);
++       unregister_chrdev_region(kcopy_dev.dev, KCOPY_MAX_MINORS);
++}
++
++module_init(kcopy_init);
++module_exit(kcopy_fini);
+diff --git a/drivers/gpu/drm/Kconfig b/drivers/gpu/drm/Kconfig
+index 1368826ef2..2ab832db95 100644
+--- a/drivers/gpu/drm/Kconfig
++++ b/drivers/gpu/drm/Kconfig
+@@ -162,3 +162,6 @@ config DRM_SAVAGE
+ source "drivers/gpu/drm/exynos/Kconfig"
+ 
+ source "drivers/gpu/drm/vmwgfx/Kconfig"
++
++source "drivers/gpu/drm/nouveau/Kconfig"
++
+diff --git a/drivers/gpu/drm/i915/i915_drv.c b/drivers/gpu/drm/i915/i915_drv.c
+index ba62adaebd..90c6a0a439 100644
+--- a/drivers/gpu/drm/i915/i915_drv.c
++++ b/drivers/gpu/drm/i915/i915_drv.c
+@@ -47,11 +47,11 @@ MODULE_PARM_DESC(modeset,
+ unsigned int i915_fbpercrtc __always_unused = 0;
+ module_param_named(fbpercrtc, i915_fbpercrtc, int, 0400);
+ 
+-int i915_panel_ignore_lid __read_mostly = 0;
++int i915_panel_ignore_lid __read_mostly = 1;
+ module_param_named(panel_ignore_lid, i915_panel_ignore_lid, int, 0600);
+ MODULE_PARM_DESC(panel_ignore_lid,
+-		"Override lid status (0=autodetect [default], 1=lid open, "
+-		"-1=lid closed)");
++		"Override lid status (0=autodetect, 1=autodetect disabled [default], "
++		"-1=force lid closed, -2=force lid open)");
+ 
+ unsigned int i915_powersave __read_mostly = 1;
+ module_param_named(powersave, i915_powersave, int, 0600);
+diff --git a/drivers/gpu/drm/i915/intel_panel.c b/drivers/gpu/drm/i915/intel_panel.c
+index 04cb34a37e..8100271391 100644
+--- a/drivers/gpu/drm/i915/intel_panel.c
++++ b/drivers/gpu/drm/i915/intel_panel.c
+@@ -266,7 +266,7 @@ static void intel_panel_actually_set_backlight(struct drm_device *dev, u32 level
+ 	}
+ 
+ 	tmp = I915_READ(BLC_PWM_CTL);
+-	if (INTEL_INFO(dev)->gen < 4) 
++	if (INTEL_INFO(dev)->gen < 4)
+ 		level <<= 1;
+ 	tmp &= ~BACKLIGHT_DUTY_CYCLE_MASK;
+ 	I915_WRITE(BLC_PWM_CTL, tmp | level);
+@@ -311,26 +311,23 @@ static void intel_panel_init_backlight(struct drm_device *dev)
+ enum drm_connector_status
+ intel_panel_detect(struct drm_device *dev)
+ {
+-#if 0
+ 	struct drm_i915_private *dev_priv = dev->dev_private;
+-#endif
+-
+-	if (i915_panel_ignore_lid)
+-		return i915_panel_ignore_lid > 0 ?
+-			connector_status_connected :
+-			connector_status_disconnected;
+ 
+-	/* opregion lid state on HP 2540p is wrong at boot up,
+-	 * appears to be either the BIOS or Linux ACPI fault */
+-#if 0
+ 	/* Assume that the BIOS does not lie through the OpRegion... */
+-	if (dev_priv->opregion.lid_state)
++	if (!i915_panel_ignore_lid && dev_priv->opregion.lid_state) {
+ 		return ioread32(dev_priv->opregion.lid_state) & 0x1 ?
+ 			connector_status_connected :
+ 			connector_status_disconnected;
+-#endif
++	}
+ 
+-	return connector_status_unknown;
++	switch (i915_panel_ignore_lid) {
++	case -2:
++		return connector_status_connected;
++	case -1:
++		return connector_status_disconnected;
++	default:
++		return connector_status_unknown;
++	}
+ }
+ 
+ #ifdef CONFIG_BACKLIGHT_CLASS_DEVICE
+diff --git a/drivers/gpu/drm/nouveau/Kconfig b/drivers/gpu/drm/nouveau/Kconfig
+index ca1639918f..aa5a01fbb3 100644
+--- a/drivers/gpu/drm/nouveau/Kconfig
++++ b/drivers/gpu/drm/nouveau/Kconfig
+@@ -13,6 +13,7 @@ config DRM_NOUVEAU
+ 	select ACPI_VIDEO if ACPI && X86 && BACKLIGHT_CLASS_DEVICE && VIDEO_OUTPUT_CONTROL && INPUT
+ 	select ACPI_WMI if ACPI
+ 	select MXM_WMI if ACPI
++	select VIDEO_OUTPUT_CONTROL
+ 	help
+ 	  Choose this option for open-source nVidia support.
+ 
+diff --git a/drivers/input/keyboard/atkbd.c b/drivers/input/keyboard/atkbd.c
+index 19cfc0cf55..e05a2e7073 100644
+--- a/drivers/input/keyboard/atkbd.c
++++ b/drivers/input/keyboard/atkbd.c
+@@ -1305,7 +1305,7 @@ static ssize_t atkbd_show_extra(struct atkbd *atkbd, char *buf)
+ static ssize_t atkbd_set_extra(struct atkbd *atkbd, const char *buf, size_t count)
+ {
+ 	struct input_dev *old_dev, *new_dev;
+-	unsigned long value;
++	unsigned int value;
+ 	int err;
+ 	bool old_extra;
+ 	unsigned char old_set;
+@@ -1313,7 +1313,11 @@ static ssize_t atkbd_set_extra(struct atkbd *atkbd, const char *buf, size_t coun
+ 	if (!atkbd->write)
+ 		return -EIO;
+ 
+-	if (strict_strtoul(buf, 10, &value) || value > 1)
++	err = kstrtouint(buf, 10, &value);
++	if (err)
++		return err;
++
++	if (value > 1)
+ 		return -EINVAL;
+ 
+ 	if (atkbd->extra != value) {
+@@ -1389,11 +1393,15 @@ static ssize_t atkbd_show_scroll(struct atkbd *atkbd, char *buf)
+ static ssize_t atkbd_set_scroll(struct atkbd *atkbd, const char *buf, size_t count)
+ {
+ 	struct input_dev *old_dev, *new_dev;
+-	unsigned long value;
++	unsigned int value;
+ 	int err;
+ 	bool old_scroll;
+ 
+-	if (strict_strtoul(buf, 10, &value) || value > 1)
++	err = kstrtouint(buf, 10, &value);
++	if (err)
++		return err;
++
++	if (value > 1)
+ 		return -EINVAL;
+ 
+ 	if (atkbd->scroll != value) {
+@@ -1433,7 +1441,7 @@ static ssize_t atkbd_show_set(struct atkbd *atkbd, char *buf)
+ static ssize_t atkbd_set_set(struct atkbd *atkbd, const char *buf, size_t count)
+ {
+ 	struct input_dev *old_dev, *new_dev;
+-	unsigned long value;
++	unsigned int value;
+ 	int err;
+ 	unsigned char old_set;
+ 	bool old_extra;
+@@ -1441,7 +1449,11 @@ static ssize_t atkbd_set_set(struct atkbd *atkbd, const char *buf, size_t count)
+ 	if (!atkbd->write)
+ 		return -EIO;
+ 
+-	if (strict_strtoul(buf, 10, &value) || (value != 2 && value != 3))
++	err = kstrtouint(buf, 10, &value);
++	if (err)
++		return err;
++
++	if (value != 2 && value != 3)
+ 		return -EINVAL;
+ 
+ 	if (atkbd->set != value) {
+@@ -1484,14 +1496,18 @@ static ssize_t atkbd_show_softrepeat(struct atkbd *atkbd, char *buf)
+ static ssize_t atkbd_set_softrepeat(struct atkbd *atkbd, const char *buf, size_t count)
+ {
+ 	struct input_dev *old_dev, *new_dev;
+-	unsigned long value;
++	unsigned int value;
+ 	int err;
+ 	bool old_softrepeat, old_softraw;
+ 
+ 	if (!atkbd->write)
+ 		return -EIO;
+ 
+-	if (strict_strtoul(buf, 10, &value) || value > 1)
++	err = kstrtouint(buf, 10, &value);
++	if (err)
++		return err;
++
++	if (value > 1)
+ 		return -EINVAL;
+ 
+ 	if (atkbd->softrepeat != value) {
+@@ -1534,11 +1550,15 @@ static ssize_t atkbd_show_softraw(struct atkbd *atkbd, char *buf)
+ static ssize_t atkbd_set_softraw(struct atkbd *atkbd, const char *buf, size_t count)
+ {
+ 	struct input_dev *old_dev, *new_dev;
+-	unsigned long value;
++	unsigned int value;
+ 	int err;
+ 	bool old_softraw;
+ 
+-	if (strict_strtoul(buf, 10, &value) || value > 1)
++	err = kstrtouint(buf, 10, &value);
++	if (err)
++		return err;
++
++	if (value > 1)
+ 		return -EINVAL;
+ 
+ 	if (atkbd->softraw != value) {
+diff --git a/drivers/input/mouse/alps.c b/drivers/input/mouse/alps.c
+index 64ce6d9116..9854a1ff5a 100644
+--- a/drivers/input/mouse/alps.c
++++ b/drivers/input/mouse/alps.c
+@@ -17,13 +17,63 @@
+ 
+ #include <linux/slab.h>
+ #include <linux/input.h>
++#include <linux/input/mt.h>
+ #include <linux/serio.h>
+ #include <linux/libps2.h>
+ 
+ #include "psmouse.h"
+ #include "alps.h"
+ 
+-#define ALPS_OLDPROTO		0x01	/* old style input */
++/*
++ * Definitions for ALPS version 3 and 4 command mode protocol
++ */
++#define ALPS_V3_X_MAX	2000
++#define ALPS_V3_Y_MAX	1400
++
++#define ALPS_BITMAP_X_BITS	15
++#define ALPS_BITMAP_Y_BITS	11
++
++#define ALPS_CMD_NIBBLE_10	0x01f2
++
++static const struct alps_nibble_commands alps_v3_nibble_commands[] = {
++	{ PSMOUSE_CMD_SETPOLL,		0x00 }, /* 0 */
++	{ PSMOUSE_CMD_RESET_DIS,	0x00 }, /* 1 */
++	{ PSMOUSE_CMD_SETSCALE21,	0x00 }, /* 2 */
++	{ PSMOUSE_CMD_SETRATE,		0x0a }, /* 3 */
++	{ PSMOUSE_CMD_SETRATE,		0x14 }, /* 4 */
++	{ PSMOUSE_CMD_SETRATE,		0x28 }, /* 5 */
++	{ PSMOUSE_CMD_SETRATE,		0x3c }, /* 6 */
++	{ PSMOUSE_CMD_SETRATE,		0x50 }, /* 7 */
++	{ PSMOUSE_CMD_SETRATE,		0x64 }, /* 8 */
++	{ PSMOUSE_CMD_SETRATE,		0xc8 }, /* 9 */
++	{ ALPS_CMD_NIBBLE_10,		0x00 }, /* a */
++	{ PSMOUSE_CMD_SETRES,		0x00 }, /* b */
++	{ PSMOUSE_CMD_SETRES,		0x01 }, /* c */
++	{ PSMOUSE_CMD_SETRES,		0x02 }, /* d */
++	{ PSMOUSE_CMD_SETRES,		0x03 }, /* e */
++	{ PSMOUSE_CMD_SETSCALE11,	0x00 }, /* f */
++};
++
++static const struct alps_nibble_commands alps_v4_nibble_commands[] = {
++	{ PSMOUSE_CMD_ENABLE,		0x00 }, /* 0 */
++	{ PSMOUSE_CMD_RESET_DIS,	0x00 }, /* 1 */
++	{ PSMOUSE_CMD_SETSCALE21,	0x00 }, /* 2 */
++	{ PSMOUSE_CMD_SETRATE,		0x0a }, /* 3 */
++	{ PSMOUSE_CMD_SETRATE,		0x14 }, /* 4 */
++	{ PSMOUSE_CMD_SETRATE,		0x28 }, /* 5 */
++	{ PSMOUSE_CMD_SETRATE,		0x3c }, /* 6 */
++	{ PSMOUSE_CMD_SETRATE,		0x50 }, /* 7 */
++	{ PSMOUSE_CMD_SETRATE,		0x64 }, /* 8 */
++	{ PSMOUSE_CMD_SETRATE,		0xc8 }, /* 9 */
++	{ ALPS_CMD_NIBBLE_10,		0x00 }, /* a */
++	{ PSMOUSE_CMD_SETRES,		0x00 }, /* b */
++	{ PSMOUSE_CMD_SETRES,		0x01 }, /* c */
++	{ PSMOUSE_CMD_SETRES,		0x02 }, /* d */
++	{ PSMOUSE_CMD_SETRES,		0x03 }, /* e */
++	{ PSMOUSE_CMD_SETSCALE11,	0x00 }, /* f */
++};
++
++
+ #define ALPS_DUALPOINT		0x02	/* touchpad has trackstick */
+ #define ALPS_PASS		0x04	/* device has a pass-through port */
+ 
+@@ -35,30 +85,33 @@
+ 					   6-byte ALPS packet */
+ 
+ static const struct alps_model_info alps_model_data[] = {
+-	{ { 0x32, 0x02, 0x14 },	0xf8, 0xf8, ALPS_PASS | ALPS_DUALPOINT }, /* Toshiba Salellite Pro M10 */
+-	{ { 0x33, 0x02, 0x0a },	0x88, 0xf8, ALPS_OLDPROTO },		  /* UMAX-530T */
+-	{ { 0x53, 0x02, 0x0a },	0xf8, 0xf8, 0 },
+-	{ { 0x53, 0x02, 0x14 },	0xf8, 0xf8, 0 },
+-	{ { 0x60, 0x03, 0xc8 }, 0xf8, 0xf8, 0 },			  /* HP ze1115 */
+-	{ { 0x63, 0x02, 0x0a },	0xf8, 0xf8, 0 },
+-	{ { 0x63, 0x02, 0x14 },	0xf8, 0xf8, 0 },
+-	{ { 0x63, 0x02, 0x28 },	0xf8, 0xf8, ALPS_FW_BK_2 },		  /* Fujitsu Siemens S6010 */
+-	{ { 0x63, 0x02, 0x3c },	0x8f, 0x8f, ALPS_WHEEL },		  /* Toshiba Satellite S2400-103 */
+-	{ { 0x63, 0x02, 0x50 },	0xef, 0xef, ALPS_FW_BK_1 },		  /* NEC Versa L320 */
+-	{ { 0x63, 0x02, 0x64 },	0xf8, 0xf8, 0 },
+-	{ { 0x63, 0x03, 0xc8 }, 0xf8, 0xf8, ALPS_PASS | ALPS_DUALPOINT }, /* Dell Latitude D800 */
+-	{ { 0x73, 0x00, 0x0a },	0xf8, 0xf8, ALPS_DUALPOINT },		  /* ThinkPad R61 8918-5QG */
+-	{ { 0x73, 0x02, 0x0a },	0xf8, 0xf8, 0 },
+-	{ { 0x73, 0x02, 0x14 },	0xf8, 0xf8, ALPS_FW_BK_2 },		  /* Ahtec Laptop */
+-	{ { 0x20, 0x02, 0x0e },	0xf8, 0xf8, ALPS_PASS | ALPS_DUALPOINT }, /* XXX */
+-	{ { 0x22, 0x02, 0x0a },	0xf8, 0xf8, ALPS_PASS | ALPS_DUALPOINT },
+-	{ { 0x22, 0x02, 0x14 }, 0xff, 0xff, ALPS_PASS | ALPS_DUALPOINT }, /* Dell Latitude D600 */
++	{ { 0x32, 0x02, 0x14 },	0x00, ALPS_PROTO_V2, 0xf8, 0xf8, ALPS_PASS | ALPS_DUALPOINT },	/* Toshiba Salellite Pro M10 */
++	{ { 0x33, 0x02, 0x0a },	0x00, ALPS_PROTO_V1, 0x88, 0xf8, 0 },				/* UMAX-530T */
++	{ { 0x53, 0x02, 0x0a },	0x00, ALPS_PROTO_V2, 0xf8, 0xf8, 0 },
++	{ { 0x53, 0x02, 0x14 },	0x00, ALPS_PROTO_V2, 0xf8, 0xf8, 0 },
++	{ { 0x60, 0x03, 0xc8 }, 0x00, ALPS_PROTO_V2, 0xf8, 0xf8, 0 },				/* HP ze1115 */
++	{ { 0x63, 0x02, 0x0a },	0x00, ALPS_PROTO_V2, 0xf8, 0xf8, 0 },
++	{ { 0x63, 0x02, 0x14 },	0x00, ALPS_PROTO_V2, 0xf8, 0xf8, 0 },
++	{ { 0x63, 0x02, 0x28 },	0x00, ALPS_PROTO_V2, 0xf8, 0xf8, ALPS_FW_BK_2 },		/* Fujitsu Siemens S6010 */
++	{ { 0x63, 0x02, 0x3c },	0x00, ALPS_PROTO_V2, 0x8f, 0x8f, ALPS_WHEEL },			/* Toshiba Satellite S2400-103 */
++	{ { 0x63, 0x02, 0x50 },	0x00, ALPS_PROTO_V2, 0xef, 0xef, ALPS_FW_BK_1 },		/* NEC Versa L320 */
++	{ { 0x63, 0x02, 0x64 },	0x00, ALPS_PROTO_V2, 0xf8, 0xf8, 0 },
++	{ { 0x63, 0x03, 0xc8 }, 0x00, ALPS_PROTO_V2, 0xf8, 0xf8, ALPS_PASS | ALPS_DUALPOINT },	/* Dell Latitude D800 */
++	{ { 0x73, 0x00, 0x0a },	0x00, ALPS_PROTO_V2, 0xf8, 0xf8, ALPS_DUALPOINT },		/* ThinkPad R61 8918-5QG */
++	{ { 0x73, 0x02, 0x0a },	0x00, ALPS_PROTO_V2, 0xf8, 0xf8, 0 },
++	{ { 0x73, 0x02, 0x14 },	0x00, ALPS_PROTO_V2, 0xf8, 0xf8, ALPS_FW_BK_2 },		/* Ahtec Laptop */
++	{ { 0x20, 0x02, 0x0e },	0x00, ALPS_PROTO_V2, 0xf8, 0xf8, ALPS_PASS | ALPS_DUALPOINT },	/* XXX */
++	{ { 0x22, 0x02, 0x0a },	0x00, ALPS_PROTO_V2, 0xf8, 0xf8, ALPS_PASS | ALPS_DUALPOINT },
++	{ { 0x22, 0x02, 0x14 }, 0x00, ALPS_PROTO_V2, 0xff, 0xff, ALPS_PASS | ALPS_DUALPOINT },	/* Dell Latitude D600 */
+ 	/* Dell Latitude E5500, E6400, E6500, Precision M4400 */
+-	{ { 0x62, 0x02, 0x14 }, 0xcf, 0xcf,
++	{ { 0x62, 0x02, 0x14 }, 0x00, ALPS_PROTO_V2, 0xcf, 0xcf,
+ 		ALPS_PASS | ALPS_DUALPOINT | ALPS_PS2_INTERLEAVED },
+-	{ { 0x73, 0x02, 0x50 }, 0xcf, 0xcf, ALPS_FOUR_BUTTONS },	  /* Dell Vostro 1400 */
+-	{ { 0x52, 0x01, 0x14 }, 0xff, 0xff,
+-		ALPS_PASS | ALPS_DUALPOINT | ALPS_PS2_INTERLEAVED },	  /* Toshiba Tecra A11-11L */
++	{ { 0x73, 0x02, 0x50 }, 0x00, ALPS_PROTO_V2, 0xcf, 0xcf, ALPS_FOUR_BUTTONS },		/* Dell Vostro 1400 */
++	{ { 0x52, 0x01, 0x14 }, 0x00, ALPS_PROTO_V2, 0xff, 0xff,
++		ALPS_PASS | ALPS_DUALPOINT | ALPS_PS2_INTERLEAVED },				/* Toshiba Tecra A11-11L */
++	{ { 0x73, 0x02, 0x64 },	0x9b, ALPS_PROTO_V3, 0x8f, 0x8f, ALPS_DUALPOINT },
++	{ { 0x73, 0x02, 0x64 },	0x9d, ALPS_PROTO_V3, 0x8f, 0x8f, ALPS_DUALPOINT },
++	{ { 0x73, 0x02, 0x64 },	0x8a, ALPS_PROTO_V4, 0x8f, 0x8f, 0 },
+ };
+ 
+ /*
+@@ -67,42 +120,7 @@ static const struct alps_model_info alps_model_data[] = {
+  * isn't valid per PS/2 spec.
+  */
+ 
+-/*
+- * PS/2 packet format
+- *
+- * byte 0:  0    0 YSGN XSGN    1    M    R    L
+- * byte 1: X7   X6   X5   X4   X3   X2   X1   X0
+- * byte 2: Y7   Y6   Y5   Y4   Y3   Y2   Y1   Y0
+- *
+- * Note that the device never signals overflow condition.
+- *
+- * ALPS absolute Mode - new format
+- *
+- * byte 0:  1    ?    ?    ?    1    ?    ?    ?
+- * byte 1:  0   x6   x5   x4   x3   x2   x1   x0
+- * byte 2:  0  x10   x9   x8   x7    ?  fin  ges
+- * byte 3:  0   y9   y8   y7    1    M    R    L
+- * byte 4:  0   y6   y5   y4   y3   y2   y1   y0
+- * byte 5:  0   z6   z5   z4   z3   z2   z1   z0
+- *
+- * Dualpoint device -- interleaved packet format
+- *
+- * byte 0:    1    1    0    0    1    1    1    1
+- * byte 1:    0   x6   x5   x4   x3   x2   x1   x0
+- * byte 2:    0  x10   x9   x8   x7    0  fin  ges
+- * byte 3:    0    0 YSGN XSGN    1    1    1    1
+- * byte 4:   X7   X6   X5   X4   X3   X2   X1   X0
+- * byte 5:   Y7   Y6   Y5   Y4   Y3   Y2   Y1   Y0
+- * byte 6:    0   y9   y8   y7    1    m    r    l
+- * byte 7:    0   y6   y5   y4   y3   y2   y1   y0
+- * byte 8:    0   z6   z5   z4   z3   z2   z1   z0
+- *
+- * CAPITALS = stick, miniscules = touchpad
+- *
+- * ?'s can have different meanings on different models,
+- * such as wheel rotation, extra buttons, stick buttons
+- * on a dualpoint, etc.
+- */
++/* Packet formats are described in Documentation/input/alps.txt */
+ 
+ static bool alps_is_valid_first_byte(const struct alps_model_info *model,
+ 				     unsigned char data)
+@@ -137,7 +155,7 @@ static void alps_report_buttons(struct psmouse *psmouse,
+ 	input_sync(dev2);
+ }
+ 
+-static void alps_process_packet(struct psmouse *psmouse)
++static void alps_process_packet_v1_v2(struct psmouse *psmouse)
+ {
+ 	struct alps_data *priv = psmouse->private;
+ 	const struct alps_model_info *model = priv->i;
+@@ -147,7 +165,7 @@ static void alps_process_packet(struct psmouse *psmouse)
+ 	int x, y, z, ges, fin, left, right, middle;
+ 	int back = 0, forward = 0;
+ 
+-	if (model->flags & ALPS_OLDPROTO) {
++	if (model->proto_version == ALPS_PROTO_V1) {
+ 		left = packet[2] & 0x10;
+ 		right = packet[2] & 0x08;
+ 		middle = 0;
+@@ -239,6 +257,403 @@ static void alps_process_packet(struct psmouse *psmouse)
+ 	input_sync(dev);
+ }
+ 
++/*
++ * Process bitmap data from v3 and v4 protocols. Returns the number of
++ * fingers detected. A return value of 0 means at least one of the
++ * bitmaps was empty.
++ *
++ * The bitmaps don't have enough data to track fingers, so this function
++ * only generates points representing a bounding box of all contacts.
++ * These points are returned in x1, y1, x2, and y2 when the return value
++ * is greater than 0.
++ */
++static int alps_process_bitmap(unsigned int x_map, unsigned int y_map,
++			       int *x1, int *y1, int *x2, int *y2)
++{
++	struct alps_bitmap_point {
++		int start_bit;
++		int num_bits;
++	};
++
++	int fingers_x = 0, fingers_y = 0, fingers;
++	int i, bit, prev_bit;
++	struct alps_bitmap_point x_low = {0,}, x_high = {0,};
++	struct alps_bitmap_point y_low = {0,}, y_high = {0,};
++	struct alps_bitmap_point *point;
++
++	if (!x_map || !y_map)
++		return 0;
++
++	*x1 = *y1 = *x2 = *y2 = 0;
++
++	prev_bit = 0;
++	point = &x_low;
++	for (i = 0; x_map != 0; i++, x_map >>= 1) {
++		bit = x_map & 1;
++		if (bit) {
++			if (!prev_bit) {
++				point->start_bit = i;
++				fingers_x++;
++			}
++			point->num_bits++;
++		} else {
++			if (prev_bit)
++				point = &x_high;
++			else
++				point->num_bits = 0;
++		}
++		prev_bit = bit;
++	}
++
++	/*
++	 * y bitmap is reversed for what we need (lower positions are in
++	 * higher bits), so we process from the top end.
++	 */
++	y_map = y_map << (sizeof(y_map) * BITS_PER_BYTE - ALPS_BITMAP_Y_BITS);
++	prev_bit = 0;
++	point = &y_low;
++	for (i = 0; y_map != 0; i++, y_map <<= 1) {
++		bit = y_map & (1 << (sizeof(y_map) * BITS_PER_BYTE - 1));
++		if (bit) {
++			if (!prev_bit) {
++				point->start_bit = i;
++				fingers_y++;
++			}
++			point->num_bits++;
++		} else {
++			if (prev_bit)
++				point = &y_high;
++			else
++				point->num_bits = 0;
++		}
++		prev_bit = bit;
++	}
++
++	/*
++	 * Fingers can overlap, so we use the maximum count of fingers
++	 * on either axis as the finger count.
++	 */
++	fingers = max(fingers_x, fingers_y);
++
++	/*
++	 * If total fingers is > 1 but either axis reports only a single
++	 * contact, we have overlapping or adjacent fingers. For the
++	 * purposes of creating a bounding box, divide the single contact
++	 * (roughly) equally between the two points.
++	 */
++	if (fingers > 1) {
++		if (fingers_x == 1) {
++			i = x_low.num_bits / 2;
++			x_low.num_bits = x_low.num_bits - i;
++			x_high.start_bit = x_low.start_bit + i;
++			x_high.num_bits = max(i, 1);
++		} else if (fingers_y == 1) {
++			i = y_low.num_bits / 2;
++			y_low.num_bits = y_low.num_bits - i;
++			y_high.start_bit = y_low.start_bit + i;
++			y_high.num_bits = max(i, 1);
++		}
++	}
++
++	*x1 = (ALPS_V3_X_MAX * (2 * x_low.start_bit + x_low.num_bits - 1)) /
++	      (2 * (ALPS_BITMAP_X_BITS - 1));
++	*y1 = (ALPS_V3_Y_MAX * (2 * y_low.start_bit + y_low.num_bits - 1)) /
++	      (2 * (ALPS_BITMAP_Y_BITS - 1));
++
++	if (fingers > 1) {
++		*x2 = (ALPS_V3_X_MAX * (2 * x_high.start_bit + x_high.num_bits - 1)) /
++		      (2 * (ALPS_BITMAP_X_BITS - 1));
++		*y2 = (ALPS_V3_Y_MAX * (2 * y_high.start_bit + y_high.num_bits - 1)) /
++		      (2 * (ALPS_BITMAP_Y_BITS - 1));
++	}
++
++	return fingers;
++}
++
++static void alps_set_slot(struct input_dev *dev, int slot, bool active,
++			  int x, int y)
++{
++	input_mt_slot(dev, slot);
++	input_mt_report_slot_state(dev, MT_TOOL_FINGER, active);
++	if (active) {
++		input_report_abs(dev, ABS_MT_POSITION_X, x);
++		input_report_abs(dev, ABS_MT_POSITION_Y, y);
++	}
++}
++
++static void alps_report_semi_mt_data(struct input_dev *dev, int num_fingers,
++				     int x1, int y1, int x2, int y2)
++{
++	alps_set_slot(dev, 0, num_fingers != 0, x1, y1);
++	alps_set_slot(dev, 1, num_fingers == 2, x2, y2);
++}
++
++static void alps_process_trackstick_packet_v3(struct psmouse *psmouse)
++{
++	struct alps_data *priv = psmouse->private;
++	unsigned char *packet = psmouse->packet;
++	struct input_dev *dev = priv->dev2;
++	int x, y, z, left, right, middle;
++
++	/* Sanity check packet */
++	if (!(packet[0] & 0x40)) {
++		psmouse_dbg(psmouse, "Bad trackstick packet, discarding\n");
++		return;
++	}
++
++	/*
++	 * There's a special packet that seems to indicate the end
++	 * of a stream of trackstick data. Filter these out.
++	 */
++	if (packet[1] == 0x7f && packet[2] == 0x7f && packet[4] == 0x7f)
++		return;
++
++	x = (s8)(((packet[0] & 0x20) << 2) | (packet[1] & 0x7f));
++	y = (s8)(((packet[0] & 0x10) << 3) | (packet[2] & 0x7f));
++	z = (packet[4] & 0x7c) >> 2;
++
++	/*
++	 * The x and y values tend to be quite large, and when used
++	 * alone the trackstick is difficult to use. Scale them down
++	 * to compensate.
++	 */
++	x /= 8;
++	y /= 8;
++
++	input_report_rel(dev, REL_X, x);
++	input_report_rel(dev, REL_Y, -y);
++
++	/*
++	 * Most ALPS models report the trackstick buttons in the touchpad
++	 * packets, but a few report them here. No reliable way has been
++	 * found to differentiate between the models upfront, so we enable
++	 * the quirk in response to seeing a button press in the trackstick
++	 * packet.
++	 */
++	left = packet[3] & 0x01;
++	right = packet[3] & 0x02;
++	middle = packet[3] & 0x04;
++
++	if (!(priv->quirks & ALPS_QUIRK_TRACKSTICK_BUTTONS) &&
++	    (left || right || middle))
++		priv->quirks |= ALPS_QUIRK_TRACKSTICK_BUTTONS;
++
++	if (priv->quirks & ALPS_QUIRK_TRACKSTICK_BUTTONS) {
++		input_report_key(dev, BTN_LEFT, left);
++		input_report_key(dev, BTN_RIGHT, right);
++		input_report_key(dev, BTN_MIDDLE, middle);
++	}
++
++	input_sync(dev);
++	return;
++}
++
++static void alps_process_touchpad_packet_v3(struct psmouse *psmouse)
++{
++	struct alps_data *priv = psmouse->private;
++	unsigned char *packet = psmouse->packet;
++	struct input_dev *dev = psmouse->dev;
++	struct input_dev *dev2 = priv->dev2;
++	int x, y, z;
++	int left, right, middle;
++	int x1 = 0, y1 = 0, x2 = 0, y2 = 0;
++	int fingers = 0, bmap_fingers;
++	unsigned int x_bitmap, y_bitmap;
++
++	/*
++	 * There's no single feature of touchpad position and bitmap packets
++	 * that can be used to distinguish between them. We rely on the fact
++	 * that a bitmap packet should always follow a position packet with
++	 * bit 6 of packet[4] set.
++	 */
++	if (priv->multi_packet) {
++		/*
++		 * Sometimes a position packet will indicate a multi-packet
++		 * sequence, but then what follows is another position
++		 * packet. Check for this, and when it happens process the
++		 * position packet as usual.
++		 */
++		if (packet[0] & 0x40) {
++			fingers = (packet[5] & 0x3) + 1;
++			x_bitmap = ((packet[4] & 0x7e) << 8) |
++				   ((packet[1] & 0x7f) << 2) |
++				   ((packet[0] & 0x30) >> 4);
++			y_bitmap = ((packet[3] & 0x70) << 4) |
++				   ((packet[2] & 0x7f) << 1) |
++				   (packet[4] & 0x01);
++
++			bmap_fingers = alps_process_bitmap(x_bitmap, y_bitmap,
++							   &x1, &y1, &x2, &y2);
++
++			/*
++			 * We shouldn't report more than one finger if
++			 * we don't have two coordinates.
++			 */
++			if (fingers > 1 && bmap_fingers < 2)
++				fingers = bmap_fingers;
++
++			/* Now process position packet */
++			packet = priv->multi_data;
++		} else {
++			priv->multi_packet = 0;
++		}
++	}
++
++	/*
++	 * Bit 6 of byte 0 is not usually set in position packets. The only
++	 * times it seems to be set is in situations where the data is
++	 * suspect anyway, e.g. a palm resting flat on the touchpad. Given
++	 * this combined with the fact that this bit is useful for filtering
++	 * out misidentified bitmap packets, we reject anything with this
++	 * bit set.
++	 */
++	if (packet[0] & 0x40)
++		return;
++
++	if (!priv->multi_packet && (packet[4] & 0x40)) {
++		priv->multi_packet = 1;
++		memcpy(priv->multi_data, packet, sizeof(priv->multi_data));
++		return;
++	}
++
++	priv->multi_packet = 0;
++
++	left = packet[3] & 0x01;
++	right = packet[3] & 0x02;
++	middle = packet[3] & 0x04;
++
++	x = ((packet[1] & 0x7f) << 4) | ((packet[4] & 0x30) >> 2) |
++	    ((packet[0] & 0x30) >> 4);
++	y = ((packet[2] & 0x7f) << 4) | (packet[4] & 0x0f);
++	z = packet[5] & 0x7f;
++
++	/*
++	 * Sometimes the hardware sends a single packet with z = 0
++	 * in the middle of a stream. Real releases generate packets
++	 * with x, y, and z all zero, so these seem to be flukes.
++	 * Ignore them.
++	 */
++	if (x && y && !z)
++		return;
++
++	/*
++	 * If we don't have MT data or the bitmaps were empty, we have
++	 * to rely on ST data.
++	 */
++	if (!fingers) {
++		x1 = x;
++		y1 = y;
++		fingers = z > 0 ? 1 : 0;
++	}
++
++	if (z >= 64)
++		input_report_key(dev, BTN_TOUCH, 1);
++	else
++		input_report_key(dev, BTN_TOUCH, 0);
++
++	alps_report_semi_mt_data(dev, fingers, x1, y1, x2, y2);
++
++	input_report_key(dev, BTN_TOOL_FINGER, fingers == 1);
++	input_report_key(dev, BTN_TOOL_DOUBLETAP, fingers == 2);
++	input_report_key(dev, BTN_TOOL_TRIPLETAP, fingers == 3);
++	input_report_key(dev, BTN_TOOL_QUADTAP, fingers == 4);
++
++	input_report_key(dev, BTN_LEFT, left);
++	input_report_key(dev, BTN_RIGHT, right);
++	input_report_key(dev, BTN_MIDDLE, middle);
++
++	if (z > 0) {
++		input_report_abs(dev, ABS_X, x);
++		input_report_abs(dev, ABS_Y, y);
++	}
++	input_report_abs(dev, ABS_PRESSURE, z);
++
++	input_sync(dev);
++
++	if (!(priv->quirks & ALPS_QUIRK_TRACKSTICK_BUTTONS)) {
++		left = packet[3] & 0x10;
++		right = packet[3] & 0x20;
++		middle = packet[3] & 0x40;
++
++		input_report_key(dev2, BTN_LEFT, left);
++		input_report_key(dev2, BTN_RIGHT, right);
++		input_report_key(dev2, BTN_MIDDLE, middle);
++		input_sync(dev2);
++	}
++}
++
++static void alps_process_packet_v3(struct psmouse *psmouse)
++{
++	unsigned char *packet = psmouse->packet;
++
++	/*
++	 * v3 protocol packets come in three types, two representing
++	 * touchpad data and one representing trackstick data.
++	 * Trackstick packets seem to be distinguished by always
++	 * having 0x3f in the last byte. This value has never been
++	 * observed in the last byte of either of the other types
++	 * of packets.
++	 */
++	if (packet[5] == 0x3f) {
++		alps_process_trackstick_packet_v3(psmouse);
++		return;
++	}
++
++	alps_process_touchpad_packet_v3(psmouse);
++}
++
++static void alps_process_packet_v4(struct psmouse *psmouse)
++{
++	unsigned char *packet = psmouse->packet;
++	struct input_dev *dev = psmouse->dev;
++	int x, y, z;
++	int left, right;
++
++	left = packet[4] & 0x01;
++	right = packet[4] & 0x02;
++
++	x = ((packet[1] & 0x7f) << 4) | ((packet[3] & 0x30) >> 2) |
++	    ((packet[0] & 0x30) >> 4);
++	y = ((packet[2] & 0x7f) << 4) | (packet[3] & 0x0f);
++	z = packet[5] & 0x7f;
++
++	if (z >= 64)
++		input_report_key(dev, BTN_TOUCH, 1);
++	else
++		input_report_key(dev, BTN_TOUCH, 0);
++
++	if (z > 0) {
++		input_report_abs(dev, ABS_X, x);
++		input_report_abs(dev, ABS_Y, y);
++	}
++	input_report_abs(dev, ABS_PRESSURE, z);
++
++	input_report_key(dev, BTN_TOOL_FINGER, z > 0);
++	input_report_key(dev, BTN_LEFT, left);
++	input_report_key(dev, BTN_RIGHT, right);
++
++	input_sync(dev);
++}
++
++static void alps_process_packet(struct psmouse *psmouse)
++{
++	struct alps_data *priv = psmouse->private;
++	const struct alps_model_info *model = priv->i;
++
++	switch (model->proto_version) {
++	case ALPS_PROTO_V1:
++	case ALPS_PROTO_V2:
++		alps_process_packet_v1_v2(psmouse);
++		break;
++	case ALPS_PROTO_V3:
++		alps_process_packet_v3(psmouse);
++		break;
++	case ALPS_PROTO_V4:
++		alps_process_packet_v4(psmouse);
++		break;
++	}
++}
++
+ static void alps_report_bare_ps2_packet(struct psmouse *psmouse,
+ 					unsigned char packet[],
+ 					bool report_buttons)
+@@ -344,7 +759,7 @@ static void alps_flush_packet(unsigned long data)
+ 
+ 	serio_pause_rx(psmouse->ps2dev.serio);
+ 
+-	if (psmouse->pktcnt == 6) {
++	if (psmouse->pktcnt == psmouse->pktsize) {
+ 
+ 		/*
+ 		 * We did not any more data in reasonable amount of time.
+@@ -401,8 +816,8 @@ static psmouse_ret_t alps_process_byte(struct psmouse *psmouse)
+ 		return PSMOUSE_BAD_DATA;
+ 	}
+ 
+-	/* Bytes 2 - 6 should have 0 in the highest bit */
+-	if (psmouse->pktcnt >= 2 && psmouse->pktcnt <= 6 &&
++	/* Bytes 2 - pktsize should have 0 in the highest bit */
++	if (psmouse->pktcnt >= 2 && psmouse->pktcnt <= psmouse->pktsize &&
+ 	    (psmouse->packet[psmouse->pktcnt - 1] & 0x80)) {
+ 		psmouse_dbg(psmouse, "refusing packet[%i] = %x\n",
+ 			    psmouse->pktcnt - 1,
+@@ -410,7 +825,7 @@ static psmouse_ret_t alps_process_byte(struct psmouse *psmouse)
+ 		return PSMOUSE_BAD_DATA;
+ 	}
+ 
+-	if (psmouse->pktcnt == 6) {
++	if (psmouse->pktcnt == psmouse->pktsize) {
+ 		alps_process_packet(psmouse);
+ 		return PSMOUSE_FULL_PACKET;
+ 	}
+@@ -418,11 +833,127 @@ static psmouse_ret_t alps_process_byte(struct psmouse *psmouse)
+ 	return PSMOUSE_GOOD_DATA;
+ }
+ 
++static int alps_command_mode_send_nibble(struct psmouse *psmouse, int nibble)
++{
++	struct ps2dev *ps2dev = &psmouse->ps2dev;
++	struct alps_data *priv = psmouse->private;
++	int command;
++	unsigned char *param;
++	unsigned char dummy[4];
++
++	BUG_ON(nibble > 0xf);
++
++	command = priv->nibble_commands[nibble].command;
++	param = (command & 0x0f00) ?
++		dummy : (unsigned char *)&priv->nibble_commands[nibble].data;
++
++	if (ps2_command(ps2dev, param, command))
++		return -1;
++
++	return 0;
++}
++
++static int alps_command_mode_set_addr(struct psmouse *psmouse, int addr)
++{
++	struct ps2dev *ps2dev = &psmouse->ps2dev;
++	struct alps_data *priv = psmouse->private;
++	int i, nibble;
++
++	if (ps2_command(ps2dev, NULL, priv->addr_command))
++		return -1;
++
++	for (i = 12; i >= 0; i -= 4) {
++		nibble = (addr >> i) & 0xf;
++		if (alps_command_mode_send_nibble(psmouse, nibble))
++			return -1;
++	}
++
++	return 0;
++}
++
++static int __alps_command_mode_read_reg(struct psmouse *psmouse, int addr)
++{
++	struct ps2dev *ps2dev = &psmouse->ps2dev;
++	unsigned char param[4];
++
++	if (ps2_command(ps2dev, param, PSMOUSE_CMD_GETINFO))
++		return -1;
++
++	/*
++	 * The address being read is returned in the first two bytes
++	 * of the result. Check that this address matches the expected
++	 * address.
++	 */
++	if (addr != ((param[0] << 8) | param[1]))
++		return -1;
++
++	return param[2];
++}
++
++static int alps_command_mode_read_reg(struct psmouse *psmouse, int addr)
++{
++	if (alps_command_mode_set_addr(psmouse, addr))
++		return -1;
++	return __alps_command_mode_read_reg(psmouse, addr);
++}
++
++static int __alps_command_mode_write_reg(struct psmouse *psmouse, u8 value)
++{
++	if (alps_command_mode_send_nibble(psmouse, (value >> 4) & 0xf))
++		return -1;
++	if (alps_command_mode_send_nibble(psmouse, value & 0xf))
++		return -1;
++	return 0;
++}
++
++static int alps_command_mode_write_reg(struct psmouse *psmouse, int addr,
++				       u8 value)
++{
++	if (alps_command_mode_set_addr(psmouse, addr))
++		return -1;
++	return __alps_command_mode_write_reg(psmouse, value);
++}
++
++static int alps_enter_command_mode(struct psmouse *psmouse,
++				   unsigned char *resp)
++{
++	unsigned char param[4];
++	struct ps2dev *ps2dev = &psmouse->ps2dev;
++
++	if (ps2_command(ps2dev, NULL, PSMOUSE_CMD_RESET_WRAP) ||
++	    ps2_command(ps2dev, NULL, PSMOUSE_CMD_RESET_WRAP) ||
++	    ps2_command(ps2dev, NULL, PSMOUSE_CMD_RESET_WRAP) ||
++	    ps2_command(ps2dev, param, PSMOUSE_CMD_GETINFO)) {
++		psmouse_err(psmouse, "failed to enter command mode\n");
++		return -1;
++	}
++
++	if (param[0] != 0x88 && param[1] != 0x07) {
++		psmouse_dbg(psmouse,
++			    "unknown response while entering command mode: %2.2x %2.2x %2.2x\n",
++			    param[0], param[1], param[2]);
++		return -1;
++	}
++
++	if (resp)
++		*resp = param[2];
++	return 0;
++}
++
++static inline int alps_exit_command_mode(struct psmouse *psmouse)
++{
++	struct ps2dev *ps2dev = &psmouse->ps2dev;
++	if (ps2_command(ps2dev, NULL, PSMOUSE_CMD_SETSTREAM))
++		return -1;
++	return 0;
++}
++
+ static const struct alps_model_info *alps_get_model(struct psmouse *psmouse, int *version)
+ {
+ 	struct ps2dev *ps2dev = &psmouse->ps2dev;
+ 	static const unsigned char rates[] = { 0, 10, 20, 40, 60, 80, 100, 200 };
+ 	unsigned char param[4];
++	const struct alps_model_info *model = NULL;
+ 	int i;
+ 
+ 	/*
+@@ -473,12 +1004,41 @@ static const struct alps_model_info *alps_get_model(struct psmouse *psmouse, int
+ 		*version = (param[0] << 8) | (param[1] << 4) | i;
+ 	}
+ 
+-	for (i = 0; i < ARRAY_SIZE(alps_model_data); i++)
++	for (i = 0; i < ARRAY_SIZE(alps_model_data); i++) {
+ 		if (!memcmp(param, alps_model_data[i].signature,
+-			    sizeof(alps_model_data[i].signature)))
+-			return alps_model_data + i;
++			    sizeof(alps_model_data[i].signature))) {
++			model = alps_model_data + i;
++			break;
++		}
++	}
+ 
+-	return NULL;
++	if (model && model->proto_version > ALPS_PROTO_V2) {
++		/*
++		 * Need to check command mode response to identify
++		 * model
++		 */
++		model = NULL;
++		if (alps_enter_command_mode(psmouse, param)) {
++			psmouse_warn(psmouse,
++				     "touchpad failed to enter command mode\n");
++		} else {
++			for (i = 0; i < ARRAY_SIZE(alps_model_data); i++) {
++				if (alps_model_data[i].proto_version > ALPS_PROTO_V2 &&
++				    alps_model_data[i].command_mode_resp == param[0]) {
++					model = alps_model_data + i;
++					break;
++				}
++			}
++			alps_exit_command_mode(psmouse);
++
++			if (!model)
++				psmouse_dbg(psmouse,
++					    "Unknown command mode response %2.2x\n",
++					    param[0]);
++		}
++	}
++
++	return model;
+ }
+ 
+ /*
+@@ -486,7 +1046,7 @@ static const struct alps_model_info *alps_get_model(struct psmouse *psmouse, int
+  * subsequent commands. It looks like glidepad is behind stickpointer,
+  * I'd thought it would be other way around...
+  */
+-static int alps_passthrough_mode(struct psmouse *psmouse, bool enable)
++static int alps_passthrough_mode_v2(struct psmouse *psmouse, bool enable)
+ {
+ 	struct ps2dev *ps2dev = &psmouse->ps2dev;
+ 	int cmd = enable ? PSMOUSE_CMD_SETSCALE21 : PSMOUSE_CMD_SETSCALE11;
+@@ -503,7 +1063,7 @@ static int alps_passthrough_mode(struct psmouse *psmouse, bool enable)
+ 	return 0;
+ }
+ 
+-static int alps_absolute_mode(struct psmouse *psmouse)
++static int alps_absolute_mode_v1_v2(struct psmouse *psmouse)
+ {
+ 	struct ps2dev *ps2dev = &psmouse->ps2dev;
+ 
+@@ -574,17 +1134,17 @@ static int alps_tap_mode(struct psmouse *psmouse, int enable)
+ static int alps_poll(struct psmouse *psmouse)
+ {
+ 	struct alps_data *priv = psmouse->private;
+-	unsigned char buf[6];
++	unsigned char buf[sizeof(psmouse->packet)];
+ 	bool poll_failed;
+ 
+ 	if (priv->i->flags & ALPS_PASS)
+-		alps_passthrough_mode(psmouse, true);
++		alps_passthrough_mode_v2(psmouse, true);
+ 
+ 	poll_failed = ps2_command(&psmouse->ps2dev, buf,
+ 				  PSMOUSE_CMD_POLL | (psmouse->pktsize << 8)) < 0;
+ 
+ 	if (priv->i->flags & ALPS_PASS)
+-		alps_passthrough_mode(psmouse, false);
++		alps_passthrough_mode_v2(psmouse, false);
+ 
+ 	if (poll_failed || (buf[0] & priv->i->mask0) != priv->i->byte0)
+ 		return -1;
+@@ -601,13 +1161,13 @@ static int alps_poll(struct psmouse *psmouse)
+ 	return 0;
+ }
+ 
+-static int alps_hw_init(struct psmouse *psmouse)
++static int alps_hw_init_v1_v2(struct psmouse *psmouse)
+ {
+ 	struct alps_data *priv = psmouse->private;
+ 	const struct alps_model_info *model = priv->i;
+ 
+ 	if ((model->flags & ALPS_PASS) &&
+-	    alps_passthrough_mode(psmouse, true)) {
++	    alps_passthrough_mode_v2(psmouse, true)) {
+ 		return -1;
+ 	}
+ 
+@@ -616,13 +1176,13 @@ static int alps_hw_init(struct psmouse *psmouse)
+ 		return -1;
+ 	}
+ 
+-	if (alps_absolute_mode(psmouse)) {
++	if (alps_absolute_mode_v1_v2(psmouse)) {
+ 		psmouse_err(psmouse, "Failed to enable absolute mode\n");
+ 		return -1;
+ 	}
+ 
+ 	if ((model->flags & ALPS_PASS) &&
+-	    alps_passthrough_mode(psmouse, false)) {
++	    alps_passthrough_mode_v2(psmouse, false)) {
+ 		return -1;
+ 	}
+ 
+@@ -635,6 +1195,297 @@ static int alps_hw_init(struct psmouse *psmouse)
+ 	return 0;
+ }
+ 
++/*
++ * Enable or disable passthrough mode to the trackstick. Must be in
++ * command mode when calling this function.
++ */
++static int alps_passthrough_mode_v3(struct psmouse *psmouse, bool enable)
++{
++	int reg_val;
++
++	reg_val = alps_command_mode_read_reg(psmouse, 0x0008);
++	if (reg_val == -1)
++		return -1;
++
++	if (enable)
++		reg_val |= 0x01;
++	else
++		reg_val &= ~0x01;
++
++	if (__alps_command_mode_write_reg(psmouse, reg_val))
++		return -1;
++
++	return 0;
++}
++
++/* Must be in command mode when calling this function */
++static int alps_absolute_mode_v3(struct psmouse *psmouse)
++{
++	int reg_val;
++
++	reg_val = alps_command_mode_read_reg(psmouse, 0x0004);
++	if (reg_val == -1)
++		return -1;
++
++	reg_val |= 0x06;
++	if (__alps_command_mode_write_reg(psmouse, reg_val))
++		return -1;
++
++	return 0;
++}
++
++static int alps_hw_init_v3(struct psmouse *psmouse)
++{
++	struct alps_data *priv = psmouse->private;
++	struct ps2dev *ps2dev = &psmouse->ps2dev;
++	int reg_val;
++	unsigned char param[4];
++
++	priv->nibble_commands = alps_v3_nibble_commands;
++	priv->addr_command = PSMOUSE_CMD_RESET_WRAP;
++
++	if (alps_enter_command_mode(psmouse, NULL))
++		goto error;
++
++	/* Check for trackstick */
++	reg_val = alps_command_mode_read_reg(psmouse, 0x0008);
++	if (reg_val == -1)
++		goto error;
++	if (reg_val & 0x80) {
++		if (alps_passthrough_mode_v3(psmouse, true))
++			goto error;
++		if (alps_exit_command_mode(psmouse))
++			goto error;
++
++		/*
++		 * E7 report for the trackstick
++		 *
++		 * There have been reports of failures to seem to trace back
++		 * to the above trackstick check failing. When these occur
++		 * this E7 report fails, so when that happens we continue
++		 * with the assumption that there isn't a trackstick after
++		 * all.
++		 */
++		param[0] = 0x64;
++		if (ps2_command(ps2dev, NULL, PSMOUSE_CMD_SETSCALE21) ||
++		    ps2_command(ps2dev, NULL, PSMOUSE_CMD_SETSCALE21) ||
++		    ps2_command(ps2dev, NULL, PSMOUSE_CMD_SETSCALE21) ||
++		    ps2_command(ps2dev, param, PSMOUSE_CMD_GETINFO)) {
++			psmouse_warn(psmouse, "trackstick E7 report failed\n");
++		} else {
++			psmouse_dbg(psmouse,
++				    "trackstick E7 report: %2.2x %2.2x %2.2x\n",
++				    param[0], param[1], param[2]);
++
++			/*
++			 * Not sure what this does, but it is absolutely
++			 * essential. Without it, the touchpad does not
++			 * work at all and the trackstick just emits normal
++			 * PS/2 packets.
++			 */
++			if (ps2_command(ps2dev, NULL, PSMOUSE_CMD_SETSCALE11) ||
++			    ps2_command(ps2dev, NULL, PSMOUSE_CMD_SETSCALE11) ||
++			    ps2_command(ps2dev, NULL, PSMOUSE_CMD_SETSCALE11) ||
++			    alps_command_mode_send_nibble(psmouse, 0x9) ||
++			    alps_command_mode_send_nibble(psmouse, 0x4)) {
++				psmouse_err(psmouse,
++					    "Error sending magic E6 sequence\n");
++				goto error_passthrough;
++			}
++		}
++
++		if (alps_enter_command_mode(psmouse, NULL))
++			goto error_passthrough;
++		if (alps_passthrough_mode_v3(psmouse, false))
++			goto error;
++	}
++
++	if (alps_absolute_mode_v3(psmouse)) {
++		psmouse_err(psmouse, "Failed to enter absolute mode\n");
++		goto error;
++	}
++
++	reg_val = alps_command_mode_read_reg(psmouse, 0x0006);
++	if (reg_val == -1)
++		goto error;
++	if (__alps_command_mode_write_reg(psmouse, reg_val | 0x01))
++		goto error;
++
++	reg_val = alps_command_mode_read_reg(psmouse, 0x0007);
++	if (reg_val == -1)
++		goto error;
++	if (__alps_command_mode_write_reg(psmouse, reg_val | 0x01))
++		goto error;
++
++	if (alps_command_mode_read_reg(psmouse, 0x0144) == -1)
++		goto error;
++	if (__alps_command_mode_write_reg(psmouse, 0x04))
++		goto error;
++
++	if (alps_command_mode_read_reg(psmouse, 0x0159) == -1)
++		goto error;
++	if (__alps_command_mode_write_reg(psmouse, 0x03))
++		goto error;
++
++	if (alps_command_mode_read_reg(psmouse, 0x0163) == -1)
++		goto error;
++	if (alps_command_mode_write_reg(psmouse, 0x0163, 0x03))
++		goto error;
++
++	if (alps_command_mode_read_reg(psmouse, 0x0162) == -1)
++		goto error;
++	if (alps_command_mode_write_reg(psmouse, 0x0162, 0x04))
++		goto error;
++
++	/*
++	 * This ensures the trackstick packets are in the format
++	 * supported by this driver. If bit 1 isn't set the packet
++	 * format is different.
++	 */
++	if (alps_command_mode_write_reg(psmouse, 0x0008, 0x82))
++		goto error;
++
++	alps_exit_command_mode(psmouse);
++
++	/* Set rate and enable data reporting */
++	param[0] = 0x64;
++	if (ps2_command(ps2dev, param, PSMOUSE_CMD_SETRATE) ||
++	    ps2_command(ps2dev, NULL, PSMOUSE_CMD_ENABLE)) {
++		psmouse_err(psmouse, "Failed to enable data reporting\n");
++		return -1;
++	}
++
++	return 0;
++
++error_passthrough:
++	/* Something failed while in passthrough mode, so try to get out */
++	if (!alps_enter_command_mode(psmouse, NULL))
++		alps_passthrough_mode_v3(psmouse, false);
++error:
++	/*
++	 * Leaving the touchpad in command mode will essentially render
++	 * it unusable until the machine reboots, so exit it here just
++	 * to be safe
++	 */
++	alps_exit_command_mode(psmouse);
++	return -1;
++}
++
++/* Must be in command mode when calling this function */
++static int alps_absolute_mode_v4(struct psmouse *psmouse)
++{
++	int reg_val;
++
++	reg_val = alps_command_mode_read_reg(psmouse, 0x0004);
++	if (reg_val == -1)
++		return -1;
++
++	reg_val |= 0x02;
++	if (__alps_command_mode_write_reg(psmouse, reg_val))
++		return -1;
++
++	return 0;
++}
++
++static int alps_hw_init_v4(struct psmouse *psmouse)
++{
++	struct alps_data *priv = psmouse->private;
++	struct ps2dev *ps2dev = &psmouse->ps2dev;
++	unsigned char param[4];
++
++	priv->nibble_commands = alps_v4_nibble_commands;
++	priv->addr_command = PSMOUSE_CMD_DISABLE;
++
++	if (alps_enter_command_mode(psmouse, NULL))
++		goto error;
++
++	if (alps_absolute_mode_v4(psmouse)) {
++		psmouse_err(psmouse, "Failed to enter absolute mode\n");
++		goto error;
++	}
++
++	if (alps_command_mode_write_reg(psmouse, 0x0007, 0x8c))
++		goto error;
++
++	if (alps_command_mode_write_reg(psmouse, 0x0149, 0x03))
++		goto error;
++
++	if (alps_command_mode_write_reg(psmouse, 0x0160, 0x03))
++		goto error;
++
++	if (alps_command_mode_write_reg(psmouse, 0x017f, 0x15))
++		goto error;
++
++	if (alps_command_mode_write_reg(psmouse, 0x0151, 0x01))
++		goto error;
++
++	if (alps_command_mode_write_reg(psmouse, 0x0168, 0x03))
++		goto error;
++
++	if (alps_command_mode_write_reg(psmouse, 0x014a, 0x03))
++		goto error;
++
++	if (alps_command_mode_write_reg(psmouse, 0x0161, 0x03))
++		goto error;
++
++	alps_exit_command_mode(psmouse);
++
++	/*
++	 * This sequence changes the output from a 9-byte to an
++	 * 8-byte format. All the same data seems to be present,
++	 * just in a more compact format.
++	 */
++	param[0] = 0xc8;
++	param[1] = 0x64;
++	param[2] = 0x50;
++	if (ps2_command(ps2dev, &param[0], PSMOUSE_CMD_SETRATE) ||
++	    ps2_command(ps2dev, &param[1], PSMOUSE_CMD_SETRATE) ||
++	    ps2_command(ps2dev, &param[2], PSMOUSE_CMD_SETRATE) ||
++	    ps2_command(ps2dev, param, PSMOUSE_CMD_GETID))
++		return -1;
++
++	/* Set rate and enable data reporting */
++	param[0] = 0x64;
++	if (ps2_command(ps2dev, param, PSMOUSE_CMD_SETRATE) ||
++	    ps2_command(ps2dev, NULL, PSMOUSE_CMD_ENABLE)) {
++		psmouse_err(psmouse, "Failed to enable data reporting\n");
++		return -1;
++	}
++
++	return 0;
++
++error:
++	/*
++	 * Leaving the touchpad in command mode will essentially render
++	 * it unusable until the machine reboots, so exit it here just
++	 * to be safe
++	 */
++	alps_exit_command_mode(psmouse);
++	return -1;
++}
++
++static int alps_hw_init(struct psmouse *psmouse)
++{
++	struct alps_data *priv = psmouse->private;
++	const struct alps_model_info *model = priv->i;
++	int ret = -1;
++
++	switch (model->proto_version) {
++	case ALPS_PROTO_V1:
++	case ALPS_PROTO_V2:
++		ret = alps_hw_init_v1_v2(psmouse);
++		break;
++	case ALPS_PROTO_V3:
++		ret = alps_hw_init_v3(psmouse);
++		break;
++	case ALPS_PROTO_V4:
++		ret = alps_hw_init_v4(psmouse);
++		break;
++	}
++
++	return ret;
++}
++
+ static int alps_reconnect(struct psmouse *psmouse)
+ {
+ 	const struct alps_model_info *model;
+@@ -675,6 +1526,8 @@ int alps_init(struct psmouse *psmouse)
+ 
+ 	psmouse->private = priv;
+ 
++	psmouse_reset(psmouse);
++
+ 	model = alps_get_model(psmouse, &version);
+ 	if (!model)
+ 		goto init_fail;
+@@ -702,8 +1555,29 @@ int alps_init(struct psmouse *psmouse)
+ 		BIT_MASK(BTN_LEFT) | BIT_MASK(BTN_RIGHT);
+ 
+ 	dev1->evbit[BIT_WORD(EV_ABS)] |= BIT_MASK(EV_ABS);
+-	input_set_abs_params(dev1, ABS_X, 0, 1023, 0, 0);
+-	input_set_abs_params(dev1, ABS_Y, 0, 767, 0, 0);
++
++	switch (model->proto_version) {
++	case ALPS_PROTO_V1:
++	case ALPS_PROTO_V2:
++		input_set_abs_params(dev1, ABS_X, 0, 1023, 0, 0);
++		input_set_abs_params(dev1, ABS_Y, 0, 767, 0, 0);
++		break;
++	case ALPS_PROTO_V3:
++		set_bit(INPUT_PROP_SEMI_MT, dev1->propbit);
++		input_mt_init_slots(dev1, 2);
++		input_set_abs_params(dev1, ABS_MT_POSITION_X, 0, ALPS_V3_X_MAX, 0, 0);
++		input_set_abs_params(dev1, ABS_MT_POSITION_Y, 0, ALPS_V3_Y_MAX, 0, 0);
++
++		set_bit(BTN_TOOL_DOUBLETAP, dev1->keybit);
++		set_bit(BTN_TOOL_TRIPLETAP, dev1->keybit);
++		set_bit(BTN_TOOL_QUADTAP, dev1->keybit);
++		/* fall through */
++	case ALPS_PROTO_V4:
++		input_set_abs_params(dev1, ABS_X, 0, ALPS_V3_X_MAX, 0, 0);
++		input_set_abs_params(dev1, ABS_Y, 0, ALPS_V3_Y_MAX, 0, 0);
++		break;
++	}
++
+ 	input_set_abs_params(dev1, ABS_PRESSURE, 0, 127, 0, 0);
+ 
+ 	if (model->flags & ALPS_WHEEL) {
+@@ -746,7 +1620,7 @@ int alps_init(struct psmouse *psmouse)
+ 	psmouse->poll = alps_poll;
+ 	psmouse->disconnect = alps_disconnect;
+ 	psmouse->reconnect = alps_reconnect;
+-	psmouse->pktsize = 6;
++	psmouse->pktsize = model->proto_version == ALPS_PROTO_V4 ? 8 : 6;
+ 
+ 	/* We are having trouble resyncing ALPS touchpads so disable it for now */
+ 	psmouse->resync_time = 0;
+diff --git a/drivers/input/mouse/alps.h b/drivers/input/mouse/alps.h
+index 904ed8b3c8..a00a4ab92a 100644
+--- a/drivers/input/mouse/alps.h
++++ b/drivers/input/mouse/alps.h
+@@ -12,20 +12,39 @@
+ #ifndef _ALPS_H
+ #define _ALPS_H
+ 
++#define ALPS_PROTO_V1	0
++#define ALPS_PROTO_V2	1
++#define ALPS_PROTO_V3	2
++#define ALPS_PROTO_V4	3
++
+ struct alps_model_info {
+         unsigned char signature[3];
++	unsigned char command_mode_resp; /* v3/v4 only */
++	unsigned char proto_version;
+         unsigned char byte0, mask0;
+         unsigned char flags;
+ };
+ 
++struct alps_nibble_commands {
++	int command;
++	unsigned char data;
++};
++
+ struct alps_data {
+ 	struct input_dev *dev2;		/* Relative device */
+ 	char phys[32];			/* Phys */
+ 	const struct alps_model_info *i;/* Info */
++	const struct alps_nibble_commands *nibble_commands;
++	int addr_command;		/* Command to set register address */
+ 	int prev_fin;			/* Finger bit from previous packet */
++	int multi_packet;		/* Multi-packet data in progress */
++	unsigned char multi_data[6];	/* Saved multi-packet data */
++	u8 quirks;
+ 	struct timer_list timer;
+ };
+ 
++#define ALPS_QUIRK_TRACKSTICK_BUTTONS	1 /* trakcstick buttons in trackstick packet */
++
+ #ifdef CONFIG_MOUSE_PS2_ALPS
+ int alps_detect(struct psmouse *psmouse, bool set_properties);
+ int alps_init(struct psmouse *psmouse);
+diff --git a/drivers/input/mouse/psmouse.h b/drivers/input/mouse/psmouse.h
+index 9b84b0c4e3..11a9c6c8bc 100644
+--- a/drivers/input/mouse/psmouse.h
++++ b/drivers/input/mouse/psmouse.h
+@@ -8,6 +8,7 @@
+ #define PSMOUSE_CMD_SETSTREAM	0x00ea
+ #define PSMOUSE_CMD_SETPOLL	0x00f0
+ #define PSMOUSE_CMD_POLL	0x00eb	/* caller sets number of bytes to receive */
++#define PSMOUSE_CMD_RESET_WRAP	0x00ec
+ #define PSMOUSE_CMD_GETID	0x02f2
+ #define PSMOUSE_CMD_SETRATE	0x10f3
+ #define PSMOUSE_CMD_ENABLE	0x00f4
+diff --git a/drivers/input/serio/i8042.c b/drivers/input/serio/i8042.c
+index 1233bb4774..178e75d6bb 100644
+--- a/drivers/input/serio/i8042.c
++++ b/drivers/input/serio/i8042.c
+@@ -390,10 +390,8 @@ static int i8042_start(struct serio *serio)
+ {
+ 	struct i8042_port *port = serio->port_data;
+ 
+-	spin_lock_irq(&i8042_lock);
+ 	port->exists = true;
+-	spin_unlock_irq(&i8042_lock);
+-
++	mb();
+ 	return 0;
+ }
+ 
+@@ -406,20 +404,16 @@ static void i8042_stop(struct serio *serio)
+ {
+ 	struct i8042_port *port = serio->port_data;
+ 
+-	spin_lock_irq(&i8042_lock);
+ 	port->exists = false;
+-	port->serio = NULL;
+-	spin_unlock_irq(&i8042_lock);
+ 
+ 	/*
+-	 * We need to make sure that interrupt handler finishes using
+-	 * our serio port before we return from this function.
+ 	 * We synchronize with both AUX and KBD IRQs because there is
+ 	 * a (very unlikely) chance that AUX IRQ is raised for KBD port
+ 	 * and vice versa.
+ 	 */
+ 	synchronize_irq(I8042_AUX_IRQ);
+ 	synchronize_irq(I8042_KBD_IRQ);
++	port->serio = NULL;
+ }
+ 
+ /*
+@@ -536,7 +530,7 @@ static irqreturn_t i8042_interrupt(int irq, void *dev_id)
+ 
+ 	spin_unlock_irqrestore(&i8042_lock, flags);
+ 
+-	if (likely(serio && !filtered))
++	if (likely(port->exists && !filtered))
+ 		serio_interrupt(serio, data, dfl);
+ 
+  out:
+@@ -1229,7 +1223,6 @@ static int __init i8042_create_kbd_port(void)
+ 	serio->start		= i8042_start;
+ 	serio->stop		= i8042_stop;
+ 	serio->close		= i8042_port_close;
+-	serio->ps2_cmd_mutex	= &i8042_mutex;
+ 	serio->port_data	= port;
+ 	serio->dev.parent	= &i8042_platform_device->dev;
+ 	strlcpy(serio->name, "i8042 KBD port", sizeof(serio->name));
+@@ -1255,7 +1248,6 @@ static int __init i8042_create_aux_port(int idx)
+ 	serio->write		= i8042_aux_write;
+ 	serio->start		= i8042_start;
+ 	serio->stop		= i8042_stop;
+-	serio->ps2_cmd_mutex	= &i8042_mutex;
+ 	serio->port_data	= port;
+ 	serio->dev.parent	= &i8042_platform_device->dev;
+ 	if (idx < 0) {
+@@ -1318,6 +1310,21 @@ static void __devexit i8042_unregister_ports(void)
+ 	}
+ }
+ 
++/*
++ * Checks whether port belongs to i8042 controller.
++ */
++bool i8042_check_port_owner(const struct serio *port)
++{
++	int i;
++
++	for (i = 0; i < I8042_NUM_PORTS; i++)
++		if (i8042_ports[i].serio == port)
++			return true;
++
++	return false;
++}
++EXPORT_SYMBOL(i8042_check_port_owner);
++
+ static void i8042_free_irqs(void)
+ {
+ 	if (i8042_aux_irq_registered)
+diff --git a/drivers/input/serio/libps2.c b/drivers/input/serio/libps2.c
+index b5ec313cb9..07a8363f3c 100644
+--- a/drivers/input/serio/libps2.c
++++ b/drivers/input/serio/libps2.c
+@@ -57,17 +57,19 @@ EXPORT_SYMBOL(ps2_sendbyte);
+ 
+ void ps2_begin_command(struct ps2dev *ps2dev)
+ {
+-	struct mutex *m = ps2dev->serio->ps2_cmd_mutex ?: &ps2dev->cmd_mutex;
++	mutex_lock(&ps2dev->cmd_mutex);
+ 
+-	mutex_lock(m);
++	if (i8042_check_port_owner(ps2dev->serio))
++		i8042_lock_chip();
+ }
+ EXPORT_SYMBOL(ps2_begin_command);
+ 
+ void ps2_end_command(struct ps2dev *ps2dev)
+ {
+-	struct mutex *m = ps2dev->serio->ps2_cmd_mutex ?: &ps2dev->cmd_mutex;
++	if (i8042_check_port_owner(ps2dev->serio))
++		i8042_unlock_chip();
+ 
+-	mutex_unlock(m);
++	mutex_unlock(&ps2dev->cmd_mutex);
+ }
+ EXPORT_SYMBOL(ps2_end_command);
+ 
+diff --git a/drivers/pci/msi.c b/drivers/pci/msi.c
+index e3efb43322..337e16ab4a 100644
+--- a/drivers/pci/msi.c
++++ b/drivers/pci/msi.c
+@@ -323,6 +323,8 @@ static void free_msi_irqs(struct pci_dev *dev)
+ 			if (list_is_last(&entry->list, &dev->msi_list))
+ 				iounmap(entry->mask_base);
+ 		}
++		kobject_del(&entry->kobj);
++		kobject_put(&entry->kobj);
+ 		list_del(&entry->list);
+ 		kfree(entry);
+ 	}
+@@ -403,6 +405,98 @@ void pci_restore_msi_state(struct pci_dev *dev)
+ }
+ EXPORT_SYMBOL_GPL(pci_restore_msi_state);
+ 
++
++#define to_msi_attr(obj) container_of(obj, struct msi_attribute, attr)
++#define to_msi_desc(obj) container_of(obj, struct msi_desc, kobj)
++
++struct msi_attribute {
++	struct attribute        attr;
++	ssize_t (*show)(struct msi_desc *entry, struct msi_attribute *attr,
++			char *buf);
++	ssize_t (*store)(struct msi_desc *entry, struct msi_attribute *attr,
++			 const char *buf, size_t count);
++};
++
++static ssize_t show_msi_mode(struct msi_desc *entry, struct msi_attribute *atr,
++			     char *buf)
++{
++	return sprintf(buf, "%s\n", entry->msi_attrib.is_msix ? "msix" : "msi");
++}
++
++static ssize_t msi_irq_attr_show(struct kobject *kobj,
++				 struct attribute *attr, char *buf)
++{
++	struct msi_attribute *attribute = to_msi_attr(attr);
++	struct msi_desc *entry = to_msi_desc(kobj);
++
++	if (!attribute->show)
++		return -EIO;
++
++	return attribute->show(entry, attribute, buf);
++}
++
++static const struct sysfs_ops msi_irq_sysfs_ops = {
++	.show = msi_irq_attr_show,
++};
++
++static struct msi_attribute mode_attribute =
++	__ATTR(mode, S_IRUGO, show_msi_mode, NULL);
++
++
++struct attribute *msi_irq_default_attrs[] = {
++	&mode_attribute.attr,
++	NULL
++};
++
++void msi_kobj_release(struct kobject *kobj)
++{
++	struct msi_desc *entry = to_msi_desc(kobj);
++
++	pci_dev_put(entry->dev);
++}
++
++static struct kobj_type msi_irq_ktype = {
++	.release = msi_kobj_release,
++	.sysfs_ops = &msi_irq_sysfs_ops,
++	.default_attrs = msi_irq_default_attrs,
++};
++
++static int populate_msi_sysfs(struct pci_dev *pdev)
++{
++	struct msi_desc *entry;
++	struct kobject *kobj;
++	int ret;
++	int count = 0;
++
++	pdev->msi_kset = kset_create_and_add("msi_irqs", NULL, &pdev->dev.kobj);
++	if (!pdev->msi_kset)
++		return -ENOMEM;
++
++	list_for_each_entry(entry, &pdev->msi_list, list) {
++		kobj = &entry->kobj;
++		kobj->kset = pdev->msi_kset;
++		pci_dev_get(pdev);
++		ret = kobject_init_and_add(kobj, &msi_irq_ktype, NULL,
++				     "%u", entry->irq);
++		if (ret)
++			goto out_unroll;
++
++		count++;
++	}
++
++	return 0;
++
++out_unroll:
++	list_for_each_entry(entry, &pdev->msi_list, list) {
++		if (!count)
++			break;
++		kobject_del(&entry->kobj);
++		kobject_put(&entry->kobj);
++		count--;
++	}
++	return ret;
++}
++
+ /**
+  * msi_capability_init - configure device's MSI capability structure
+  * @dev: pointer to the pci_dev data structure of MSI device function
+@@ -454,6 +548,13 @@ static int msi_capability_init(struct pci_dev *dev, int nvec)
+ 		return ret;
+ 	}
+ 
++	ret = populate_msi_sysfs(dev);
++	if (ret) {
++		msi_mask_irq(entry, mask, ~mask);
++		free_msi_irqs(dev);
++		return ret;
++	}
++
+ 	/* Set MSI enabled bits	 */
+ 	pci_intx_for_msi(dev, 0);
+ 	msi_set_enable(dev, pos, 1);
+@@ -574,6 +675,12 @@ static int msix_capability_init(struct pci_dev *dev,
+ 
+ 	msix_program_entries(dev, entries);
+ 
++	ret = populate_msi_sysfs(dev);
++	if (ret) {
++		ret = 0;
++		goto error;
++	}
++
+ 	/* Set MSI-X enabled bits and unmask the function */
+ 	pci_intx_for_msi(dev, 0);
+ 	dev->msix_enabled = 1;
+@@ -732,6 +839,8 @@ void pci_disable_msi(struct pci_dev *dev)
+ 
+ 	pci_msi_shutdown(dev);
+ 	free_msi_irqs(dev);
++	kset_unregister(dev->msi_kset);
++	dev->msi_kset = NULL;
+ }
+ EXPORT_SYMBOL(pci_disable_msi);
+ 
+@@ -830,6 +939,8 @@ void pci_disable_msix(struct pci_dev *dev)
+ 
+ 	pci_msix_shutdown(dev);
+ 	free_msi_irqs(dev);
++	kset_unregister(dev->msi_kset);
++	dev->msi_kset = NULL;
+ }
+ EXPORT_SYMBOL(pci_disable_msix);
+ 
+diff --git a/drivers/video/Kconfig b/drivers/video/Kconfig
+index e6d08368eb..3df81dc5dd 100644
+--- a/drivers/video/Kconfig
++++ b/drivers/video/Kconfig
+@@ -1227,7 +1227,6 @@ config FB_MATROX
+ 	select FB_CFB_FILLRECT
+ 	select FB_CFB_COPYAREA
+ 	select FB_CFB_IMAGEBLIT
+-	select FB_TILEBLITTING
+ 	select FB_MACMODES if PPC_PMAC
+ 	---help---
+ 	  Say Y here if you have a Matrox Millennium, Matrox Millennium II,
+diff --git a/drivers/video/console/Kconfig b/drivers/video/console/Kconfig
+index 2209e354f5..abd35ee397 100644
+--- a/drivers/video/console/Kconfig
++++ b/drivers/video/console/Kconfig
+@@ -122,6 +122,19 @@ config FRAMEBUFFER_CONSOLE_ROTATION
+          such that other users of the framebuffer will remain normally
+          oriented.
+ 
++config FB_CON_DECOR
++	bool "Support for the Framebuffer Console Decorations"
++	depends on FRAMEBUFFER_CONSOLE=y && !FB_TILEBLITTING
++	default n
++	---help---
++	  This option enables support for framebuffer console decorations which
++	  makes it possible to display images in the background of the system
++	  consoles.  Note that userspace utilities are necessary in order to take 
++	  advantage of these features. Refer to Documentation/fb/fbcondecor.txt 
++	  for more information.
++
++	  If unsure, say N.
++
+ config STI_CONSOLE
+         bool "STI text console"
+         depends on PARISC
+diff --git a/drivers/video/console/Makefile b/drivers/video/console/Makefile
+index a862e9173e..86bfcff45b 100644
+--- a/drivers/video/console/Makefile
++++ b/drivers/video/console/Makefile
+@@ -34,6 +34,7 @@ obj-$(CONFIG_FRAMEBUFFER_CONSOLE)     += fbcon_rotate.o fbcon_cw.o fbcon_ud.o \
+                                          fbcon_ccw.o
+ endif
+ 
++obj-$(CONFIG_FB_CON_DECOR)     	  += fbcondecor.o cfbcondecor.o
+ obj-$(CONFIG_FB_STI)              += sticore.o font.o
+ 
+ ifeq ($(CONFIG_USB_SISUSBVGA_CON),y)
+diff --git a/drivers/video/console/bitblit.c b/drivers/video/console/bitblit.c
+index 6cbb206953..d5c15cb650 100644
+--- a/drivers/video/console/bitblit.c
++++ b/drivers/video/console/bitblit.c
+@@ -18,6 +18,7 @@
+ #include <linux/console.h>
+ #include <asm/types.h>
+ #include "fbcon.h"
++#include "fbcondecor.h"
+ 
+ /*
+  * Accelerated handlers.
+@@ -55,6 +56,13 @@ static void bit_bmove(struct vc_data *vc, struct fb_info *info, int sy,
+ 	area.height = height * vc->vc_font.height;
+ 	area.width = width * vc->vc_font.width;
+ 
++	if (fbcon_decor_active(info, vc)) {
++ 		area.sx += vc->vc_decor.tx;
++ 		area.sy += vc->vc_decor.ty;
++ 		area.dx += vc->vc_decor.tx;
++ 		area.dy += vc->vc_decor.ty;
++ 	}
++
+ 	info->fbops->fb_copyarea(info, &area);
+ }
+ 
+@@ -379,11 +387,15 @@ static void bit_cursor(struct vc_data *vc, struct fb_info *info, int mode,
+ 	cursor.image.depth = 1;
+ 	cursor.rop = ROP_XOR;
+ 
+-	if (info->fbops->fb_cursor)
+-		err = info->fbops->fb_cursor(info, &cursor);
++	if (fbcon_decor_active(info, vc)) {
++		fbcon_decor_cursor(info, &cursor);
++	} else {
++		if (info->fbops->fb_cursor)
++			err = info->fbops->fb_cursor(info, &cursor);
+ 
+-	if (err)
+-		soft_cursor(info, &cursor);
++		if (err)
++			soft_cursor(info, &cursor);
++	}
+ 
+ 	ops->cursor_reset = 0;
+ }
+diff --git a/drivers/video/console/cfbcondecor.c b/drivers/video/console/cfbcondecor.c
+new file mode 100644
+index 0000000000..18a5452515
+--- /dev/null
++++ b/drivers/video/console/cfbcondecor.c
+@@ -0,0 +1,472 @@
++/*
++ *  linux/drivers/video/cfbcon_decor.c -- Framebuffer decor render functions
++ *
++ *  Copyright (C) 2004 Michal Januszewski <spock@gentoo.org>
++ *
++ *  Code based upon "Bootdecor" (C) 2001-2003
++ *       Volker Poplawski <volker@poplawski.de>,
++ *       Stefan Reinauer <stepan@suse.de>,
++ *       Steffen Winterfeldt <snwint@suse.de>,
++ *       Michael Schroeder <mls@suse.de>,
++ *       Ken Wimer <wimer@suse.de>.
++ *
++ *  This file is subject to the terms and conditions of the GNU General Public
++ *  License.  See the file COPYING in the main directory of this archive for
++ *  more details.
++ */
++#include <linux/module.h>
++#include <linux/types.h>
++#include <linux/fb.h>
++#include <linux/selection.h>
++#include <linux/slab.h>
++#include <linux/vt_kern.h>
++#include <asm/irq.h>
++#include <asm/system.h>
++
++#include "fbcon.h"
++#include "fbcondecor.h"
++
++#define parse_pixel(shift,bpp,type)						\
++	do {									\
++		if (d & (0x80 >> (shift)))					\
++			dd2[(shift)] = fgx;					\
++		else								\
++			dd2[(shift)] = transparent ? *(type *)decor_src : bgx;	\
++		decor_src += (bpp);						\
++	} while (0)								\
++
++extern int get_color(struct vc_data *vc, struct fb_info *info,
++		     u16 c, int is_fg);
++
++void fbcon_decor_fix_pseudo_pal(struct fb_info *info, struct vc_data *vc)
++{
++	int i, j, k;
++	int minlen = min(min(info->var.red.length, info->var.green.length),
++			     info->var.blue.length);
++	u32 col;
++
++	for (j = i = 0; i < 16; i++) {
++		k = color_table[i];
++
++		col = ((vc->vc_palette[j++]  >> (8-minlen))
++			<< info->var.red.offset);
++		col |= ((vc->vc_palette[j++] >> (8-minlen))
++			<< info->var.green.offset);
++		col |= ((vc->vc_palette[j++] >> (8-minlen))
++			<< info->var.blue.offset);
++			((u32 *)info->pseudo_palette)[k] = col;
++	}
++}
++
++void fbcon_decor_renderc(struct fb_info *info, int ypos, int xpos, int height,
++		      int width, u8* src, u32 fgx, u32 bgx, u8 transparent)
++{
++	unsigned int x, y;
++	u32 dd;
++	int bytespp = ((info->var.bits_per_pixel + 7) >> 3);
++	unsigned int d = ypos * info->fix.line_length + xpos * bytespp;
++	unsigned int ds = (ypos * info->var.xres + xpos) * bytespp;
++	u16 dd2[4];
++
++	u8* decor_src = (u8 *)(info->bgdecor.data + ds);
++	u8* dst = (u8 *)(info->screen_base + d);
++
++	if ((ypos + height) > info->var.yres || (xpos + width) > info->var.xres)
++		return;
++
++	for (y = 0; y < height; y++) {
++		switch (info->var.bits_per_pixel) {
++
++		case 32:
++			for (x = 0; x < width; x++) {
++
++				if ((x & 7) == 0)
++					d = *src++;
++				if (d & 0x80)
++					dd = fgx;
++				else
++					dd = transparent ?
++					     *(u32 *)decor_src : bgx;
++
++				d <<= 1;
++				decor_src += 4;
++				fb_writel(dd, dst);
++				dst += 4;
++			}
++			break;
++		case 24:
++			for (x = 0; x < width; x++) {
++
++				if ((x & 7) == 0)
++					d = *src++;
++				if (d & 0x80)
++					dd = fgx;
++				else
++					dd = transparent ?
++					     (*(u32 *)decor_src & 0xffffff) : bgx;
++
++				d <<= 1;
++				decor_src += 3;
++#ifdef __LITTLE_ENDIAN
++				fb_writew(dd & 0xffff, dst);
++				dst += 2;
++				fb_writeb((dd >> 16), dst);
++#else
++				fb_writew(dd >> 8, dst);
++				dst += 2;
++				fb_writeb(dd & 0xff, dst);
++#endif
++				dst++;
++			}
++			break;
++		case 16:
++			for (x = 0; x < width; x += 2) {
++				if ((x & 7) == 0)
++					d = *src++;
++
++				parse_pixel(0, 2, u16);
++				parse_pixel(1, 2, u16);
++#ifdef __LITTLE_ENDIAN
++				dd = dd2[0] | (dd2[1] << 16);
++#else
++				dd = dd2[1] | (dd2[0] << 16);
++#endif
++				d <<= 2;
++				fb_writel(dd, dst);
++				dst += 4;
++			}
++			break;
++
++		case 8:
++			for (x = 0; x < width; x += 4) {
++				if ((x & 7) == 0)
++					d = *src++;
++
++				parse_pixel(0, 1, u8);
++				parse_pixel(1, 1, u8);
++				parse_pixel(2, 1, u8);
++				parse_pixel(3, 1, u8);
++
++#ifdef __LITTLE_ENDIAN
++				dd = dd2[0] | (dd2[1] << 8) | (dd2[2] << 16) | (dd2[3] << 24);
++#else
++				dd = dd2[3] | (dd2[2] << 8) | (dd2[1] << 16) | (dd2[0] << 24);
++#endif
++				d <<= 4;
++				fb_writel(dd, dst);
++				dst += 4;
++			}
++		}
++
++		dst += info->fix.line_length - width * bytespp;
++		decor_src += (info->var.xres - width) * bytespp;
++	}
++}
++
++#define cc2cx(a) 						\
++	((info->fix.visual == FB_VISUAL_TRUECOLOR || 		\
++	  info->fix.visual == FB_VISUAL_DIRECTCOLOR) ? 		\
++	 ((u32*)info->pseudo_palette)[a] : a)
++
++void fbcon_decor_putcs(struct vc_data *vc, struct fb_info *info,
++		   const unsigned short *s, int count, int yy, int xx)
++{
++	unsigned short charmask = vc->vc_hi_font_mask ? 0x1ff : 0xff;
++	struct fbcon_ops *ops = info->fbcon_par;
++	int fg_color, bg_color, transparent;
++	u8 *src;
++	u32 bgx, fgx;
++	u16 c = scr_readw(s);
++
++	fg_color = get_color(vc, info, c, 1);
++        bg_color = get_color(vc, info, c, 0);
++
++	/* Don't paint the background image if console is blanked */
++	transparent = ops->blank_state ? 0 :
++		(vc->vc_decor.bg_color == bg_color);
++
++	xx = xx * vc->vc_font.width + vc->vc_decor.tx;
++	yy = yy * vc->vc_font.height + vc->vc_decor.ty;
++
++	fgx = cc2cx(fg_color);
++	bgx = cc2cx(bg_color);
++
++	while (count--) {
++		c = scr_readw(s++);
++		src = vc->vc_font.data + (c & charmask) * vc->vc_font.height *
++		      ((vc->vc_font.width + 7) >> 3);
++
++		fbcon_decor_renderc(info, yy, xx, vc->vc_font.height,
++			       vc->vc_font.width, src, fgx, bgx, transparent);
++		xx += vc->vc_font.width;
++	}
++}
++
++void fbcon_decor_cursor(struct fb_info *info, struct fb_cursor *cursor)
++{
++	int i;
++	unsigned int dsize, s_pitch;
++	struct fbcon_ops *ops = info->fbcon_par;
++	struct vc_data* vc;
++	u8 *src;
++
++	/* we really don't need any cursors while the console is blanked */
++	if (info->state != FBINFO_STATE_RUNNING || ops->blank_state)
++		return;
++
++	vc = vc_cons[ops->currcon].d;
++
++	src = kmalloc(64 + sizeof(struct fb_image), GFP_ATOMIC);
++	if (!src)
++		return;
++
++	s_pitch = (cursor->image.width + 7) >> 3;
++	dsize = s_pitch * cursor->image.height;
++	if (cursor->enable) {
++		switch (cursor->rop) {
++		case ROP_XOR:
++			for (i = 0; i < dsize; i++)
++				src[i] = cursor->image.data[i] ^ cursor->mask[i];
++                        break;
++		case ROP_COPY:
++		default:
++			for (i = 0; i < dsize; i++)
++				src[i] = cursor->image.data[i] & cursor->mask[i];
++			break;
++		}
++	} else
++		memcpy(src, cursor->image.data, dsize);
++
++	fbcon_decor_renderc(info,
++			cursor->image.dy + vc->vc_decor.ty,
++			cursor->image.dx + vc->vc_decor.tx,
++			cursor->image.height,
++			cursor->image.width,
++			(u8*)src,
++			cc2cx(cursor->image.fg_color),
++			cc2cx(cursor->image.bg_color),
++			cursor->image.bg_color == vc->vc_decor.bg_color);
++
++	kfree(src);
++}
++
++static void decorset(u8 *dst, int height, int width, int dstbytes,
++		        u32 bgx, int bpp)
++{
++	int i;
++
++	if (bpp == 8)
++		bgx |= bgx << 8;
++	if (bpp == 16 || bpp == 8)
++		bgx |= bgx << 16;
++
++	while (height-- > 0) {
++		u8 *p = dst;
++
++		switch (bpp) {
++
++		case 32:
++			for (i=0; i < width; i++) {
++				fb_writel(bgx, p); p += 4;
++			}
++			break;
++		case 24:
++			for (i=0; i < width; i++) {
++#ifdef __LITTLE_ENDIAN
++				fb_writew((bgx & 0xffff),(u16*)p); p += 2;
++				fb_writeb((bgx >> 16),p++);
++#else
++				fb_writew((bgx >> 8),(u16*)p); p += 2;
++				fb_writeb((bgx & 0xff),p++);
++#endif
++			}
++		case 16:
++			for (i=0; i < width/4; i++) {
++				fb_writel(bgx,p); p += 4;
++				fb_writel(bgx,p); p += 4;
++			}
++			if (width & 2) {
++				fb_writel(bgx,p); p += 4;
++			}
++			if (width & 1)
++				fb_writew(bgx,(u16*)p);
++			break;
++		case 8:
++			for (i=0; i < width/4; i++) {
++				fb_writel(bgx,p); p += 4;
++			}
++
++			if (width & 2) {
++				fb_writew(bgx,p); p += 2;
++			}
++			if (width & 1)
++				fb_writeb(bgx,(u8*)p);
++			break;
++
++		}
++		dst += dstbytes;
++	}
++}
++
++void fbcon_decor_copy(u8 *dst, u8 *src, int height, int width, int linebytes,
++		   int srclinebytes, int bpp)
++{
++	int i;
++
++	while (height-- > 0) {
++		u32 *p = (u32 *)dst;
++		u32 *q = (u32 *)src;
++
++		switch (bpp) {
++
++		case 32:
++			for (i=0; i < width; i++)
++				fb_writel(*q++, p++);
++			break;
++		case 24:
++			for (i=0; i < (width*3/4); i++)
++				fb_writel(*q++, p++);
++			if ((width*3) % 4) {
++				if (width & 2) {
++					fb_writeb(*(u8*)q, (u8*)p);
++				} else if (width & 1) {
++					fb_writew(*(u16*)q, (u16*)p);
++					fb_writeb(*(u8*)((u16*)q+1),(u8*)((u16*)p+2));
++				}
++			}
++			break;
++		case 16:
++			for (i=0; i < width/4; i++) {
++				fb_writel(*q++, p++);
++				fb_writel(*q++, p++);
++			}
++			if (width & 2)
++				fb_writel(*q++, p++);
++			if (width & 1)
++				fb_writew(*(u16*)q, (u16*)p);
++			break;
++		case 8:
++			for (i=0; i < width/4; i++)
++				fb_writel(*q++, p++);
++
++			if (width & 2) {
++				fb_writew(*(u16*)q, (u16*)p);
++				q = (u32*) ((u16*)q + 1);
++				p = (u32*) ((u16*)p + 1);
++			}
++			if (width & 1)
++				fb_writeb(*(u8*)q, (u8*)p);
++			break;
++		}
++
++		dst += linebytes;
++		src += srclinebytes;
++	}
++}
++
++static void decorfill(struct fb_info *info, int sy, int sx, int height,
++		       int width)
++{
++	int bytespp = ((info->var.bits_per_pixel + 7) >> 3);
++	int d  = sy * info->fix.line_length + sx * bytespp;
++	int ds = (sy * info->var.xres + sx) * bytespp;
++
++	fbcon_decor_copy((u8 *)(info->screen_base + d), (u8 *)(info->bgdecor.data + ds),
++		    height, width, info->fix.line_length, info->var.xres * bytespp,
++		    info->var.bits_per_pixel);
++}
++
++void fbcon_decor_clear(struct vc_data *vc, struct fb_info *info, int sy, int sx,
++		    int height, int width)
++{
++	int bgshift = (vc->vc_hi_font_mask) ? 13 : 12;
++	struct fbcon_ops *ops = info->fbcon_par;
++	u8 *dst;
++	int transparent, bg_color = attr_bgcol_ec(bgshift, vc, info);
++
++	transparent = (vc->vc_decor.bg_color == bg_color);
++	sy = sy * vc->vc_font.height + vc->vc_decor.ty;
++	sx = sx * vc->vc_font.width + vc->vc_decor.tx;
++	height *= vc->vc_font.height;
++	width *= vc->vc_font.width;
++
++	/* Don't paint the background image if console is blanked */
++	if (transparent && !ops->blank_state) {
++		decorfill(info, sy, sx, height, width);
++	} else {
++		dst = (u8 *)(info->screen_base + sy * info->fix.line_length +
++			     sx * ((info->var.bits_per_pixel + 7) >> 3));
++		decorset(dst, height, width, info->fix.line_length, cc2cx(bg_color),
++			  info->var.bits_per_pixel);
++	}
++}
++
++void fbcon_decor_clear_margins(struct vc_data *vc, struct fb_info *info,
++			    int bottom_only)
++{
++	unsigned int tw = vc->vc_cols*vc->vc_font.width;
++	unsigned int th = vc->vc_rows*vc->vc_font.height;
++
++	if (!bottom_only) {
++		/* top margin */
++		decorfill(info, 0, 0, vc->vc_decor.ty, info->var.xres);
++		/* left margin */
++		decorfill(info, vc->vc_decor.ty, 0, th, vc->vc_decor.tx);
++		/* right margin */
++		decorfill(info, vc->vc_decor.ty, vc->vc_decor.tx + tw, th, 
++			   info->var.xres - vc->vc_decor.tx - tw);
++	}
++	decorfill(info, vc->vc_decor.ty + th, 0, 
++		   info->var.yres - vc->vc_decor.ty - th, info->var.xres);
++}
++
++void fbcon_decor_bmove_redraw(struct vc_data *vc, struct fb_info *info, int y, 
++			   int sx, int dx, int width)
++{
++	u16 *d = (u16 *) (vc->vc_origin + vc->vc_size_row * y + dx * 2);
++	u16 *s = d + (dx - sx);
++	u16 *start = d;
++	u16 *ls = d;
++	u16 *le = d + width;
++	u16 c;
++	int x = dx;
++	u16 attr = 1;
++
++	do {
++		c = scr_readw(d);
++		if (attr != (c & 0xff00)) {
++			attr = c & 0xff00;
++			if (d > start) {
++				fbcon_decor_putcs(vc, info, start, d - start, y, x);
++				x += d - start;
++				start = d;
++			}
++		}
++		if (s >= ls && s < le && c == scr_readw(s)) {
++			if (d > start) {
++				fbcon_decor_putcs(vc, info, start, d - start, y, x);
++				x += d - start + 1;
++				start = d + 1;
++			} else {
++				x++;
++				start++;
++			}
++		}
++		s++;
++		d++;
++	} while (d < le);
++	if (d > start)
++		fbcon_decor_putcs(vc, info, start, d - start, y, x);
++}
++
++void fbcon_decor_blank(struct vc_data *vc, struct fb_info *info, int blank)
++{
++	if (blank) {
++		decorset((u8 *)info->screen_base, info->var.yres, info->var.xres,
++			  info->fix.line_length, 0, info->var.bits_per_pixel);
++	} else {
++		update_screen(vc);
++		fbcon_decor_clear_margins(vc, info, 0);
++	}
++}
++
+diff --git a/drivers/video/console/fbcon.c b/drivers/video/console/fbcon.c
+index 6b4fb5cf15..5d581c2c60 100644
+--- a/drivers/video/console/fbcon.c
++++ b/drivers/video/console/fbcon.c
+@@ -26,7 +26,7 @@
+  *
+  *  Hardware cursor support added by Emmanuel Marty (core@ggi-project.org)
+  *  Smart redraw scrolling, arbitrary font width support, 512char font support
+- *  and software scrollback added by 
++ *  and software scrollback added by
+  *                         Jakub Jelinek (jj@ultra.linux.cz)
+  *
+  *  Random hacking by Martin Mares <mj@ucw.cz>
+@@ -80,6 +80,7 @@
+ #include <asm/system.h>
+ 
+ #include "fbcon.h"
++#include "fbcondecor.h"
+ 
+ #ifdef FBCONDEBUG
+ #  define DPRINTK(fmt, args...) printk(KERN_DEBUG "%s: " fmt, __func__ , ## args)
+@@ -95,7 +96,7 @@ enum {
+ 
+ static struct display fb_display[MAX_NR_CONSOLES];
+ 
+-static signed char con2fb_map[MAX_NR_CONSOLES];
++signed char con2fb_map[MAX_NR_CONSOLES];
+ static signed char con2fb_map_boot[MAX_NR_CONSOLES];
+ 
+ static int logo_lines;
+@@ -111,7 +112,7 @@ static int softback_lines;
+ /* console mappings */
+ static int first_fb_vc;
+ static int last_fb_vc = MAX_NR_CONSOLES - 1;
+-static int fbcon_is_default = 1; 
++static int fbcon_is_default = 1;
+ static int fbcon_has_exited;
+ static int primary_device = -1;
+ static int fbcon_has_console_bind;
+@@ -287,7 +288,7 @@ static inline int fbcon_is_inactive(struct vc_data *vc, struct fb_info *info)
+ 		!vt_force_oops_output(vc);
+ }
+ 
+-static int get_color(struct vc_data *vc, struct fb_info *info,
++int get_color(struct vc_data *vc, struct fb_info *info,
+ 	      u16 c, int is_fg)
+ {
+ 	int depth = fb_get_color_depth(&info->var, &info->fix);
+@@ -451,7 +452,7 @@ static int __init fb_console_setup(char *this_opt)
+ 	while ((options = strsep(&this_opt, ",")) != NULL) {
+ 		if (!strncmp(options, "font:", 5))
+ 			strcpy(fontname, options + 5);
+-		
++
+ 		if (!strncmp(options, "scrollback:", 11)) {
+ 			options += 11;
+ 			if (*options) {
+@@ -466,7 +467,7 @@ static int __init fb_console_setup(char *this_opt)
+ 			} else
+ 				return 1;
+ 		}
+-		
++
+ 		if (!strncmp(options, "map:", 4)) {
+ 			options += 4;
+ 			if (*options) {
+@@ -491,8 +492,8 @@ static int __init fb_console_setup(char *this_opt)
+ 				first_fb_vc = 0;
+ 			if (*options++ == '-')
+ 				last_fb_vc = simple_strtoul(options, &options, 10) - 1;
+-			fbcon_is_default = 0; 
+-		}	
++			fbcon_is_default = 0;
++		}
+ 
+ 		if (!strncmp(options, "rotate:", 7)) {
+ 			options += 7;
+@@ -552,6 +553,9 @@ static int do_fbcon_takeover(int show_logo)
+ 		info_idx = -1;
+ 	} else {
+ 		fbcon_has_console_bind = 1;
++#ifdef CONFIG_FB_CON_DECOR
++		fbcon_decor_init();
++#endif
+ 	}
+ 
+ 	return err;
+@@ -970,7 +974,7 @@ static const char *fbcon_startup(void)
+ 	info = registered_fb[info_idx];
+ 	if (!info)
+ 		return NULL;
+-	
++
+ 	owner = info->fbops->owner;
+ 	if (!try_module_get(owner))
+ 		return NULL;
+@@ -1036,6 +1040,12 @@ static const char *fbcon_startup(void)
+ 	rows = FBCON_SWAP(ops->rotate, info->var.yres, info->var.xres);
+ 	cols /= vc->vc_font.width;
+ 	rows /= vc->vc_font.height;
++
++	if (fbcon_decor_active(info, vc)) {
++		cols = vc->vc_decor.twidth / vc->vc_font.width;
++		rows = vc->vc_decor.theight / vc->vc_font.height;
++	}
++
+ 	vc_resize(vc, cols, rows);
+ 
+ 	DPRINTK("mode:   %s\n", info->fix.id);
+@@ -1065,7 +1075,7 @@ static void fbcon_init(struct vc_data *vc, int init)
+ 	cap = info->flags;
+ 
+ 	if (vc != svc || logo_shown == FBCON_LOGO_DONTSHOW ||
+-	    (info->fix.type == FB_TYPE_TEXT))
++	    (info->fix.type == FB_TYPE_TEXT) || fbcon_decor_active(info, vc))
+ 		logo = 0;
+ 
+ 	if (var_to_display(p, &info->var, info))
+@@ -1281,6 +1291,11 @@ static void fbcon_clear(struct vc_data *vc, int sy, int sx, int height,
+ 	if (sy < vc->vc_top && vc->vc_top == logo_lines)
+ 		vc->vc_top = 0;
+ 
++ 	if (fbcon_decor_active(info, vc)) {
++ 		fbcon_decor_clear(vc, info, sy, sx, height, width);
++ 		return;
++ 	}
++
+ 	/* Split blits that cross physical y_wrap boundary */
+ 
+ 	y_break = p->vrows - p->yscroll;
+@@ -1300,10 +1315,15 @@ static void fbcon_putcs(struct vc_data *vc, const unsigned short *s,
+ 	struct display *p = &fb_display[vc->vc_num];
+ 	struct fbcon_ops *ops = info->fbcon_par;
+ 
+-	if (!fbcon_is_inactive(vc, info))
+-		ops->putcs(vc, info, s, count, real_y(p, ypos), xpos,
+-			   get_color(vc, info, scr_readw(s), 1),
+-			   get_color(vc, info, scr_readw(s), 0));
++	if (!fbcon_is_inactive(vc, info)) {
++
++		if (fbcon_decor_active(info, vc))
++			fbcon_decor_putcs(vc, info, s, count, ypos, xpos);
++		else
++			ops->putcs(vc, info, s, count, real_y(p, ypos), xpos,
++				   get_color(vc, info, scr_readw(s), 1),
++				   get_color(vc, info, scr_readw(s), 0));
++	}
+ }
+ 
+ static void fbcon_putc(struct vc_data *vc, int c, int ypos, int xpos)
+@@ -1319,8 +1339,13 @@ static void fbcon_clear_margins(struct vc_data *vc, int bottom_only)
+ 	struct fb_info *info = registered_fb[con2fb_map[vc->vc_num]];
+ 	struct fbcon_ops *ops = info->fbcon_par;
+ 
+-	if (!fbcon_is_inactive(vc, info))
+-		ops->clear_margins(vc, info, bottom_only);
++	if (!fbcon_is_inactive(vc, info)) {
++	 	if (fbcon_decor_active(info, vc)) {
++	 		fbcon_decor_clear_margins(vc, info, bottom_only);
++ 		} else {
++			ops->clear_margins(vc, info, bottom_only);
++		}
++	}
+ }
+ 
+ static void fbcon_cursor(struct vc_data *vc, int mode)
+@@ -1430,7 +1455,7 @@ static __inline__ void ywrap_up(struct vc_data *vc, int count)
+ 	struct fb_info *info = registered_fb[con2fb_map[vc->vc_num]];
+ 	struct fbcon_ops *ops = info->fbcon_par;
+ 	struct display *p = &fb_display[vc->vc_num];
+-	
++
+ 	p->yscroll += count;
+ 	if (p->yscroll >= p->vrows)	/* Deal with wrap */
+ 		p->yscroll -= p->vrows;
+@@ -1449,7 +1474,7 @@ static __inline__ void ywrap_down(struct vc_data *vc, int count)
+ 	struct fb_info *info = registered_fb[con2fb_map[vc->vc_num]];
+ 	struct fbcon_ops *ops = info->fbcon_par;
+ 	struct display *p = &fb_display[vc->vc_num];
+-	
++
+ 	p->yscroll -= count;
+ 	if (p->yscroll < 0)	/* Deal with wrap */
+ 		p->yscroll += p->vrows;
+@@ -1516,7 +1541,7 @@ static __inline__ void ypan_down(struct vc_data *vc, int count)
+ 	struct fb_info *info = registered_fb[con2fb_map[vc->vc_num]];
+ 	struct display *p = &fb_display[vc->vc_num];
+ 	struct fbcon_ops *ops = info->fbcon_par;
+-	
++
+ 	p->yscroll -= count;
+ 	if (p->yscroll < 0) {
+ 		ops->bmove(vc, info, 0, 0, p->vrows - vc->vc_rows,
+@@ -1840,7 +1865,7 @@ static int fbcon_scroll(struct vc_data *vc, int t, int b, int dir,
+ 			count = vc->vc_rows;
+ 		if (softback_top)
+ 			fbcon_softback_note(vc, t, count);
+-		if (logo_shown >= 0)
++		if (logo_shown >= 0 || fbcon_decor_active(info, vc))
+ 			goto redraw_up;
+ 		switch (p->scrollmode) {
+ 		case SCROLL_MOVE:
+@@ -1933,6 +1958,8 @@ static int fbcon_scroll(struct vc_data *vc, int t, int b, int dir,
+ 			count = vc->vc_rows;
+ 		if (logo_shown >= 0)
+ 			goto redraw_down;
++		if (fbcon_decor_active(info, vc))
++			goto redraw_down;
+ 		switch (p->scrollmode) {
+ 		case SCROLL_MOVE:
+ 			fbcon_redraw_blit(vc, info, p, b - 1, b - t - count,
+@@ -2025,7 +2052,7 @@ static void fbcon_bmove(struct vc_data *vc, int sy, int sx, int dy, int dx,
+ {
+ 	struct fb_info *info = registered_fb[con2fb_map[vc->vc_num]];
+ 	struct display *p = &fb_display[vc->vc_num];
+-	
++
+ 	if (fbcon_is_inactive(vc, info))
+ 		return;
+ 
+@@ -2043,7 +2070,7 @@ static void fbcon_bmove(struct vc_data *vc, int sy, int sx, int dy, int dx,
+ 			p->vrows - p->yscroll);
+ }
+ 
+-static void fbcon_bmove_rec(struct vc_data *vc, struct display *p, int sy, int sx, 
++static void fbcon_bmove_rec(struct vc_data *vc, struct display *p, int sy, int sx,
+ 			    int dy, int dx, int height, int width, u_int y_break)
+ {
+ 	struct fb_info *info = registered_fb[con2fb_map[vc->vc_num]];
+@@ -2081,6 +2108,13 @@ static void fbcon_bmove_rec(struct vc_data *vc, struct display *p, int sy, int s
+ 		}
+ 		return;
+ 	}
++
++	if (fbcon_decor_active(info, vc) && sy == dy && height == 1) {
++ 		/* must use slower redraw bmove to keep background pic intact */
++ 		fbcon_decor_bmove_redraw(vc, info, sy, sx, dx, width);
++ 		return;
++ 	}
++
+ 	ops->bmove(vc, info, real_y(p, sy), sx, real_y(p, dy), dx,
+ 		   height, width);
+ }
+@@ -2132,7 +2166,7 @@ static void updatescrollmode(struct display *p,
+ 	}
+ }
+ 
+-static int fbcon_resize(struct vc_data *vc, unsigned int width, 
++static int fbcon_resize(struct vc_data *vc, unsigned int width,
+ 			unsigned int height, unsigned int user)
+ {
+ 	struct fb_info *info = registered_fb[con2fb_map[vc->vc_num]];
+@@ -2151,8 +2185,8 @@ static int fbcon_resize(struct vc_data *vc, unsigned int width,
+ 	var.yres = virt_h * virt_fh;
+ 	x_diff = info->var.xres - var.xres;
+ 	y_diff = info->var.yres - var.yres;
+-	if (x_diff < 0 || x_diff > virt_fw ||
+-	    y_diff < 0 || y_diff > virt_fh) {
++	if ((x_diff < 0 || x_diff > virt_fw ||
++		y_diff < 0 || y_diff > virt_fh) && !vc->vc_decor.state) {
+ 		const struct fb_videomode *mode;
+ 
+ 		DPRINTK("attempting resize %ix%i\n", var.xres, var.yres);
+@@ -2188,6 +2222,21 @@ static int fbcon_switch(struct vc_data *vc)
+ 
+ 	info = registered_fb[con2fb_map[vc->vc_num]];
+ 	ops = info->fbcon_par;
++	prev_console = ops->currcon;
++	if (prev_console != -1)
++		old_info = registered_fb[con2fb_map[prev_console]];
++
++#ifdef CONFIG_FB_CON_DECOR
++	if (!fbcon_decor_active_vc(vc) && info->fix.visual == FB_VISUAL_DIRECTCOLOR) {
++		struct vc_data *vc_curr = vc_cons[prev_console].d;
++		if (vc_curr && fbcon_decor_active_vc(vc_curr)) {
++			/* Clear the screen to avoid displaying funky colors during
++			 * palette updates. */
++			memset((u8*)info->screen_base + info->fix.line_length * info->var.yoffset,
++			       0, info->var.yres * info->fix.line_length);
++		}
++	}
++#endif
+ 
+ 	if (softback_top) {
+ 		if (softback_lines)
+@@ -2206,9 +2255,6 @@ static int fbcon_switch(struct vc_data *vc)
+ 		logo_shown = FBCON_LOGO_CANSHOW;
+ 	}
+ 
+-	prev_console = ops->currcon;
+-	if (prev_console != -1)
+-		old_info = registered_fb[con2fb_map[prev_console]];
+ 	/*
+ 	 * FIXME: If we have multiple fbdev's loaded, we need to
+ 	 * update all info->currcon.  Perhaps, we can place this
+@@ -2252,6 +2298,18 @@ static int fbcon_switch(struct vc_data *vc)
+ 			fbcon_del_cursor_timer(old_info);
+ 	}
+ 
++	if (fbcon_decor_active_vc(vc)) {
++		struct vc_data *vc_curr = vc_cons[prev_console].d;
++
++		if (!vc_curr->vc_decor.theme ||
++			strcmp(vc->vc_decor.theme, vc_curr->vc_decor.theme) ||
++			(fbcon_decor_active_nores(info, vc_curr) &&
++			 !fbcon_decor_active(info, vc_curr))) {
++			fbcon_decor_disable(vc, 0);
++			fbcon_decor_call_helper("modechange", vc->vc_num);
++		}
++	}
++
+ 	if (fbcon_is_inactive(vc, info) ||
+ 	    ops->blank_state != FB_BLANK_UNBLANK)
+ 		fbcon_del_cursor_timer(info);
+@@ -2300,11 +2358,10 @@ static int fbcon_switch(struct vc_data *vc)
+ 	    ops->update_start(info);
+ 	}
+ 
+-	fbcon_set_palette(vc, color_table); 	
++	fbcon_set_palette(vc, color_table);
+ 	fbcon_clear_margins(vc, 0);
+ 
+ 	if (logo_shown == FBCON_LOGO_DRAW) {
+-
+ 		logo_shown = fg_console;
+ 		/* This is protected above by initmem_freed */
+ 		fb_show_logo(info, ops->rotate);
+@@ -2360,15 +2417,20 @@ static int fbcon_blank(struct vc_data *vc, int blank, int mode_switch)
+ 		}
+ 	}
+ 
+- 	if (!fbcon_is_inactive(vc, info)) {
++	if (!fbcon_is_inactive(vc, info)) {
+ 		if (ops->blank_state != blank) {
+ 			ops->blank_state = blank;
+ 			fbcon_cursor(vc, blank ? CM_ERASE : CM_DRAW);
+ 			ops->cursor_flash = (!blank);
+ 
+-			if (!(info->flags & FBINFO_MISC_USEREVENT))
+-				if (fb_blank(info, blank))
+-					fbcon_generic_blank(vc, info, blank);
++			if (!(info->flags & FBINFO_MISC_USEREVENT)) {
++				if (fb_blank(info, blank)) {
++					if (fbcon_decor_active(info, vc))
++						fbcon_decor_blank(vc, info, blank);
++					else
++						fbcon_generic_blank(vc, info, blank);
++				}
++			}
+ 		}
+ 
+ 		if (!blank)
+@@ -2490,7 +2552,7 @@ static int fbcon_do_set_font(struct vc_data *vc, int w, int h,
+ 			vc->vc_complement_mask >>= 1;
+ 			vc->vc_s_complement_mask >>= 1;
+ 		}
+-			
++
+ 		/* ++Edmund: reorder the attribute bits */
+ 		if (vc->vc_can_do_color) {
+ 			unsigned short *cp =
+@@ -2513,7 +2575,7 @@ static int fbcon_do_set_font(struct vc_data *vc, int w, int h,
+ 			vc->vc_complement_mask <<= 1;
+ 			vc->vc_s_complement_mask <<= 1;
+ 		}
+-			
++
+ 		/* ++Edmund: reorder the attribute bits */
+ 		{
+ 			unsigned short *cp =
+@@ -2543,13 +2605,22 @@ static int fbcon_do_set_font(struct vc_data *vc, int w, int h,
+ 	}
+ 
+ 	if (resize) {
++		/* reset wrap/pan */
+ 		int cols, rows;
+ 
+ 		cols = FBCON_SWAP(ops->rotate, info->var.xres, info->var.yres);
+ 		rows = FBCON_SWAP(ops->rotate, info->var.yres, info->var.xres);
++
++		if (fbcon_decor_active(info, vc)) {
++			info->var.xoffset = info->var.yoffset = p->yscroll = 0;
++			cols = vc->vc_decor.twidth;
++			rows = vc->vc_decor.theight;
++		}
+ 		cols /= w;
+ 		rows /= h;
++
+ 		vc_resize(vc, cols, rows);
++
+ 		if (CON_IS_VISIBLE(vc) && softback_buf)
+ 			fbcon_update_softback(vc);
+ 	} else if (CON_IS_VISIBLE(vc)
+@@ -2633,7 +2704,7 @@ static int fbcon_set_font(struct vc_data *vc, struct console_font *font, unsigne
+ 	/* Check if the same font is on some other console already */
+ 	for (i = first_fb_vc; i <= last_fb_vc; i++) {
+ 		struct vc_data *tmp = vc_cons[i].d;
+-		
++
+ 		if (fb_display[i].userfont &&
+ 		    fb_display[i].fontdata &&
+ 		    FNTSUM(fb_display[i].fontdata) == csum &&
+@@ -2678,7 +2749,11 @@ static int fbcon_set_palette(struct vc_data *vc, unsigned char *table)
+ 	int i, j, k, depth;
+ 	u8 val;
+ 
+-	if (fbcon_is_inactive(vc, info))
++	if (fbcon_is_inactive(vc, info)
++#ifdef CONFIG_FB_CON_DECOR
++			|| vc->vc_num != fg_console
++#endif
++		)
+ 		return -EINVAL;
+ 
+ 	if (!CON_IS_VISIBLE(vc))
+@@ -2704,14 +2779,56 @@ static int fbcon_set_palette(struct vc_data *vc, unsigned char *table)
+ 	} else
+ 		fb_copy_cmap(fb_default_cmap(1 << depth), &palette_cmap);
+ 
+-	return fb_set_cmap(&palette_cmap, info);
++	if (fbcon_decor_active(info, vc_cons[fg_console].d) &&
++	    info->fix.visual == FB_VISUAL_DIRECTCOLOR) {
++
++		u16 *red, *green, *blue;
++		int minlen = min(min(info->var.red.length, info->var.green.length),
++				     info->var.blue.length);
++		int h;
++
++		struct fb_cmap cmap = {
++			.start = 0,
++			.len = (1 << minlen),
++			.red = NULL,
++			.green = NULL,
++			.blue = NULL,
++			.transp = NULL
++		};
++
++		red = kmalloc(256 * sizeof(u16) * 3, GFP_KERNEL);
++
++		if (!red)
++			goto out;
++
++		green = red + 256;
++		blue = green + 256;
++		cmap.red = red;
++		cmap.green = green;
++		cmap.blue = blue;
++
++		for (i = 0; i < cmap.len; i++) {
++			red[i] = green[i] = blue[i] = (0xffff * i)/(cmap.len-1);
++		}
++
++		h = fb_set_cmap(&cmap, info);
++		fbcon_decor_fix_pseudo_pal(info, vc_cons[fg_console].d);
++		kfree(red);
++
++		return h;
++
++	} else if (fbcon_decor_active(info, vc_cons[fg_console].d) &&
++		   info->var.bits_per_pixel == 8 && info->bgdecor.cmap.red != NULL)
++		fb_set_cmap(&info->bgdecor.cmap, info);
++
++out:	return fb_set_cmap(&palette_cmap, info);
+ }
+ 
+ static u16 *fbcon_screen_pos(struct vc_data *vc, int offset)
+ {
+ 	unsigned long p;
+ 	int line;
+-	
++
+ 	if (vc->vc_num != fg_console || !softback_lines)
+ 		return (u16 *) (vc->vc_origin + offset);
+ 	line = offset / vc->vc_size_row;
+@@ -2930,7 +3047,14 @@ static void fbcon_modechanged(struct fb_info *info)
+ 		rows = FBCON_SWAP(ops->rotate, info->var.yres, info->var.xres);
+ 		cols /= vc->vc_font.width;
+ 		rows /= vc->vc_font.height;
+-		vc_resize(vc, cols, rows);
++
++		if (!fbcon_decor_active_nores(info, vc)) {
++			vc_resize(vc, cols, rows);
++		} else {
++			fbcon_decor_disable(vc, 0);
++			fbcon_decor_call_helper("modechange", vc->vc_num);
++		}
++
+ 		updatescrollmode(p, info, vc);
+ 		scrollback_max = 0;
+ 		scrollback_current = 0;
+@@ -2975,7 +3099,9 @@ static void fbcon_set_all_vcs(struct fb_info *info)
+ 		rows = FBCON_SWAP(ops->rotate, info->var.yres, info->var.xres);
+ 		cols /= vc->vc_font.width;
+ 		rows /= vc->vc_font.height;
+-		vc_resize(vc, cols, rows);
++		if (!fbcon_decor_active_nores(info, vc)) {
++			vc_resize(vc, cols, rows);
++		}
+ 	}
+ 
+ 	if (fg != -1)
+@@ -3590,6 +3716,7 @@ static void fbcon_exit(void)
+ 		}
+ 	}
+ 
++	fbcon_decor_exit();
+ 	fbcon_has_exited = 1;
+ }
+ 
+@@ -3643,7 +3770,7 @@ static void __exit fb_console_exit(void)
+ 	fbcon_exit();
+ 	console_unlock();
+ 	unregister_con_driver(&fb_con);
+-}	
++}
+ 
+ module_exit(fb_console_exit);
+ 
+diff --git a/drivers/video/console/fbcondecor.c b/drivers/video/console/fbcondecor.c
+new file mode 100644
+index 0000000000..b80639c5b6
+--- /dev/null
++++ b/drivers/video/console/fbcondecor.c
+@@ -0,0 +1,556 @@
++/*
++ *  linux/drivers/video/console/fbcondecor.c -- Framebuffer console decorations
++ *
++ *  Copyright (C) 2004-2009 Michal Januszewski <spock@gentoo.org>
++ *
++ *  Code based upon "Bootsplash" (C) 2001-2003
++ *       Volker Poplawski <volker@poplawski.de>,
++ *       Stefan Reinauer <stepan@suse.de>,
++ *       Steffen Winterfeldt <snwint@suse.de>,
++ *       Michael Schroeder <mls@suse.de>,
++ *       Ken Wimer <wimer@suse.de>.
++ *
++ *  Compat ioctl support by Thorsten Klein <TK@Thorsten-Klein.de>.
++ *
++ *  This file is subject to the terms and conditions of the GNU General Public
++ *  License.  See the file COPYING in the main directory of this archive for
++ *  more details.
++ *
++ */
++#include <linux/module.h>
++#include <linux/kernel.h>
++#include <linux/string.h>
++#include <linux/types.h>
++#include <linux/fb.h>
++#include <linux/vt_kern.h>
++#include <linux/vmalloc.h>
++#include <linux/unistd.h>
++#include <linux/syscalls.h>
++#include <linux/init.h>
++#include <linux/proc_fs.h>
++#include <linux/workqueue.h>
++#include <linux/kmod.h>
++#include <linux/miscdevice.h>
++#include <linux/device.h>
++#include <linux/fs.h>
++#include <linux/compat.h>
++#include <linux/console.h>
++
++#include <asm/uaccess.h>
++#include <asm/irq.h>
++#include <asm/system.h>
++
++#include "fbcon.h"
++#include "fbcondecor.h"
++
++extern signed char con2fb_map[];
++static int fbcon_decor_enable(struct vc_data *vc);
++char fbcon_decor_path[KMOD_PATH_LEN] = "/sbin/fbcondecor_helper";
++static int initialized = 0;
++
++int fbcon_decor_call_helper(char* cmd, unsigned short vc)
++{
++	char *envp[] = {
++		"HOME=/",
++		"PATH=/sbin:/bin",
++		NULL
++	};
++
++	char tfb[5];
++	char tcons[5];
++	unsigned char fb = (int) con2fb_map[vc];
++
++	char *argv[] = {
++		fbcon_decor_path,
++		"2",
++		cmd,
++		tcons,
++		tfb,
++		vc_cons[vc].d->vc_decor.theme,
++		NULL
++	};
++
++	snprintf(tfb,5,"%d",fb);
++	snprintf(tcons,5,"%d",vc);
++
++	return call_usermodehelper(fbcon_decor_path, argv, envp, UMH_WAIT_EXEC);
++}
++
++/* Disables fbcondecor on a virtual console; called with console sem held. */
++int fbcon_decor_disable(struct vc_data *vc, unsigned char redraw)
++{
++	struct fb_info* info;
++
++	if (!vc->vc_decor.state)
++		return -EINVAL;
++
++	info = registered_fb[(int) con2fb_map[vc->vc_num]];
++
++	if (info == NULL)
++		return -EINVAL;
++
++	vc->vc_decor.state = 0;
++	vc_resize(vc, info->var.xres / vc->vc_font.width,
++		  info->var.yres / vc->vc_font.height);
++
++	if (fg_console == vc->vc_num && redraw) {
++		redraw_screen(vc, 0);
++		update_region(vc, vc->vc_origin +
++			      vc->vc_size_row * vc->vc_top,
++			      vc->vc_size_row * (vc->vc_bottom - vc->vc_top) / 2);
++	}
++
++	printk(KERN_INFO "fbcondecor: switched decor state to 'off' on console %d\n",
++			 vc->vc_num);
++
++	return 0;
++}
++
++/* Enables fbcondecor on a virtual console; called with console sem held. */
++static int fbcon_decor_enable(struct vc_data *vc)
++{
++	struct fb_info* info;
++
++	info = registered_fb[(int) con2fb_map[vc->vc_num]];
++
++	if (vc->vc_decor.twidth == 0 || vc->vc_decor.theight == 0 ||
++	    info == NULL || vc->vc_decor.state || (!info->bgdecor.data &&
++	    vc->vc_num == fg_console))
++		return -EINVAL;
++
++	vc->vc_decor.state = 1;
++	vc_resize(vc, vc->vc_decor.twidth / vc->vc_font.width,
++		  vc->vc_decor.theight / vc->vc_font.height);
++
++	if (fg_console == vc->vc_num) {
++		redraw_screen(vc, 0);
++		update_region(vc, vc->vc_origin +
++			      vc->vc_size_row * vc->vc_top,
++			      vc->vc_size_row * (vc->vc_bottom - vc->vc_top) / 2);
++		fbcon_decor_clear_margins(vc, info, 0);
++	}
++
++	printk(KERN_INFO "fbcondecor: switched decor state to 'on' on console %d\n",
++			 vc->vc_num);
++
++	return 0;
++}
++
++static inline int fbcon_decor_ioctl_dosetstate(struct vc_data *vc, unsigned int state, unsigned char origin)
++{
++	int ret;
++
++//	if (origin == FBCON_DECOR_IO_ORIG_USER)
++		console_lock();
++	if (!state)
++		ret = fbcon_decor_disable(vc, 1);
++	else
++		ret = fbcon_decor_enable(vc);
++//	if (origin == FBCON_DECOR_IO_ORIG_USER)
++		console_unlock();
++
++	return ret;
++}
++
++static inline void fbcon_decor_ioctl_dogetstate(struct vc_data *vc, unsigned int *state)
++{
++	*state = vc->vc_decor.state;
++}
++
++static int fbcon_decor_ioctl_dosetcfg(struct vc_data *vc, struct vc_decor *cfg, unsigned char origin)
++{
++	struct fb_info *info;
++	int len;
++	char *tmp;
++
++	info = registered_fb[(int) con2fb_map[vc->vc_num]];
++
++	if (info == NULL || !cfg->twidth || !cfg->theight ||
++	    cfg->tx + cfg->twidth  > info->var.xres ||
++	    cfg->ty + cfg->theight > info->var.yres)
++		return -EINVAL;
++
++	len = strlen_user(cfg->theme);
++	if (!len || len > FBCON_DECOR_THEME_LEN)
++		return -EINVAL;
++	tmp = kmalloc(len, GFP_KERNEL);
++	if (!tmp)
++		return -ENOMEM;
++	if (copy_from_user(tmp, (void __user *)cfg->theme, len))
++		return -EFAULT;
++	cfg->theme = tmp;
++	cfg->state = 0;
++
++	/* If this ioctl is a response to a request from kernel, the console sem
++	 * is already held; we also don't need to disable decor because either the
++	 * new config and background picture will be successfully loaded, and the
++	 * decor will stay on, or in case of a failure it'll be turned off in fbcon. */
++//	if (origin == FBCON_DECOR_IO_ORIG_USER) {
++		console_lock();
++		if (vc->vc_decor.state)
++			fbcon_decor_disable(vc, 1);
++//	}
++
++	if (vc->vc_decor.theme)
++		kfree(vc->vc_decor.theme);
++
++	vc->vc_decor = *cfg;
++
++//	if (origin == FBCON_DECOR_IO_ORIG_USER)
++		console_unlock();
++
++	printk(KERN_INFO "fbcondecor: console %d using theme '%s'\n",
++			 vc->vc_num, vc->vc_decor.theme);
++	return 0;
++}
++
++static int fbcon_decor_ioctl_dogetcfg(struct vc_data *vc, struct vc_decor *decor)
++{
++	char __user *tmp;
++
++	tmp = decor->theme;
++	*decor = vc->vc_decor;
++	decor->theme = tmp;
++
++	if (vc->vc_decor.theme) {
++		if (copy_to_user(tmp, vc->vc_decor.theme, strlen(vc->vc_decor.theme) + 1))
++			return -EFAULT;
++	} else
++		if (put_user(0, tmp))
++			return -EFAULT;
++
++	return 0;
++}
++
++static int fbcon_decor_ioctl_dosetpic(struct vc_data *vc, struct fb_image *img, unsigned char origin)
++{
++	struct fb_info *info;
++	int len;
++	u8 *tmp;
++
++	if (vc->vc_num != fg_console)
++		return -EINVAL;
++
++	info = registered_fb[(int) con2fb_map[vc->vc_num]];
++
++	if (info == NULL)
++		return -EINVAL;
++
++	if (img->width != info->var.xres || img->height != info->var.yres) {
++		printk(KERN_ERR "fbcondecor: picture dimensions mismatch\n");
++		printk(KERN_ERR "%dx%d vs %dx%d\n", img->width, img->height, info->var.xres, info->var.yres);
++		return -EINVAL;
++	}
++
++	if (img->depth != info->var.bits_per_pixel) {
++		printk(KERN_ERR "fbcondecor: picture depth mismatch\n");
++		return -EINVAL;
++	}
++
++	if (img->depth == 8) {
++		if (!img->cmap.len || !img->cmap.red || !img->cmap.green ||
++		    !img->cmap.blue)
++			return -EINVAL;
++
++		tmp = vmalloc(img->cmap.len * 3 * 2);
++		if (!tmp)
++			return -ENOMEM;
++
++		if (copy_from_user(tmp,
++			    	   (void __user*)img->cmap.red, (img->cmap.len << 1)) ||
++		    copy_from_user(tmp + (img->cmap.len << 1),
++			    	   (void __user*)img->cmap.green, (img->cmap.len << 1)) ||
++		    copy_from_user(tmp + (img->cmap.len << 2),
++			    	   (void __user*)img->cmap.blue, (img->cmap.len << 1))) {
++			vfree(tmp);
++			return -EFAULT;
++		}
++
++		img->cmap.transp = NULL;
++		img->cmap.red = (u16*)tmp;
++		img->cmap.green = img->cmap.red + img->cmap.len;
++		img->cmap.blue = img->cmap.green + img->cmap.len;
++	} else {
++		img->cmap.red = NULL;
++	}
++
++	len = ((img->depth + 7) >> 3) * img->width * img->height;
++
++	/*
++	 * Allocate an additional byte so that we never go outside of the
++	 * buffer boundaries in the rendering functions in a 24 bpp mode.
++	 */
++	tmp = vmalloc(len + 1);
++
++	if (!tmp)
++		goto out;
++
++	if (copy_from_user(tmp, (void __user*)img->data, len))
++		goto out;
++
++	img->data = tmp;
++
++	/* If this ioctl is a response to a request from kernel, the console sem
++	 * is already held. */
++//	if (origin == FBCON_DECOR_IO_ORIG_USER)
++		console_lock();
++
++	if (info->bgdecor.data)
++		vfree((u8*)info->bgdecor.data);
++	if (info->bgdecor.cmap.red)
++		vfree(info->bgdecor.cmap.red);
++
++	info->bgdecor = *img;
++
++	if (fbcon_decor_active_vc(vc) && fg_console == vc->vc_num) {
++		redraw_screen(vc, 0);
++		update_region(vc, vc->vc_origin +
++			      vc->vc_size_row * vc->vc_top,
++			      vc->vc_size_row * (vc->vc_bottom - vc->vc_top) / 2);
++		fbcon_decor_clear_margins(vc, info, 0);
++	}
++
++//	if (origin == FBCON_DECOR_IO_ORIG_USER)
++		console_unlock();
++
++	return 0;
++
++out:	if (img->cmap.red)
++		vfree(img->cmap.red);
++
++	if (tmp)
++		vfree(tmp);
++	return -ENOMEM;
++}
++
++static long fbcon_decor_ioctl(struct file *filp, u_int cmd, u_long arg)
++{
++	struct fbcon_decor_iowrapper __user *wrapper = (void __user*) arg;
++	struct vc_data *vc = NULL;
++	unsigned short vc_num = 0;
++	unsigned char origin = 0;
++	void __user *data = NULL;
++
++	if (!access_ok(VERIFY_READ, wrapper,
++			sizeof(struct fbcon_decor_iowrapper)))
++		return -EFAULT;
++
++	__get_user(vc_num, &wrapper->vc);
++	__get_user(origin, &wrapper->origin);
++	__get_user(data, &wrapper->data);
++
++	if (!vc_cons_allocated(vc_num))
++		return -EINVAL;
++
++	vc = vc_cons[vc_num].d;
++
++	switch (cmd) {
++	case FBIOCONDECOR_SETPIC:
++	{
++		struct fb_image img;
++		if (copy_from_user(&img, (struct fb_image __user *)data, sizeof(struct fb_image)))
++			return -EFAULT;
++
++		return fbcon_decor_ioctl_dosetpic(vc, &img, origin);
++	}
++	case FBIOCONDECOR_SETCFG:
++	{
++		struct vc_decor cfg;
++		if (copy_from_user(&cfg, (struct vc_decor __user *)data, sizeof(struct vc_decor)))
++			return -EFAULT;
++
++		return fbcon_decor_ioctl_dosetcfg(vc, &cfg, origin);
++	}
++	case FBIOCONDECOR_GETCFG:
++	{
++		int rval;
++		struct vc_decor cfg;
++
++		if (copy_from_user(&cfg, (struct vc_decor __user *)data, sizeof(struct vc_decor)))
++			return -EFAULT;
++
++		rval = fbcon_decor_ioctl_dogetcfg(vc, &cfg);
++
++		if (copy_to_user(data, &cfg, sizeof(struct vc_decor)))
++			return -EFAULT;
++		return rval;
++	}
++	case FBIOCONDECOR_SETSTATE:
++	{
++		unsigned int state = 0;
++		if (get_user(state, (unsigned int __user *)data))
++			return -EFAULT;
++		return fbcon_decor_ioctl_dosetstate(vc, state, origin);
++	}
++	case FBIOCONDECOR_GETSTATE:
++	{
++		unsigned int state = 0;
++		fbcon_decor_ioctl_dogetstate(vc, &state);
++		return put_user(state, (unsigned int __user *)data);
++	}
++
++	default:
++		return -ENOIOCTLCMD;
++	}
++}
++
++#ifdef CONFIG_COMPAT
++
++static long fbcon_decor_compat_ioctl(struct file *filp, unsigned int cmd, unsigned long arg) {
++
++	struct fbcon_decor_iowrapper32 __user *wrapper = (void __user *)arg;
++	struct vc_data *vc = NULL;
++	unsigned short vc_num = 0;
++	unsigned char origin = 0;
++	compat_uptr_t data_compat = 0;
++	void __user *data = NULL;
++
++	if (!access_ok(VERIFY_READ, wrapper,
++                       sizeof(struct fbcon_decor_iowrapper32)))
++		return -EFAULT;
++
++	__get_user(vc_num, &wrapper->vc);
++	__get_user(origin, &wrapper->origin);
++	__get_user(data_compat, &wrapper->data);
++	data = compat_ptr(data_compat);
++
++	if (!vc_cons_allocated(vc_num))
++		return -EINVAL;
++
++	vc = vc_cons[vc_num].d;
++
++	switch (cmd) {
++	case FBIOCONDECOR_SETPIC32:
++	{
++		struct fb_image32 img_compat;
++		struct fb_image img;
++
++		if (copy_from_user(&img_compat, (struct fb_image32 __user *)data, sizeof(struct fb_image32)))
++			return -EFAULT;
++
++		fb_image_from_compat(img, img_compat);
++
++		return fbcon_decor_ioctl_dosetpic(vc, &img, origin);
++	}
++
++	case FBIOCONDECOR_SETCFG32:
++	{
++		struct vc_decor32 cfg_compat;
++		struct vc_decor cfg;
++
++		if (copy_from_user(&cfg_compat, (struct vc_decor32 __user *)data, sizeof(struct vc_decor32)))
++			return -EFAULT;
++
++		vc_decor_from_compat(cfg, cfg_compat);
++
++		return fbcon_decor_ioctl_dosetcfg(vc, &cfg, origin);
++	}
++
++	case FBIOCONDECOR_GETCFG32:
++	{
++		int rval;
++		struct vc_decor32 cfg_compat;
++		struct vc_decor cfg;
++
++		if (copy_from_user(&cfg_compat, (struct vc_decor32 __user *)data, sizeof(struct vc_decor32)))
++			return -EFAULT;
++		cfg.theme = compat_ptr(cfg_compat.theme);
++
++		rval = fbcon_decor_ioctl_dogetcfg(vc, &cfg);
++
++		vc_decor_to_compat(cfg_compat, cfg);
++
++		if (copy_to_user((struct vc_decor32 __user *)data, &cfg_compat, sizeof(struct vc_decor32)))
++			return -EFAULT;
++		return rval;
++	}
++
++	case FBIOCONDECOR_SETSTATE32:
++	{
++		compat_uint_t state_compat = 0;
++		unsigned int state = 0;
++
++		if (get_user(state_compat, (compat_uint_t __user *)data))
++			return -EFAULT;
++
++		state = (unsigned int)state_compat;
++
++		return fbcon_decor_ioctl_dosetstate(vc, state, origin);
++	}
++
++	case FBIOCONDECOR_GETSTATE32:
++	{
++		compat_uint_t state_compat = 0;
++		unsigned int state = 0;
++
++		fbcon_decor_ioctl_dogetstate(vc, &state);
++		state_compat = (compat_uint_t)state;
++
++		return put_user(state_compat, (compat_uint_t __user *)data);
++	}
++
++	default:
++		return -ENOIOCTLCMD;
++	}
++}
++#else
++  #define fbcon_decor_compat_ioctl NULL
++#endif
++
++static struct file_operations fbcon_decor_ops = {
++	.owner = THIS_MODULE,
++	.unlocked_ioctl = fbcon_decor_ioctl,
++	.compat_ioctl = fbcon_decor_compat_ioctl
++};
++
++static struct miscdevice fbcon_decor_dev = {
++	.minor = MISC_DYNAMIC_MINOR,
++	.name = "fbcondecor",
++	.fops = &fbcon_decor_ops
++};
++
++void fbcon_decor_reset()
++{
++	int i;
++
++	for (i = 0; i < num_registered_fb; i++) {
++		registered_fb[i]->bgdecor.data = NULL;
++		registered_fb[i]->bgdecor.cmap.red = NULL;
++	}
++
++	for (i = 0; i < MAX_NR_CONSOLES && vc_cons[i].d; i++) {
++		vc_cons[i].d->vc_decor.state = vc_cons[i].d->vc_decor.twidth =
++						vc_cons[i].d->vc_decor.theight = 0;
++		vc_cons[i].d->vc_decor.theme = NULL;
++	}
++
++	return;
++}
++
++int fbcon_decor_init()
++{
++	int i;
++
++	fbcon_decor_reset();
++
++	if (initialized)
++		return 0;
++
++	i = misc_register(&fbcon_decor_dev);
++	if (i) {
++		printk(KERN_ERR "fbcondecor: failed to register device\n");
++		return i;
++	}
++
++	fbcon_decor_call_helper("init", 0);
++	initialized = 1;
++	return 0;
++}
++
++int fbcon_decor_exit(void)
++{
++	fbcon_decor_reset();
++	return 0;
++}
++
++EXPORT_SYMBOL(fbcon_decor_path);
+diff --git a/drivers/video/console/fbcondecor.h b/drivers/video/console/fbcondecor.h
+new file mode 100644
+index 0000000000..1d852dd95e
+--- /dev/null
++++ b/drivers/video/console/fbcondecor.h
+@@ -0,0 +1,78 @@
++/* 
++ *  linux/drivers/video/console/fbcondecor.h -- Framebuffer Console Decoration headers
++ *
++ *  Copyright (C) 2004 Michal Januszewski <spock@gentoo.org>
++ *
++ */
++
++#ifndef __FBCON_DECOR_H
++#define __FBCON_DECOR_H
++
++#ifndef _LINUX_FB_H
++#include <linux/fb.h>
++#endif
++
++/* This is needed for vc_cons in fbcmap.c */
++#include <linux/vt_kern.h>
++
++struct fb_cursor;
++struct fb_info;
++struct vc_data;
++
++#ifdef CONFIG_FB_CON_DECOR
++/* fbcondecor.c */
++int fbcon_decor_init(void);
++int fbcon_decor_exit(void);
++int fbcon_decor_call_helper(char* cmd, unsigned short cons);
++int fbcon_decor_disable(struct vc_data *vc, unsigned char redraw);
++
++/* cfbcondecor.c */
++void fbcon_decor_putcs(struct vc_data *vc, struct fb_info *info, const unsigned short *s, int count, int yy, int xx);
++void fbcon_decor_cursor(struct fb_info *info, struct fb_cursor *cursor);
++void fbcon_decor_clear(struct vc_data *vc, struct fb_info *info, int sy, int sx, int height, int width);
++void fbcon_decor_clear_margins(struct vc_data *vc, struct fb_info *info, int bottom_only);
++void fbcon_decor_blank(struct vc_data *vc, struct fb_info *info, int blank);
++void fbcon_decor_bmove_redraw(struct vc_data *vc, struct fb_info *info, int y, int sx, int dx, int width);
++void fbcon_decor_copy(u8 *dst, u8 *src, int height, int width, int linebytes, int srclinesbytes, int bpp);
++void fbcon_decor_fix_pseudo_pal(struct fb_info *info, struct vc_data *vc);
++
++/* vt.c */
++void acquire_console_sem(void);
++void release_console_sem(void);
++void do_unblank_screen(int entering_gfx);
++
++/* struct vc_data *y */
++#define fbcon_decor_active_vc(y) (y->vc_decor.state && y->vc_decor.theme) 
++
++/* struct fb_info *x, struct vc_data *y */
++#define fbcon_decor_active_nores(x,y) (x->bgdecor.data && fbcon_decor_active_vc(y))
++
++/* struct fb_info *x, struct vc_data *y */
++#define fbcon_decor_active(x,y) (fbcon_decor_active_nores(x,y) &&		\
++			      x->bgdecor.width == x->var.xres && 	\
++			      x->bgdecor.height == x->var.yres &&	\
++			      x->bgdecor.depth == x->var.bits_per_pixel)
++
++
++#else /* CONFIG_FB_CON_DECOR */
++
++static inline void fbcon_decor_putcs(struct vc_data *vc, struct fb_info *info, const unsigned short *s, int count, int yy, int xx) {}
++static inline void fbcon_decor_putc(struct vc_data *vc, struct fb_info *info, int c, int ypos, int xpos) {}
++static inline void fbcon_decor_cursor(struct fb_info *info, struct fb_cursor *cursor) {}
++static inline void fbcon_decor_clear(struct vc_data *vc, struct fb_info *info, int sy, int sx, int height, int width) {}
++static inline void fbcon_decor_clear_margins(struct vc_data *vc, struct fb_info *info, int bottom_only) {}
++static inline void fbcon_decor_blank(struct vc_data *vc, struct fb_info *info, int blank) {}
++static inline void fbcon_decor_bmove_redraw(struct vc_data *vc, struct fb_info *info, int y, int sx, int dx, int width) {}
++static inline void fbcon_decor_fix_pseudo_pal(struct fb_info *info, struct vc_data *vc) {}
++static inline int fbcon_decor_call_helper(char* cmd, unsigned short cons) { return 0; }
++static inline int fbcon_decor_init(void) { return 0; }
++static inline int fbcon_decor_exit(void) { return 0; }
++static inline int fbcon_decor_disable(struct vc_data *vc, unsigned char redraw) { return 0; }
++
++#define fbcon_decor_active_vc(y) (0)
++#define fbcon_decor_active_nores(x,y) (0)
++#define fbcon_decor_active(x,y) (0)
++
++#endif /* CONFIG_FB_CON_DECOR */
++
++#endif /* __FBCON_DECOR_H */
+diff --git a/drivers/video/fbcmap.c b/drivers/video/fbcmap.c
+index 71666c02de..f51041bc94 100644
+--- a/drivers/video/fbcmap.c
++++ b/drivers/video/fbcmap.c
+@@ -17,6 +17,8 @@
+ #include <linux/slab.h>
+ #include <linux/uaccess.h>
+ 
++#include "console/fbcondecor.h"
++
+ static u16 red2[] __read_mostly = {
+     0x0000, 0xaaaa
+ };
+@@ -251,14 +253,17 @@ int fb_set_cmap(struct fb_cmap *cmap, struct fb_info *info)
+ 			if (transp)
+ 				htransp = *transp++;
+ 			if (info->fbops->fb_setcolreg(start++,
+-						      hred, hgreen, hblue,
++						      hred, hgreen, hblue, 
+ 						      htransp, info))
+ 				break;
+ 		}
+ 	}
+-	if (rc == 0)
++	if (rc == 0) {
+ 		fb_copy_cmap(cmap, &info->cmap);
+-
++		if (fbcon_decor_active(info, vc_cons[fg_console].d) &&
++		    info->fix.visual == FB_VISUAL_DIRECTCOLOR)
++			fbcon_decor_fix_pseudo_pal(info, vc_cons[fg_console].d);
++	}
+ 	return rc;
+ }
+ 
+diff --git a/drivers/video/fbmem.c b/drivers/video/fbmem.c
+index 0a22808229..cebaa99360 100644
+--- a/drivers/video/fbmem.c
++++ b/drivers/video/fbmem.c
+@@ -1210,15 +1210,6 @@ struct fb_fix_screeninfo32 {
+ 	u16			reserved[3];
+ };
+ 
+-struct fb_cmap32 {
+-	u32			start;
+-	u32			len;
+-	compat_caddr_t	red;
+-	compat_caddr_t	green;
+-	compat_caddr_t	blue;
+-	compat_caddr_t	transp;
+-};
+-
+ static int fb_getput_cmap(struct fb_info *info, unsigned int cmd,
+ 			  unsigned long arg)
+ {
+diff --git a/include/linux/console_decor.h b/include/linux/console_decor.h
+new file mode 100644
+index 0000000000..04b8d80c34
+--- /dev/null
++++ b/include/linux/console_decor.h
+@@ -0,0 +1,46 @@
++#ifndef _LINUX_CONSOLE_DECOR_H_
++#define _LINUX_CONSOLE_DECOR_H_ 1
++
++/* A structure used by the framebuffer console decorations (drivers/video/console/fbcondecor.c) */
++struct vc_decor {
++	__u8 bg_color;				/* The color that is to be treated as transparent */
++	__u8 state;				/* Current decor state: 0 = off, 1 = on */
++	__u16 tx, ty;				/* Top left corner coordinates of the text field */
++	__u16 twidth, theight;			/* Width and height of the text field */
++	char* theme;
++};
++
++#ifdef __KERNEL__
++#ifdef CONFIG_COMPAT
++#include <linux/compat.h>
++
++struct vc_decor32 {
++	__u8 bg_color;				/* The color that is to be treated as transparent */
++	__u8 state;				/* Current decor state: 0 = off, 1 = on */
++	__u16 tx, ty;				/* Top left corner coordinates of the text field */
++	__u16 twidth, theight;			/* Width and height of the text field */
++	compat_uptr_t theme;
++};
++
++#define vc_decor_from_compat(to, from) \
++	(to).bg_color = (from).bg_color; \
++	(to).state    = (from).state; \
++	(to).tx       = (from).tx; \
++	(to).ty       = (from).ty; \
++	(to).twidth   = (from).twidth; \
++	(to).theight  = (from).theight; \
++	(to).theme    = compat_ptr((from).theme)
++
++#define vc_decor_to_compat(to, from) \
++	(to).bg_color = (from).bg_color; \
++	(to).state    = (from).state; \
++	(to).tx       = (from).tx; \
++	(to).ty       = (from).ty; \
++	(to).twidth   = (from).twidth; \
++	(to).theight  = (from).theight; \
++	(to).theme    = ptr_to_compat((from).theme)
++
++#endif /* CONFIG_COMPAT */
++#endif /* __KERNEL__ */
++
++#endif
+diff --git a/include/linux/console_struct.h b/include/linux/console_struct.h
+index 7f0c329085..98f5d60f80 100644
+--- a/include/linux/console_struct.h
++++ b/include/linux/console_struct.h
+@@ -19,6 +19,7 @@
+ struct vt_struct;
+ 
+ #define NPAR 16
++#include <linux/console_decor.h>
+ 
+ struct vc_data {
+ 	struct tty_port port;			/* Upper level data */
+@@ -107,6 +108,8 @@ struct vc_data {
+ 	unsigned long	vc_uni_pagedir;
+ 	unsigned long	*vc_uni_pagedir_loc;  /* [!] Location of uni_pagedir variable for this console */
+ 	bool vc_panic_force_write; /* when oops/panic this VC can accept forced output/blanking */
++
++	struct vc_decor vc_decor;
+ 	/* additional information is in vt_kern.h */
+ };
+ 
+diff --git a/include/linux/fb.h b/include/linux/fb.h
+index 73845ce3f4..cfe5e84278 100644
+--- a/include/linux/fb.h
++++ b/include/linux/fb.h
+@@ -11,6 +11,25 @@
+ 
+ #define FB_MAX			32	/* sufficient for now */
+ 
++struct fbcon_decor_iowrapper
++{
++	unsigned short vc;		/* Virtual console */
++	unsigned char origin;		/* Point of origin of the request */
++	void *data;
++};
++
++#ifdef __KERNEL__
++#ifdef CONFIG_COMPAT
++#include <linux/compat.h>
++struct fbcon_decor_iowrapper32
++{
++	unsigned short vc;		/* Virtual console */
++	unsigned char origin;		/* Point of origin of the request */
++	compat_uptr_t data;
++};
++#endif /* CONFIG_COMPAT */
++#endif /* __KERNEL__ */
++
+ /* ioctls
+    0x46 is 'F'								*/
+ #define FBIOGET_VSCREENINFO	0x4600
+@@ -39,6 +58,24 @@
+ #define FBIOPUT_MODEINFO        0x4617
+ #define FBIOGET_DISPINFO        0x4618
+ #define FBIO_WAITFORVSYNC	_IOW('F', 0x20, __u32)
++#define FBIOCONDECOR_SETCFG	_IOWR('F', 0x19, struct fbcon_decor_iowrapper)
++#define FBIOCONDECOR_GETCFG	_IOR('F', 0x1A, struct fbcon_decor_iowrapper)
++#define FBIOCONDECOR_SETSTATE	_IOWR('F', 0x1B, struct fbcon_decor_iowrapper)
++#define FBIOCONDECOR_GETSTATE	_IOR('F', 0x1C, struct fbcon_decor_iowrapper)
++#define FBIOCONDECOR_SETPIC 	_IOWR('F', 0x1D, struct fbcon_decor_iowrapper)
++#ifdef __KERNEL__
++#ifdef CONFIG_COMPAT
++#define FBIOCONDECOR_SETCFG32	_IOWR('F', 0x19, struct fbcon_decor_iowrapper32)
++#define FBIOCONDECOR_GETCFG32	_IOR('F', 0x1A, struct fbcon_decor_iowrapper32)
++#define FBIOCONDECOR_SETSTATE32	_IOWR('F', 0x1B, struct fbcon_decor_iowrapper32)
++#define FBIOCONDECOR_GETSTATE32	_IOR('F', 0x1C, struct fbcon_decor_iowrapper32)
++#define FBIOCONDECOR_SETPIC32	_IOWR('F', 0x1D, struct fbcon_decor_iowrapper32)
++#endif /* CONFIG_COMPAT */
++#endif /* __KERNEL__ */
++
++#define FBCON_DECOR_THEME_LEN		128	/* Maximum lenght of a theme name */
++#define FBCON_DECOR_IO_ORIG_KERNEL	0	/* Kernel ioctl origin */
++#define FBCON_DECOR_IO_ORIG_USER	1	/* User ioctl origin */
+ 
+ #define FB_TYPE_PACKED_PIXELS		0	/* Packed Pixels	*/
+ #define FB_TYPE_PLANES			1	/* Non interleaved planes */
+@@ -285,6 +322,28 @@ struct fb_cmap {
+ 	__u16 *transp;			/* transparency, can be NULL */
+ };
+ 
++#ifdef __KERNEL__
++#ifdef CONFIG_COMPAT
++struct fb_cmap32 {
++	__u32 start;
++	__u32 len;			/* Number of entries */
++	compat_uptr_t red;		/* Red values	*/
++	compat_uptr_t green;
++	compat_uptr_t blue;
++	compat_uptr_t transp;		/* transparency, can be NULL */
++};
++
++#define fb_cmap_from_compat(to, from) \
++	(to).start  = (from).start; \
++	(to).len    = (from).len; \
++	(to).red    = compat_ptr((from).red); \
++	(to).green  = compat_ptr((from).green); \
++	(to).blue   = compat_ptr((from).blue); \
++	(to).transp = compat_ptr((from).transp)
++
++#endif /* CONFIG_COMPAT */
++#endif /* __KERNEL__ */
++
+ struct fb_con2fbmap {
+ 	__u32 console;
+ 	__u32 framebuffer;
+@@ -366,6 +425,34 @@ struct fb_image {
+ 	struct fb_cmap cmap;	/* color map info */
+ };
+ 
++#ifdef __KERNEL__
++#ifdef CONFIG_COMPAT
++struct fb_image32 {
++	__u32 dx;			/* Where to place image */
++	__u32 dy;
++	__u32 width;			/* Size of image */
++	__u32 height;
++	__u32 fg_color;			/* Only used when a mono bitmap */
++	__u32 bg_color;
++	__u8  depth;			/* Depth of the image */
++	const compat_uptr_t data;	/* Pointer to image data */
++	struct fb_cmap32 cmap;		/* color map info */
++};
++
++#define fb_image_from_compat(to, from) \
++	(to).dx       = (from).dx; \
++	(to).dy       = (from).dy; \
++	(to).width    = (from).width; \
++	(to).height   = (from).height; \
++	(to).fg_color = (from).fg_color; \
++	(to).bg_color = (from).bg_color; \
++	(to).depth    = (from).depth; \
++	(to).data     = compat_ptr((from).data); \
++	fb_cmap_from_compat((to).cmap, (from).cmap)
++
++#endif /* CONFIG_COMPAT */
++#endif /* __KERNEL__ */
++
+ /*
+  * hardware cursor control
+  */
+@@ -876,6 +963,9 @@ struct fb_info {
+ #define FBINFO_STATE_SUSPENDED	1
+ 	u32 state;			/* Hardware state i.e suspend */
+ 	void *fbcon_par;                /* fbcon use-only private area */
++
++	struct fb_image bgdecor;
++
+ 	/* From here on everything is device dependent */
+ 	void *par;
+ 	/* we need the PCI or similar aperture base/size not
+diff --git a/include/linux/i8042.h b/include/linux/i8042.h
+index 801c307f6f..a986ff5889 100644
+--- a/include/linux/i8042.h
++++ b/include/linux/i8042.h
+@@ -38,6 +38,7 @@ struct serio;
+ void i8042_lock_chip(void);
+ void i8042_unlock_chip(void);
+ int i8042_command(unsigned char *param, int command);
++bool i8042_check_port_owner(const struct serio *);
+ int i8042_install_filter(bool (*filter)(unsigned char data, unsigned char str,
+ 					struct serio *serio));
+ int i8042_remove_filter(bool (*filter)(unsigned char data, unsigned char str,
+@@ -58,6 +59,11 @@ static inline int i8042_command(unsigned char *param, int command)
+ 	return -ENODEV;
+ }
+ 
++static inline bool i8042_check_port_owner(const struct serio *serio)
++{
++	return false;
++}
++
+ static inline int i8042_install_filter(bool (*filter)(unsigned char data, unsigned char str,
+ 					struct serio *serio))
+ {
+diff --git a/include/linux/msi.h b/include/linux/msi.h
+index 05acced439..ce93a34133 100644
+--- a/include/linux/msi.h
++++ b/include/linux/msi.h
+@@ -1,6 +1,7 @@
+ #ifndef LINUX_MSI_H
+ #define LINUX_MSI_H
+ 
++#include <linux/kobject.h>
+ #include <linux/list.h>
+ 
+ struct msi_msg {
+@@ -44,6 +45,8 @@ struct msi_desc {
+ 
+ 	/* Last set MSI message */
+ 	struct msi_msg msg;
++
++	struct kobject kobj;
+ };
+ 
+ /*
+diff --git a/include/linux/pci.h b/include/linux/pci.h
+index dd8bb80777..594bceb6e4 100644
+--- a/include/linux/pci.h
++++ b/include/linux/pci.h
+@@ -339,6 +339,7 @@ struct pci_dev {
+ 	struct bin_attribute *res_attr_wc[DEVICE_COUNT_RESOURCE]; /* sysfs file for WC mapping of resources */
+ #ifdef CONFIG_PCI_MSI
+ 	struct list_head msi_list;
++	struct kset *msi_kset;
+ #endif
+ 	struct pci_vpd *vpd;
+ #ifdef CONFIG_PCI_ATS
+diff --git a/include/linux/xattr.h b/include/linux/xattr.h
+index e5d1220315..bfdcde1a9f 100644
+--- a/include/linux/xattr.h
++++ b/include/linux/xattr.h
+@@ -98,4 +98,9 @@ int vfs_xattr_cmp(struct dentry *dentry, const char *xattr_name,
+ 		  const char *value, size_t size, gfp_t flags);
+ #endif  /*  __KERNEL__  */
+ 
++/* User namespace */
++#define XATTR_PAX_PREFIX XATTR_USER_PREFIX "pax."
++#define XATTR_PAX_FLAGS_SUFFIX "flags"
++#define XATTR_NAME_PAX_FLAGS XATTR_PAX_PREFIX XATTR_PAX_FLAGS_SUFFIX
++
+ #endif	/* _LINUX_XATTR_H */
+diff --git a/kernel/sysctl.c b/kernel/sysctl.c
+index 59c254de23..4766c1b539 100644
+--- a/kernel/sysctl.c
++++ b/kernel/sysctl.c
+@@ -137,6 +137,10 @@ static int min_percpu_pagelist_fract = 8;
+ static int ngroups_max = NGROUPS_MAX;
+ static const int cap_last_cap = CAP_LAST_CAP;
+ 
++#ifdef CONFIG_FB_CON_DECOR
++extern char fbcon_decor_path[];
++#endif
++
+ #ifdef CONFIG_INOTIFY_USER
+ #include <linux/inotify.h>
+ #endif
+@@ -248,6 +252,15 @@ static struct ctl_table root_table[] = {
+ 		.mode		= 0555,
+ 		.child		= dev_table,
+ 	},
++#ifdef CONFIG_FB_CON_DECOR
++	{
++		.procname	= "fbcondecor",
++		.data		= &fbcon_decor_path,
++		.maxlen		= KMOD_PATH_LEN,
++		.mode		= 0644,
++		.proc_handler	= &proc_dostring,
++	},
++#endif
+ 	{ }
+ };
+ 
+@@ -1040,7 +1053,7 @@ static struct ctl_table vm_table[] = {
+ 		.proc_handler	= proc_dointvec,
+ 	},
+ 	{
+-		.procname	= "page-cluster", 
++		.procname	= "page-cluster",
+ 		.data		= &page_cluster,
+ 		.maxlen		= sizeof(int),
+ 		.mode		= 0644,
+@@ -1486,7 +1499,7 @@ static struct ctl_table fs_table[] = {
+ 		.mode		= 0555,
+ 		.child		= inotify_table,
+ 	},
+-#endif	
++#endif
+ #ifdef CONFIG_EPOLL
+ 	{
+ 		.procname	= "epoll",
+@@ -1856,7 +1869,7 @@ static void try_attach(struct ctl_table_header *p, struct ctl_table_header *q)
+  * cover common cases -
+  *
+  * proc_dostring(), proc_dointvec(), proc_dointvec_jiffies(),
+- * proc_dointvec_userhz_jiffies(), proc_dointvec_minmax(), 
++ * proc_dointvec_userhz_jiffies(), proc_dointvec_minmax(),
+  * proc_doulongvec_ms_jiffies_minmax(), proc_doulongvec_minmax()
+  *
+  * It is the handler's job to read the input buffer from user memory
+@@ -2296,12 +2309,12 @@ static int __do_proc_dointvec(void *tbl_data, struct ctl_table *table,
+ 	unsigned long page = 0;
+ 	size_t left;
+ 	char *kbuf;
+-	
++
+ 	if (!tbl_data || !table->maxlen || !*lenp || (*ppos && !write)) {
+ 		*lenp = 0;
+ 		return 0;
+ 	}
+-	
++
+ 	i = (int *) tbl_data;
+ 	vleft = table->maxlen / sizeof(*i);
+ 	left = *lenp;
+@@ -2390,7 +2403,7 @@ static int do_proc_dointvec(struct ctl_table *table, int write,
+  * @ppos: file position
+  *
+  * Reads/writes up to table->maxlen/sizeof(unsigned int) integer
+- * values from/to the user buffer, treated as an ASCII string. 
++ * values from/to the user buffer, treated as an ASCII string.
+  *
+  * Returns 0 on success.
+  */
+@@ -2718,7 +2731,7 @@ static int do_proc_dointvec_ms_jiffies_conv(bool *negp, unsigned long *lvalp,
+  * @ppos: file position
+  *
+  * Reads/writes up to table->maxlen/sizeof(unsigned int) integer
+- * values from/to the user buffer, treated as an ASCII string. 
++ * values from/to the user buffer, treated as an ASCII string.
+  * The values read are assumed to be in seconds, and are converted into
+  * jiffies.
+  *
+@@ -2740,8 +2753,8 @@ int proc_dointvec_jiffies(struct ctl_table *table, int write,
+  * @ppos: pointer to the file position
+  *
+  * Reads/writes up to table->maxlen/sizeof(unsigned int) integer
+- * values from/to the user buffer, treated as an ASCII string. 
+- * The values read are assumed to be in 1/USER_HZ seconds, and 
++ * values from/to the user buffer, treated as an ASCII string.
++ * The values read are assumed to be in 1/USER_HZ seconds, and
+  * are converted into jiffies.
+  *
+  * Returns 0 on success.
+@@ -2763,8 +2776,8 @@ int proc_dointvec_userhz_jiffies(struct ctl_table *table, int write,
+  * @ppos: the current position in the file
+  *
+  * Reads/writes up to table->maxlen/sizeof(unsigned int) integer
+- * values from/to the user buffer, treated as an ASCII string. 
+- * The values read are assumed to be in 1/1000 seconds, and 
++ * values from/to the user buffer, treated as an ASCII string.
++ * The values read are assumed to be in 1/1000 seconds, and
+  * are converted into jiffies.
+  *
+  * Returns 0 on success.
+diff --git a/mm/shmem.c b/mm/shmem.c
+index 0a9d8919dd..66ed11bd5c 100644
+--- a/mm/shmem.c
++++ b/mm/shmem.c
+@@ -1926,6 +1926,7 @@ static const struct xattr_handler *shmem_xattr_handlers[] = {
+ static int shmem_xattr_validate(const char *name)
+ {
+ 	struct { const char *prefix; size_t len; } arr[] = {
++		{ XATTR_USER_PREFIX, XATTR_USER_PREFIX_LEN},
+ 		{ XATTR_SECURITY_PREFIX, XATTR_SECURITY_PREFIX_LEN },
+ 		{ XATTR_TRUSTED_PREFIX, XATTR_TRUSTED_PREFIX_LEN }
+ 	};
+@@ -1979,6 +1980,13 @@ static int shmem_setxattr(struct dentry *dentry, const char *name,
+ 	if (err)
+ 		return err;
+ 
++	if (!strncmp(name, XATTR_USER_PREFIX, XATTR_USER_PREFIX_LEN)) {
++		if (strcmp(name, XATTR_NAME_PAX_FLAGS))
++			return -EOPNOTSUPP;
++		if (size > 8)
++			return -EINVAL;
++	}
++
+ 	if (size == 0)
+ 		value = "";  /* empty EA, do not remove */
+ 
+diff --git a/net/key/af_key.c b/net/key/af_key.c
+index e588b17119..62099b1cd7 100644
+--- a/net/key/af_key.c
++++ b/net/key/af_key.c
+@@ -1740,6 +1740,7 @@ static int key_notify_sa_flush(const struct km_event *c)
+ 	hdr->sadb_msg_pid = c->pid;
+ 	hdr->sadb_msg_version = PF_KEY_V2;
+ 	hdr->sadb_msg_errno = (uint8_t) 0;
++	hdr->sadb_msg_satype = SADB_SATYPE_UNSPEC;
+ 	hdr->sadb_msg_len = (sizeof(struct sadb_msg) / sizeof(uint64_t));
+ 	hdr->sadb_msg_reserved = 0;
+ 
