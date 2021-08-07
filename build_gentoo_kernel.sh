@@ -4,6 +4,7 @@ for ver in $@
 do
   gcc -v && ld -v
   cd /usr/src/linux-$ver-gentoo && \
+  make clean && \
   make -j`cat /proc/cpuinfo | grep process | wc -l` && \
   rm -rfv /lib/modules/*$ver* && \
   make modules_install && \

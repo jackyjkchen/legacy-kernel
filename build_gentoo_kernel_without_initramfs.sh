@@ -2,21 +2,21 @@
 
 for ver in $@
 do
-  if [[ ${ver} > "2.6.27" ]]
+  if [ ${ver} > "2.6.27" ]
   then
     arch=x86_64
     compress=xz
     compress_args="-z9ev"
     gentoo="-gentoo"
     make_deps=true
-  elif [[ ${ver} > "2.6.0" ]]
+  elif [ ${ver} > "2.6.0" ]
   then
     arch=i686pae
     compress=bzip2
     compress_args="-z9v"
     gentoo="-gentoo"
     make_deps=true
-  elif [[ ${ver} > "2.4.0" ]]
+  elif [ ${ver} > "2.4.0" ]
   then
     arch=i686pae
     compress=bzip2
@@ -31,6 +31,7 @@ do
   sleep 1
   gcc -v && ld -v
   cd /usr/src/linux-${ver}${gentoo} && \
+  make clean && \
   ${make_deps} && \
   make -j`cat /proc/cpuinfo | grep process | wc -l` && \
   rm -rfv /lib/modules/*${ver}* && \
