@@ -23,6 +23,12 @@ do
     compress_args="-z9v"
     gentoo=
     make_deps="make dep"
+  else
+    arch=i686
+    compress=bzip2
+    compress_args="-z9v"
+    gentoo=
+    make_deps="make dep"
   fi
   echo arch=${arch}
   echo compress=${compress}
@@ -33,7 +39,7 @@ do
   cd /usr/src/linux-${ver}${gentoo} && \
   make clean && \
   ${make_deps} && \
-  make -j`cat /proc/cpuinfo | grep process | wc -l` && \
+  make -j`cat /proc/cpuinfo | grep process | wc -l` all modules && \
   rm -rfv /lib/modules/*${ver}* && \
   make modules_install && \
   rm -rfv /boot/*${ver}* && \
