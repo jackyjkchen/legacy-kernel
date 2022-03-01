@@ -9,6 +9,19 @@ index c13f48d658..dd776157a8 100644
 +source "distro/Kconfig"
 +
  source "arch/$SRCARCH/Kconfig"
+diff --git a/Makefile b/Makefile
+index 2a03be868d..e1470d4ac4 100644
+--- a/Makefile
++++ b/Makefile
+@@ -1,7 +1,7 @@
+ VERSION = 4
+ PATCHLEVEL = 4
+ SUBLEVEL = 302
+-EXTRAVERSION =
++EXTRAVERSION = -gentoo
+ NAME = Blurry Fish Butt
+ 
+ # *DOCUMENTATION*
 diff --git a/distro/Kconfig b/distro/Kconfig
 new file mode 100644
 index 0000000000..80f5d7e0ae
