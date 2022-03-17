@@ -16,6 +16,7 @@ IMAGE_DICT=(
   ["ppc"]="rootfs-gentoo-allgcc-generic-ppc"
   ["alpha"]="rootfs-gentoo-allgcc-generic-alpha"
   ["riscv64"]="rootfs-gentoo-allgcc-multilib-riscv64"
+  ["sparc64"]="rootfs-gentoo-allgcc-multilib-sparc64"
   ["s390x"]="rootfs-gentoo-allgcc-ibm-s390x"
   ["sh4"]="rootfs-gentoo-allgcc-generic-sh4"
   ["m68k"]="rootfs-gentoo-allgcc-generic-m68k"
@@ -34,4 +35,4 @@ if [ $dest == "" ]; then
 fi
 tar --numeric-owner --xattrs-include=='*.*' -pcf $dest/$image.tar ./
 popd > /dev/null
-rm -v $name.tar.xz
+rm -v $image.tar.xz
