@@ -12,7 +12,7 @@ do
   make install && \
   genkernel --install initramfs --kerneldir=/usr/src/linux-$ver-gentoo && \
   cd / && rm -rfv /usr/src/kernel-$ver-gentoo-cjk-x86_64.tar.xz && \
-  tar -pcvf /usr/src/kernel-$ver-gentoo-cjk-x86_64.tar boot/config*$ver* boot/System*$ver* boot/vmlinuz*$ver* lib/modules/$ver-gentoo*-cjk-x86_64 && \
+  tar -pcvf /usr/src/kernel-$ver-gentoo-cjk-x86_64.tar boot/config*$ver* boot/System*$ver* boot/vmlinuz*$ver* boot/initramfs*$ver* lib/modules/$ver-gentoo*-cjk-x86_64 && \
   xz -z9ev /usr/src/kernel-$ver-gentoo-cjk-x86_64.tar || (echo Failed in kernel: $ver && exit -1)
 done
 
