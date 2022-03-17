@@ -30,7 +30,7 @@ image=${IMAGE_DICT[$dir]}
 find $dir | grep '\.pyc\|\.pyo\|\.keep' | xargs rm -v
 pushd $dir > /dev/null
 dest=$2
-if [ $dest == "" ]; then
+if [[ $dest == "" ]]; then
     dest=../
 fi
 tar --numeric-owner --xattrs-include=='*.*' -pcf $dest/$image.tar ./
