@@ -28,11 +28,9 @@ IMAGE_DICT=(
 dir=$1
 image=${IMAGE_DICT[$dir]}
 find $dir | grep '\.pyc\|\.pyo\|\.keep' | xargs rm -v
-pushd $dir > /dev/null
 dest=$2
 if [[ $dest == "" ]]; then
-    dest=../
+    dest=.
 fi
-tar --numeric-owner --xattrs-include=='*.*' -pcf $dest/$image.tar ./
-popd > /dev/null
+tar --numeric-owner --xattrs-include=='*.*' -pcf $dest/$image.tar -C $dir ./
 rm -v $image.tar.xz
