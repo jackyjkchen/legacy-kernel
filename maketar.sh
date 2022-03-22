@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 declare -A IMAGE_DICT
 
