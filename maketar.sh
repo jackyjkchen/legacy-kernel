@@ -32,5 +32,5 @@ dest=$2
 if [[ $dest == "" ]]; then
     dest=.
 fi
-tar --numeric-owner --xattrs-include=='*.*' -pcf $dest/$image.tar -C $dir ./
+tar --numeric-owner --xattrs -pcf $dest/$image.tar -C $dir ./
 rm -v $image.tar.xz
