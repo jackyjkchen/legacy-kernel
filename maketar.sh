@@ -27,7 +27,7 @@ IMAGE_DICT=(
 
 dir=$1
 image=${IMAGE_DICT[$dir]}
-find $dir | grep '\.pyc\|\.pyo\|\.keep' | xargs rm -v
+find $dir | grep '\.pyc\|\.pyo\|\.keep\|\.bash_history' | xargs rm -v
 dest=$2
 if [[ $dest == "" ]]; then
     dest=.
