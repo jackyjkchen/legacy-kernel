@@ -1,0 +1,2 @@
+#!/bin/sh
+gcc-4.5.4 -B$(dirname ${0}) "$@"

@@ -39,14 +39,13 @@ do
   cd /usr/src/linux-${ver}${gentoo} && \
   make clean && \
   ${make_deps} && \
-  make -j`cat /proc/cpuinfo | grep process | wc -l` all modules && \
-  rm -rfv /lib/modules/*${ver}* && \
-  make modules_install && \
-  rm -rfv /boot/*${ver}* && \
-  make install && \
-  cd / && rm -rfv /usr/src/kernel-${ver}${gentoo}-cjk-${arch}.tar.xz && \
-  tar -pcvf /usr/src/kernel-${ver}${gentoo}-cjk-${arch}.tar boot/config*${ver}* boot/System*${ver}* boot/vmlinuz*${ver}* lib/modules/${ver}${gentoo}-cjk-${arch} && \
-  ${compress} ${compress_args} /usr/src/kernel-${ver}${gentoo}-cjk-${arch}.tar || (echo Failed in kernel: ${ver} && exit -1)
+  make CROSS_COMPILE=${CROSS_COMPILE} HOSTCC=${HOSTCC-gcc} -j`cat /proc/cpuinfo | grep process | wc -l` && \
+  mkdir -p target_dir/{boot,lib} && \
+  make CROSS_COMPILE=${CROSS_COMPILE} HOSTCC=${HOSTCC-gcc} INSTALL_MOD_PATH=./target_dir modules_install && \
+  make CROSS_COMPILE=${CROSS_COMPILE} HOSTCC=${HOSTCC-gcc} INSTALL_PATH=./target_dir/boot install && \
+  rm -rfv ../kernel-${ver}${gentoo}-cjk-${arch}.tar.xz && \
+  tar -pcf ../kernel-${ver}${gentoo}-cjk-${arch}.tar -C ./target_dir ./ && \
+  ${compress} ${compress_args} kernel-${ver}${gentoo}-cjk-${arch}.tar || (echo Failed in kernel: ${ver} && exit -1)
 done
 
 echo Complete built $@.
