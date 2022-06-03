@@ -1,7 +1,7 @@
 #!/bin/sh
 
 case ${0} in
-  *-loogson3.sh)
+  *_loongson3.sh)
     arch="loongson3"
     ;;
   *)

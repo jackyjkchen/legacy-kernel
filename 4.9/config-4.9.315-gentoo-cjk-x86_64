@@ -1,6 +1,6 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/x86 4.9.309-gentoo Kernel Configuration
+# Linux/x86 4.9.315-gentoo Kernel Configuration
 #
 
 #
@@ -1458,6 +1458,7 @@ CONFIG_PNPACPI=y
 CONFIG_BLK_DEV=y
 # CONFIG_BLK_DEV_NULL_BLK is not set
 CONFIG_BLK_DEV_FD=m
+# CONFIG_BLK_DEV_FD_RAWCMD is not set
 # CONFIG_PARIDE is not set
 # CONFIG_BLK_DEV_PCIESSD_MTIP32XX is not set
 CONFIG_ZRAM=m
@@ -2122,7 +2123,6 @@ CONFIG_VMXNET3=m
 # CONFIG_FUJITSU_ES is not set
 CONFIG_HYPERV_NET=m
 # CONFIG_ISDN is not set
-# CONFIG_NVM is not set
 
 #
 # Input device support
