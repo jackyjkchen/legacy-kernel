@@ -27,11 +27,15 @@ IMAGE_DICT=(
 
 dir=$1
 image=${IMAGE_DICT[$dir]}
-find $dir | grep '\.pyc\|\.pyo\|\.keep\|\.bash_history' | xargs rm -v
+find $dir/ | grep '\.pyc\|\.pyo\|\.keep\|\.bash_history' | xargs rm -v
 rm -v $dir/usr/local/bin/qemu-*
 dest=$2
 if [[ $dest == "" ]]; then
     dest=.
 fi
-tar --numeric-owner --xattrs -pcf $dest/$image.tar -C $dir ./
+dlist=
+cd $dir && dlist=$(echo *) && cd ..
+rm -v $image.tar
+tar --numeric-owner --xattrs -pcf $dest/$image.tar -C $dir $dlist
 rm -v $image.tar.xz
+exit 0
