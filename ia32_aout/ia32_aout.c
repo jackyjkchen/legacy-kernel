@@ -7,35 +7,16 @@
 
 #include <linux/module.h>
 
-#include <linux/time.h>
-#include <linux/kernel.h>
-#include <linux/mm.h>
 #include <linux/mman.h>
 #include <linux/a.out.h>
-#include <linux/errno.h>
-#include <linux/signal.h>
-#include <linux/string.h>
-#include <linux/fs.h>
-#include <linux/file.h>
-#include <linux/stat.h>
-#include <linux/fcntl.h>
-#include <linux/ptrace.h>
-#include <linux/user.h>
 #include <linux/binfmts.h>
-#include <linux/personality.h>
-#include <linux/init.h>
-#include <linux/jiffies.h>
 #include <linux/perf_event.h>
-#include <linux/sched/task_stack.h>
 #include <linux/version.h>
-
-#include <linux/uaccess.h>
-#include <asm/pgalloc.h>
-#include <asm/cacheflush.h>
-#include <asm/user32.h>
 #include <asm/ia32.h>
-
-#undef WARN_OLD
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 10, 0)
+#include <linux/uaccess.h>
+#include <asm/cacheflush.h>
+#endif
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 0, 0)
 #define lk_access_ok(type, addr, size) access_ok((addr),(size))
@@ -194,25 +175,6 @@ static int load_aout_binary(struct linux_binprm *bprm)
 		if ((signed long)error < 0)
 			return error;
 	} else {
-#ifdef WARN_OLD
-		static unsigned long error_time, error_time2;
-		if ((ex.a_text & 0xfff || ex.a_data & 0xfff) &&
-		    (N_MAGIC(ex) != NMAGIC) &&
-				time_after(jiffies, error_time2 + 5*HZ)) {
-			printk(KERN_NOTICE "executable not page aligned\n");
-			error_time2 = jiffies;
-		}
-
-		if ((fd_offset & ~PAGE_MASK) != 0 &&
-			    time_after(jiffies, error_time + 5*HZ)) {
-			printk(KERN_WARNING
-			       "fd_offset is not page aligned. Please convert "
-			       "program: %pD\n",
-			       bprm->file);
-			error_time = jiffies;
-		}
-#endif
-
 		if (!bprm->file->f_op->mmap || (fd_offset & ~PAGE_MASK) != 0) {
 			error = vm_brk(N_TXTADDR(ex), ex.a_text+ex.a_data);
 			if (error)
@@ -299,16 +261,6 @@ static int load_aout_library(struct file *file)
 	start_addr =  ex.a_entry & 0xfffff000;
 
 	if ((N_TXTOFF(ex) & ~PAGE_MASK) != 0) {
-#ifdef WARN_OLD
-		static unsigned long error_time;
-		if (time_after(jiffies, error_time + 5*HZ)) {
-			printk(KERN_WARNING
-			       "N_TXTOFF is not page aligned. Please convert "
-			       "library: %pD\n",
-			       file);
-			error_time = jiffies;
-		}
-#endif
 		retval = vm_brk(start_addr, ex.a_text + ex.a_data + ex.a_bss);
 		if (retval)
 			goto out;
