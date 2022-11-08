@@ -5,23 +5,23 @@
  *  Hacked together by Andi Kleen
  */
 
-#include <linux/module.h>
-
-#include <linux/mman.h>
-#include <linux/a.out.h>
-#include <linux/binfmts.h>
-#include <linux/perf_event.h>
 #include <linux/version.h>
-#include <asm/ia32.h>
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 10, 0)
-#include <linux/uaccess.h>
-#include <asm/cacheflush.h>
-#endif
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 0, 0)
 #define lk_access_ok(type, addr, size) access_ok((addr),(size))
 #else
-#define lk_access_ok(type, addr, size) access_ok((type),(addr),(size))
+#error "Please use ia32_aout module in kernel tree when version < 5.0."
+#endif
+
+#include <linux/module.h>
+#include <linux/mman.h>
+#include <linux/a.out.h>
+#include <linux/binfmts.h>
+#include <linux/perf_event.h>
+#include <asm/ia32.h>
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 10, 0)
+#include <linux/uaccess.h>
+#include <asm/cacheflush.h>
 #endif
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 10, 0)
