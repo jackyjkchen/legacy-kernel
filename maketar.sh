@@ -18,6 +18,7 @@ IMAGE_DICT=(
   ["riscv64"]="rootfs-gentoo-allgcc-multilib-riscv64"
   ["sparc64"]="rootfs-gentoo-allgcc-multilib-sparc64"
   ["s390x"]="rootfs-gentoo-allgcc-ibm-s390x"
+  ["hppa1.1"]="rootfs-gentoo-allgcc-generic-hppa1.1"
   ["sh4"]="rootfs-gentoo-allgcc-generic-sh4"
   ["m68k"]="rootfs-gentoo-allgcc-generic-m68k"
   ["debian"]="rootfs-debian-testing-x86_64"
@@ -27,7 +28,7 @@ IMAGE_DICT=(
 
 dir=$1
 image=${IMAGE_DICT[$dir]}
-find $dir/ | grep '\.pyc\|\.pyo\|\.keep\|\.bash_history' | xargs rm -v
+find $dir/ | grep '\.pyc\|\.pyo\|\.keep\|\.bash_history\|\.nfs0' | xargs rm -v
 rm -v $dir/usr/local/bin/qemu-*
 dest=$2
 if [[ $dest == "" ]]; then
