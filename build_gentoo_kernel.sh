@@ -18,6 +18,8 @@ do
   mkdir -p target_dir/{boot,lib} && \
   make CROSS_COMPILE=${CROSS_COMPILE} HOSTCC=${HOSTCC-gcc} INSTALL_MOD_PATH=./target_dir modules_install && \
   make CROSS_COMPILE=${CROSS_COMPILE} HOSTCC=${HOSTCC-gcc} INSTALL_PATH=./target_dir/boot install && \
+  genkernel initramfs --kernel-modules-prefix=./target_dir --kerneldir=/usr/src/linux-$ver-gentoo && \
+  mv -v /boot/initramfs-$ver-gentoo*-cjk-${arch}.img ./target_dir/boot/ && \
   rm -rfv  ../kernel-$ver-gentoo-cjk-${arch}.tar.xz && \
   tar -pcf ../kernel-$ver-gentoo-cjk-${arch}.tar -C ./target_dir ./ && \
   xz -z9ev ../kernel-$ver-gentoo-cjk-${arch}.tar || (echo Failed in kernel: $ver && exit -1)
