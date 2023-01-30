@@ -31,6 +31,8 @@ image=${IMAGE_DICT[$dir]}
 find $dir/ | grep '\.pyc\|\.pyo\|\.keep\|\.bash_history\|\.nfs0' | xargs rm -v
 setcap cap_net_raw=ep $dir/bin/arping
 setcap cap_net_raw=ep $dir/bin/ping
+setcap cap_net_raw=ep $dir/usr/bin/arping
+setcap cap_net_raw=ep $dir/usr/bin/ping
 setcap cap_dac_override=ep $dir/sbin/unix_chkpwd
 rm -v $dir/usr/local/bin/qemu-*
 dest=$2

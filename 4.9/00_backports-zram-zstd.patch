@@ -1658,10 +1658,10 @@ index 00000000..249575e2
 +
 +#endif  /* ZSTD_H */
 diff --git a/lib/Kconfig b/lib/Kconfig
-index 260a80e3..8deab4f7 100644
+index 60075970..44c9cd7d 100644
 --- a/lib/Kconfig
 +++ b/lib/Kconfig
-@@ -185,6 +185,9 @@ config CRC8
+@@ -184,6 +184,9 @@ config CRC8
  	  when they need to do cyclic redundancy check according CRC8
  	  algorithm. Module will be called crc8.
  
@@ -1671,7 +1671,7 @@ index 260a80e3..8deab4f7 100644
  config AUDIT_GENERIC
  	bool
  	depends on AUDIT && !AUDIT_ARCH
-@@ -239,6 +242,14 @@ config LZ4HC_COMPRESS
+@@ -238,6 +241,14 @@ config LZ4HC_COMPRESS
  config LZ4_DECOMPRESS
  	tristate
  
@@ -1687,7 +1687,7 @@ index 260a80e3..8deab4f7 100644
  
  #
 diff --git a/lib/Makefile b/lib/Makefile
-index 7a55c520..869198e2 100644
+index 775d6ef6..1deb5a4d 100644
 --- a/lib/Makefile
 +++ b/lib/Makefile
 @@ -95,6 +95,7 @@ obj-$(CONFIG_CRC32)	+= crc32.o

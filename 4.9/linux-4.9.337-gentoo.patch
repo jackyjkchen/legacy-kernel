@@ -1,0 +1,608 @@
+diff --git a/Kconfig b/Kconfig
+index c13f48d..dd77615 100644
+--- a/Kconfig
++++ b/Kconfig
+@@ -8,4 +8,6 @@ config SRCARCH
+ 	string
+ 	option env="SRCARCH"
+ 
++source "distro/Kconfig"
++
+ source "arch/$SRCARCH/Kconfig"
+diff --git a/Makefile b/Makefile
+index 7d01532..a39f48f 100644
+--- a/Makefile
++++ b/Makefile
+@@ -1,7 +1,7 @@
+ VERSION = 4
+ PATCHLEVEL = 9
+ SUBLEVEL = 337
+-EXTRAVERSION =
++EXTRAVERSION = -gentoo
+ NAME = Roaring Lionus
+ 
+ # *DOCUMENTATION*
+diff --git a/arch/alpha/Kconfig b/arch/alpha/Kconfig
+index 0e49d39..ba6d5af 100644
+--- a/arch/alpha/Kconfig
++++ b/arch/alpha/Kconfig
+@@ -696,6 +696,33 @@ config HZ
+ 	default 1200 if HZ_1200
+ 	default 1024
+ 
++config ALPHA_UAC_SYSCTL
++       bool "Configure UAC policy via sysctl"
++       depends on SYSCTL
++       default y
++       ---help---
++         Configuring the UAC (unaligned access control) policy on a Linux
++         system usually involves setting a compile time define. If you say
++         Y here, you will be able to modify the UAC policy at runtime using
++         the /proc interface.
++
++         The UAC policy defines the action Linux should take when an
++         unaligned memory access occurs. The action can include printing a
++         warning message (NOPRINT), sending a signal to the offending
++         program to help developers debug their applications (SIGBUS), or
++         disabling the transparent fixing (NOFIX).
++
++         The sysctls will be initialized to the compile-time defined UAC
++         policy. You can change these manually, or with the sysctl(8)
++         userspace utility.
++
++         To disable the warning messages at runtime, you would use
++
++           echo 1 > /proc/sys/kernel/uac/noprint
++
++         This is pretty harmless. Say Y if you're not sure.
++
++
+ source "drivers/pci/Kconfig"
+ source "drivers/eisa/Kconfig"
+ 
+diff --git a/arch/alpha/kernel/traps.c b/arch/alpha/kernel/traps.c
+index 32ba92c..0b367ca 100644
+--- a/arch/alpha/kernel/traps.c
++++ b/arch/alpha/kernel/traps.c
+@@ -103,6 +103,49 @@ static char * ireg_name[] = {"v0", "t0", "t1", "t2", "t3", "t4", "t5", "t6",
+ 			   "t10", "t11", "ra", "pv", "at", "gp", "sp", "zero"};
+ #endif
+ 
++#ifdef CONFIG_ALPHA_UAC_SYSCTL
++
++#include <linux/sysctl.h>
++
++static int enabled_noprint = 0;
++static int enabled_sigbus = 0;
++static int enabled_nofix = 0;
++
++struct ctl_table uac_table[] = {
++       {
++               .procname       = "noprint",
++               .data           = &enabled_noprint,
++               .maxlen         = sizeof (int),
++               .mode           = 0644,
++               .proc_handler = &proc_dointvec,
++       },
++       {
++               .procname       = "sigbus",
++               .data           = &enabled_sigbus,
++               .maxlen         = sizeof (int),
++               .mode           = 0644,
++               .proc_handler = &proc_dointvec,
++       },
++       {
++               .procname       = "nofix",
++               .data           = &enabled_nofix,
++               .maxlen         = sizeof (int),
++               .mode           = 0644,
++               .proc_handler = &proc_dointvec,
++       },
++       { }
++};
++
++static int __init init_uac_sysctl(void)
++{
++   /* Initialize sysctls with the #defined UAC policy */
++   enabled_noprint = (test_thread_flag (TS_UAC_NOPRINT)) ? 1 : 0;
++   enabled_sigbus = (test_thread_flag (TS_UAC_SIGBUS)) ? 1 : 0;
++   enabled_nofix = (test_thread_flag (TS_UAC_NOFIX)) ? 1 : 0;
++   return 0;
++}
++#endif
++
+ static void
+ dik_show_code(unsigned int *pc)
+ {
+@@ -790,7 +833,12 @@ do_entUnaUser(void __user * va, unsigned long opcode,
+ 	/* Check the UAC bits to decide what the user wants us to do
+ 	   with the unaliged access.  */
+ 
++#ifndef CONFIG_ALPHA_UAC_SYSCTL
+ 	if (!(current_thread_info()->status & TS_UAC_NOPRINT)) {
++#else  /* CONFIG_ALPHA_UAC_SYSCTL */
++	if (!(current_thread_info()->status & TS_UAC_NOPRINT) &&
++	    !(enabled_noprint)) {
++#endif /* CONFIG_ALPHA_UAC_SYSCTL */
+ 		if (__ratelimit(&ratelimit)) {
+ 			printk("%s(%d): unaligned trap at %016lx: %p %lx %ld\n",
+ 			       current->comm, task_pid_nr(current),
+@@ -1095,3 +1143,6 @@ trap_init(void)
+ 	wrent(entSys, 5);
+ 	wrent(entDbg, 6);
+ }
++#ifdef CONFIG_ALPHA_UAC_SYSCTL
++       __initcall(init_uac_sysctl);
++#endif
+diff --git a/arch/ia64/include/asm/sections.h b/arch/ia64/include/asm/sections.h
+index 2ab2003..7f69d1d 100644
+--- a/arch/ia64/include/asm/sections.h
++++ b/arch/ia64/include/asm/sections.h
+@@ -23,7 +23,6 @@ extern char __start_gate_mckinley_e9_patchlist[], __end_gate_mckinley_e9_patchli
+ extern char __start_gate_vtop_patchlist[], __end_gate_vtop_patchlist[];
+ extern char __start_gate_fsyscall_patchlist[], __end_gate_fsyscall_patchlist[];
+ extern char __start_gate_brl_fsys_bubble_down_patchlist[], __end_gate_brl_fsys_bubble_down_patchlist[];
+-extern char __start_unwind[], __end_unwind[];
+ extern char __start_ivt_text[], __end_ivt_text[];
+ 
+ #undef dereference_function_descriptor
+diff --git a/arch/ia64/kernel/unwind.c b/arch/ia64/kernel/unwind.c
+index 8f66195..e3c4594 100644
+--- a/arch/ia64/kernel/unwind.c
++++ b/arch/ia64/kernel/unwind.c
+@@ -2242,7 +2242,20 @@ __initcall(create_gate_table);
+ void __init
+ unw_init (void)
+ {
+-	extern char __gp[];
++	#define __ia64_hidden __attribute__((visibility("hidden")))
++	/*
++	 * We use hidden symbols to generate more efficient code using
++	 * gp-relative addressing.
++	 */
++	extern char __gp[] __ia64_hidden;
++	/*
++	 * Unwind tables need to have proper alignment as init_unwind_table()
++	 * uses negative offsets against '__end_unwind'.
++	 * See https://gcc.gnu.org/PR84184
++	 */
++	extern const struct unw_table_entry __start_unwind[] __ia64_hidden;
++	extern const struct unw_table_entry __end_unwind[] __ia64_hidden;
++	#undef __ia64_hidden
+ 	extern void unw_hash_index_t_is_too_narrow (void);
+ 	long i, off;
+ 
+diff --git a/distro/Kconfig b/distro/Kconfig
+new file mode 100644
+index 0000000..80f5d7e
+--- /dev/null
++++ b/distro/Kconfig
+@@ -0,0 +1,172 @@
++menu "Gentoo Linux"
++
++config GENTOO_LINUX
++	bool "Gentoo Linux support"
++
++	default y
++
++	help
++		In order to boot Gentoo Linux a minimal set of config settings needs to
++		be enabled in the kernel; to avoid the users from having to enable them
++		manually as part of a Gentoo Linux installation or a new clean config,
++		we enable these config settings by default for convenience.
++
++		See the settings that become available for more details and fine-tuning.
++
++config GENTOO_LINUX_UDEV
++	bool "Linux dynamic and persistent device naming (userspace devfs) support"
++
++	depends on GENTOO_LINUX
++	default y if GENTOO_LINUX
++
++	select DEVTMPFS
++	select TMPFS
++	select UNIX
++
++	select MMU
++	select SHMEM
++
++	help
++		In order to boot Gentoo Linux a minimal set of config settings needs to
++		be enabled in the kernel; to avoid the users from having to enable them
++		manually as part of a Gentoo Linux installation or a new clean config,
++		we enable these config settings by default for convenience.
++
++		Currently this only selects TMPFS, DEVTMPFS and their dependencies.
++		TMPFS is enabled to maintain a tmpfs file system at /dev/shm, /run and
++		/sys/fs/cgroup; DEVTMPFS to maintain a devtmpfs file system at /dev.
++
++		Some of these are critical files that need to be available early in the
++		boot process; if not available, it causes sysfs and udev to malfunction.
++
++		To ensure Gentoo Linux boots, it is best to leave this setting enabled;
++		if you run a custom setup, you could consider whether to disable this.
++
++config GENTOO_LINUX_PORTAGE
++	bool "Select options required by Portage features"
++
++	depends on GENTOO_LINUX
++	default y if GENTOO_LINUX
++
++	select CGROUPS
++	select NAMESPACES
++	select IPC_NS
++	select NET_NS
++	select PID_NS
++	select SYSVIPC
++	select USER_NS
++	select UTS_NS
++
++	help
++		This enables options required by various Portage FEATURES.
++		Currently this selects:
++
++		CGROUPS     (required for FEATURES=cgroup)
++		IPC_NS      (required for FEATURES=ipc-sandbox)
++		NET_NS      (required for FEATURES=network-sandbox)
++		PID_NS		(required for FEATURES=pid-sandbox)
++		SYSVIPC     (required by IPC_NS)
++   
++
++		It is highly recommended that you leave this enabled as these FEATURES
++		are, or will soon be, enabled by default.
++
++menu "Support for init systems, system and service managers"
++	visible if GENTOO_LINUX
++
++config GENTOO_LINUX_INIT_SCRIPT
++	bool "OpenRC, runit and other script based systems and managers"
++
++	default y if GENTOO_LINUX
++
++	depends on GENTOO_LINUX
++
++	select BINFMT_SCRIPT
++	select CGROUPS
++	select EPOLL
++	select FILE_LOCKING
++	select INOTIFY_USER
++	select SIGNALFD
++	select TIMERFD
++
++	help
++		The init system is the first thing that loads after the kernel booted.
++
++		These config settings allow you to select which init systems to support;
++		instead of having to select all the individual settings all over the
++		place, these settings allows you to select all the settings at once.
++
++		This particular setting enables all the known requirements for OpenRC,
++		runit and similar script based systems and managers.
++
++		If you are unsure about this, it is best to leave this setting enabled.
++
++config GENTOO_LINUX_INIT_SYSTEMD
++	bool "systemd"
++
++	default n
++
++	depends on GENTOO_LINUX && GENTOO_LINUX_UDEV
++
++	select AUTOFS4_FS
++	select BLK_DEV_BSG
++	select BPF_SYSCALL
++	select CGROUP_BPF
++	select CGROUPS
++	select CHECKPOINT_RESTORE
++	select CRYPTO_HMAC 
++	select CRYPTO_SHA256
++	select CRYPTO_USER_API_HASH
++	select DEVPTS_MULTIPLE_INSTANCES
++	select DMIID if X86_32 || X86_64 || X86
++	select EPOLL
++	select FANOTIFY
++	select FHANDLE
++	select FILE_LOCKING
++	select INOTIFY_USER
++	select IPV6
++	select NET
++	select NET_NS
++	select PROC_FS
++ select SECCOMP if HAVE_ARCH_SECCOMP
++ select SECCOMP_FILTER if HAVE_ARCH_SECCOMP_FILTER
++	select SIGNALFD
++	select SYSFS
++	select TIMERFD
++	select TMPFS_POSIX_ACL
++	select TMPFS_XATTR
++
++	select ANON_INODES
++	select BLOCK
++	select EVENTFD
++	select FSNOTIFY
++	select INET
++	select NLATTR
++
++	help
++		The init system is the first thing that loads after the kernel booted.
++
++		These config settings allow you to select which init systems to support;
++		instead of having to select all the individual settings all over the
++		place, these settings allows you to select all the settings at once.
++
++		This particular setting enables all the known requirements for systemd;
++		it also enables suggested optional settings, as the package suggests to.
++
++endmenu
++
++config GENTOO_PRINT_FIRMWARE_INFO
++  bool "Print firmware information that the kernel attempts to load"
++
++  depends on GENTOO_LINUX
++  default y
++
++  help
++    In order to boot Gentoo Linux a minimal set of config settings needs to
++    be enabled in the kernel; to avoid the users from having to enable them
++    manually as part of a Gentoo Linux installation or a new clean config,
++    we enable these config settings by default for convenience.
++
++    See the settings that become available for more details and fine-tuni
++
++endmenu
+diff --git a/drivers/base/firmware_class.c b/drivers/base/firmware_class.c
+index a95e1e5..7f2c65a 100644
+--- a/drivers/base/firmware_class.c
++++ b/drivers/base/firmware_class.c
+@@ -1147,6 +1147,10 @@ _request_firmware(const struct firmware **firmware_p, const char *name,
+ 		goto out;
+ 	}
+ 
++#ifdef CONFIG_GENTOO_PRINT_FIRMWARE_INFO
++        printk(KERN_NOTICE "Loading firmware: %s\n", name);
++#endif
++
+ 	ret = _request_firmware_prepare(&fw, name, device, buf, size);
+ 	if (ret <= 0) /* error or already assigned */
+ 		goto out;
+diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
+index 8d34c6d..fd38bda 100644
+--- a/drivers/pci/quirks.c
++++ b/drivers/pci/quirks.c
+@@ -2839,6 +2839,26 @@ static void quirk_hotplug_bridge(struct pci_dev *dev)
+ 
+ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_HINT, 0x0020, quirk_hotplug_bridge);
+ 
++/*
++ * Apple: Avoid programming the memory/io aperture of 00:1c.0
++ *
++ * BIOS does not declare any resource for 00:1c.0, but with
++ * hotplug flag set, thus the OS allocates:
++ * [mem 0x7fa00000 - 0x7fbfffff]
++ * [mem 0x7fc00000-0x7fdfffff 64bit pref]
++ * which is conflict with an unreported device, which
++ * causes unpredictable result such as accessing io port.
++ * So clear the hotplug flag to work around it.
++ */
++static void quirk_apple_mbp_poweroff(struct pci_dev *dev)
++{
++   if (dmi_match(DMI_PRODUCT_NAME, "MacBookPro11,4") ||
++       dmi_match(DMI_PRODUCT_NAME, "MacBookPro11,5"))
++       dev->is_hotplug_bridge = 0;
++}
++
++DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x8c10, quirk_apple_mbp_poweroff);
++
+ /*
+  * This is a quirk for the Ricoh MMC controller found as a part of
+  * some mulifunction chips.
+diff --git a/fs/exec.c b/fs/exec.c
+index 19f8b07..2863758 100644
+--- a/fs/exec.c
++++ b/fs/exec.c
+@@ -1531,7 +1531,7 @@ static void bprm_fill_uid(struct linux_binprm *bprm)
+ 
+ /*
+  * Fill the binprm structure from the inode.
+- * Check permissions, then read the first 128 (BINPRM_BUF_SIZE) bytes
++ * Check permissions, then read the first BINPRM_BUF_SIZE bytes
+  *
+  * This may be called multiple times for binary chains (scripts for example).
+  */
+diff --git a/fs/namei.c b/fs/namei.c
+index a1b1741..244d99b 100644
+--- a/fs/namei.c
++++ b/fs/namei.c
+@@ -890,10 +890,10 @@ static inline void put_link(struct nameidata *nd)
+ 		path_put(&last->link);
+ }
+ 
+-int sysctl_protected_symlinks __read_mostly = 0;
+-int sysctl_protected_hardlinks __read_mostly = 0;
+-int sysctl_protected_fifos __read_mostly;
+-int sysctl_protected_regular __read_mostly;
++int sysctl_protected_symlinks __read_mostly = 1;
++int sysctl_protected_hardlinks __read_mostly = 1;
++int sysctl_protected_fifos __read_mostly = 1;
++int sysctl_protected_regular __read_mostly = 1;
+ 
+ /**
+  * may_follow_link - Check symlink following for unsafe situations
+diff --git a/include/uapi/linux/binfmts.h b/include/uapi/linux/binfmts.h
+index 4eb5972..038bed6 100644
+--- a/include/uapi/linux/binfmts.h
++++ b/include/uapi/linux/binfmts.h
+@@ -15,6 +15,6 @@ struct pt_regs;
+ #define MAX_ARG_STRINGS 0x7FFFFFFF
+ 
+ /* sizeof(linux_binprm->buf) */
+-#define BINPRM_BUF_SIZE 128
++#define BINPRM_BUF_SIZE 256
+ 
+ #endif /* _UAPI_LINUX_BINFMTS_H */
+diff --git a/include/uapi/linux/xattr.h b/include/uapi/linux/xattr.h
+index 1590c49..5eab462 100644
+--- a/include/uapi/linux/xattr.h
++++ b/include/uapi/linux/xattr.h
+@@ -73,5 +73,9 @@
+ #define XATTR_POSIX_ACL_DEFAULT  "posix_acl_default"
+ #define XATTR_NAME_POSIX_ACL_DEFAULT XATTR_SYSTEM_PREFIX XATTR_POSIX_ACL_DEFAULT
+ 
++/* User namespace */
++#define XATTR_PAX_PREFIX XATTR_USER_PREFIX "pax."
++#define XATTR_PAX_FLAGS_SUFFIX "flags"
++#define XATTR_NAME_PAX_FLAGS XATTR_PAX_PREFIX XATTR_PAX_FLAGS_SUFFIX
+ 
+ #endif /* _UAPI_LINUX_XATTR_H */
+diff --git a/init/do_mounts.c b/init/do_mounts.c
+index dea5de9..fb25281 100644
+--- a/init/do_mounts.c
++++ b/init/do_mounts.c
+@@ -490,7 +490,11 @@ void __init change_floppy(char *fmt, ...)
+ 	va_start(args, fmt);
+ 	vsprintf(buf, fmt, args);
+ 	va_end(args);
+-	fd = sys_open("/dev/root", O_RDWR | O_NDELAY, 0);
++	if (saved_root_name[0])
++		fd = sys_open(saved_root_name, O_RDWR | O_NDELAY, 0);
++	else
++		fd = sys_open("/dev/root", O_RDWR | O_NDELAY, 0);
++
+ 	if (fd >= 0) {
+ 		sys_ioctl(fd, FDEJECT, 0);
+ 		sys_close(fd);
+@@ -534,11 +538,17 @@ void __init mount_root(void)
+ #endif
+ #ifdef CONFIG_BLOCK
+ 	{
+-		int err = create_dev("/dev/root", ROOT_DEV);
+-
+-		if (err < 0)
+-			pr_emerg("Failed to create /dev/root: %d\n", err);
+-		mount_block_root("/dev/root", root_mountflags);
++		if (saved_root_name[0] == '/') {
++	       	int err = create_dev(saved_root_name, ROOT_DEV);
++			if (err < 0)
++				pr_emerg("Failed to create %s: %d\n", saved_root_name, err);
++			mount_block_root(saved_root_name, root_mountflags);
++		} else {
++			int err = create_dev("/dev/root", ROOT_DEV);
++			if (err < 0)
++				pr_emerg("Failed to create /dev/root: %d\n", err);
++			mount_block_root("/dev/root", root_mountflags);
++		}
+ 	}
+ #endif
+ }
+diff --git a/kernel/sysctl.c b/kernel/sysctl.c
+index 9890f93..0afc4f3 100644
+--- a/kernel/sysctl.c
++++ b/kernel/sysctl.c
+@@ -154,6 +154,11 @@ static unsigned long hung_task_timeout_max = (LONG_MAX/HZ);
+ #ifdef CONFIG_INOTIFY_USER
+ #include <linux/inotify.h>
+ #endif
++
++#ifdef CONFIG_ALPHA_UAC_SYSCTL
++extern struct ctl_table uac_table[];
++#endif
++
+ #ifdef CONFIG_SPARC
+ #endif
+ 
+@@ -1915,6 +1920,13 @@ static struct ctl_table debug_table[] = {
+ 		.extra2		= &one,
+ 	},
+ #endif
++#ifdef CONFIG_ALPHA_UAC_SYSCTL
++	{
++	        .procname   = "uac",
++		.mode       = 0555,
++	        .child      = uac_table,
++	 },
++#endif /* CONFIG_ALPHA_UAC_SYSCTL */
+ 	{ }
+ };
+ 
+diff --git a/mm/shmem.c b/mm/shmem.c
+index dffa36e..1bca8ff 100644
+--- a/mm/shmem.c
++++ b/mm/shmem.c
+@@ -3200,6 +3200,14 @@ static int shmem_xattr_handler_set(const struct xattr_handler *handler,
+ 	struct shmem_inode_info *info = SHMEM_I(inode);
+ 
+ 	name = xattr_full_name(handler, name);
++
++	if (!strncmp(name, XATTR_USER_PREFIX, XATTR_USER_PREFIX_LEN)) {
++		if (strcmp(name, XATTR_NAME_PAX_FLAGS))
++			return -EOPNOTSUPP;
++		if (size > 8)
++			return -EINVAL;
++	}
++
+ 	return simple_xattr_set(&info->xattrs, name, value, size, flags);
+ }
+ 
+@@ -3215,6 +3223,12 @@ static const struct xattr_handler shmem_trusted_xattr_handler = {
+ 	.set = shmem_xattr_handler_set,
+ };
+ 
++static const struct xattr_handler shmem_user_xattr_handler = {
++	.prefix = XATTR_USER_PREFIX,
++	.get = shmem_xattr_handler_get,
++	.set = shmem_xattr_handler_set,
++};
++
+ static const struct xattr_handler *shmem_xattr_handlers[] = {
+ #ifdef CONFIG_TMPFS_POSIX_ACL
+ 	&posix_acl_access_xattr_handler,
+@@ -3222,6 +3236,7 @@ static const struct xattr_handler *shmem_xattr_handlers[] = {
+ #endif
+ 	&shmem_security_xattr_handler,
+ 	&shmem_trusted_xattr_handler,
++	&shmem_user_xattr_handler,
+ 	NULL
+ };
+ 
+diff --git a/net/bluetooth/hci_conn.c b/net/bluetooth/hci_conn.c
+index e3cd81c..849a2a4 100644
+--- a/net/bluetooth/hci_conn.c
++++ b/net/bluetooth/hci_conn.c
+@@ -1180,8 +1180,13 @@ int hci_conn_check_link_mode(struct hci_conn *conn)
+ 		return 0;
+ 	}
+ 
+-	if (hci_conn_ssp_enabled(conn) &&
+-	    !test_bit(HCI_CONN_ENCRYPT, &conn->flags))
++	/* If Secure Simple Pairing is not enabled, then legacy connection
++	 * setup is used and no encryption or key sizes can be enforced.
++	 */
++	if (!hci_conn_ssp_enabled(conn))
++		return 1;
++
++	if (!test_bit(HCI_CONN_ENCRYPT, &conn->flags))
+ 		return 0;
+ 
+ 	return 1;
+diff --git a/security/apparmor/Makefile b/security/apparmor/Makefile
+index d693df8..8f575d1 100644
+--- a/security/apparmor/Makefile
++++ b/security/apparmor/Makefile
+@@ -20,7 +20,7 @@ cmd_make-caps = echo "static const char *const capability_names[] = {" > $@ ;\
+ 	sed $< >>$@ -r -n -e '/CAP_FS_MASK/d' \
+ 	-e 's/^\#define[ \t]+CAP_([A-Z0-9_]+)[ \t]+([0-9]+)/[\2] = "\L\1",/p';\
+ 	echo "};" >> $@ ;\
+-	echo -n '\#define AA_FS_CAPS_MASK "' >> $@ ;\
++	printf '%s' '\#define AA_FS_CAPS_MASK "' >> $@ ;\
+ 	sed $< -r -n -e '/CAP_FS_MASK/d' \
+ 	    -e 's/^\#define[ \t]+CAP_([A-Z0-9_]+)[ \t]+([0-9]+)/\L\1/p' | \
+ 	     tr '\n' ' ' | sed -e 's/ $$/"\n/' >> $@
+@@ -56,7 +56,7 @@ cmd_make-rlim = echo "static const char *const rlim_names[RLIM_NLIMITS] = {" \
+ 	echo "static const int rlim_map[RLIM_NLIMITS] = {" >> $@ ;\
+ 	sed -r -n "s/^\# ?define[ \t]+(RLIMIT_[A-Z0-9_]+).*/\1,/p" $< >> $@ ;\
+ 	echo "};" >> $@ ; \
+-	echo -n '\#define AA_FS_RLIMIT_MASK "' >> $@ ;\
++	printf '%s' '\#define AA_FS_RLIMIT_MASK "' >> $@ ;\
+ 	sed -r -n 's/^\# ?define[ \t]+RLIMIT_([A-Z0-9_]+).*/\L\1/p' $< | \
+ 	    tr '\n' ' ' | sed -e 's/ $$/"\n/' >> $@
+ 
