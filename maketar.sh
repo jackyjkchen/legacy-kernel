@@ -9,6 +9,7 @@ IMAGE_DICT=(
   ["aarch64"]="rootfs-gentoo-allgcc-generic-aarch64"
   ["armhf"]="rootfs-gentoo-allgcc-generic-armv7hf"
   ["armel"]="rootfs-gentoo-allgcc-generic-armv5tel"
+  ["loong"]="rootfs-gentoo-allgcc-generic-loongarch"
   ["mips64el"]="rootfs-gentoo-allgcc-multilib-mips64el"
   ["mips64"]="rootfs-gentoo-allgcc-multilib-mips64"
   ["ppc64le"]="rootfs-gentoo-allgcc-power9-ppc64le"
