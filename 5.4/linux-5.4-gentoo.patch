@@ -27,19 +27,23 @@ index 2040c2f76..9d3f8ebb4 100644
  WISTRON LAPTOP BUTTON DRIVER
  M:	Miloslav Trmac <mitr@volny.cz>
  S:	Maintained
-diff --git a/Makefile b/Makefile
-index 24dc30cd2..06f072eff 100644
---- a/Makefile
-+++ b/Makefile
-@@ -2,7 +2,7 @@
- VERSION = 5
- PATCHLEVEL = 4
- SUBLEVEL = 260
--EXTRAVERSION =
-+EXTRAVERSION = -gentoo
- NAME = Kleptomaniac Octopus
- 
- # *DOCUMENTATION*
+diff --git a/Makefile.rej b/Makefile.rej
+new file mode 100644
+index 000000000..8d22a7f08
+--- /dev/null
++++ b/Makefile.rej
+@@ -0,0 +1,11 @@
++--- Makefile
+++++ Makefile
++@@ -2,7 +2,7 @@
++ VERSION = 5
++ PATCHLEVEL = 4
++ SUBLEVEL = 260
++-EXTRAVERSION =
+++EXTRAVERSION = -gentoo
++ NAME = Kleptomaniac Octopus
++ 
++ # *DOCUMENTATION*
 diff --git a/arch/arm/crypto/.gitignore b/arch/arm/crypto/.gitignore
 index 31e1f538d..a3c7ad52a 100644
 --- a/arch/arm/crypto/.gitignore
@@ -42577,10 +42581,10 @@ index 264229680..289bc70e4 100644
  };
  
 diff --git a/net/bluetooth/hci_conn.c b/net/bluetooth/hci_conn.c
-index afdc0afa8..ec0539eb5 100644
+index e129b7fb6..383967b60 100644
 --- a/net/bluetooth/hci_conn.c
 +++ b/net/bluetooth/hci_conn.c
-@@ -1311,8 +1311,13 @@ int hci_conn_check_link_mode(struct hci_conn *conn)
+@@ -1309,8 +1309,13 @@ int hci_conn_check_link_mode(struct hci_conn *conn)
  		return 0;
  	}
  
