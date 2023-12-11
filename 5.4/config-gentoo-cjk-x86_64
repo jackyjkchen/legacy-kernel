@@ -1,13 +1,13 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/x86 5.4.254-gentoo Kernel Configuration
+# Linux/x86 5.4.260-gentoo Kernel Configuration
 #
 
 #
-# Compiler: gcc (Gentoo 12.3.1_p20230526 p2) 12.3.1 20230526
+# Compiler: gcc (Gentoo 13.2.1_p20230826 p7) 13.2.1 20230826
 #
 CONFIG_CC_IS_GCC=y
-CONFIG_GCC_VERSION=120301
+CONFIG_GCC_VERSION=130201
 CONFIG_CLANG_VERSION=0
 CONFIG_CC_CAN_LINK=y
 CONFIG_CC_HAS_ASM_GOTO=y
@@ -1366,8 +1366,6 @@ CONFIG_NET_CLS=y
 # CONFIG_NET_CLS_ROUTE4 is not set
 # CONFIG_NET_CLS_FW is not set
 # CONFIG_NET_CLS_U32 is not set
-# CONFIG_NET_CLS_RSVP is not set
-# CONFIG_NET_CLS_RSVP6 is not set
 # CONFIG_NET_CLS_FLOW is not set
 CONFIG_NET_CLS_CGROUP=m
 # CONFIG_NET_CLS_BPF is not set
@@ -1761,7 +1759,6 @@ CONFIG_BLK_DEV_LOOP_MIN_COUNT=8
 # CONFIG_BLK_DEV_DRBD is not set
 # CONFIG_BLK_DEV_NBD is not set
 # CONFIG_BLK_DEV_SKD is not set
-# CONFIG_BLK_DEV_SX8 is not set
 # CONFIG_BLK_DEV_RAM is not set
 # CONFIG_CDROM_PKTCDVD is not set
 # CONFIG_ATA_OVER_ETH is not set
@@ -5052,6 +5049,11 @@ CONFIG_IIO_SW_TRIGGER=m
 # CONFIG_TI_TLC4541 is not set
 # CONFIG_XILINX_XADC is not set
 # end of Analog to digital converters
+
+#
+# Analog to digital and digital to analog converters
+#
+# end of Analog to digital and digital to analog converters
 
 #
 # Analog Front Ends
