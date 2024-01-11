@@ -1,5 +1,5 @@
 diff --git a/Kconfig b/Kconfig
-index 8c4c1cb..9b532bf 100644
+index 8c4c1cb0..9b532bf0 100644
 --- a/Kconfig
 +++ b/Kconfig
 @@ -10,3 +10,5 @@ config SRCARCH
@@ -9,20 +9,20 @@ index 8c4c1cb..9b532bf 100644
 +
 +source "distro/Kconfig"
 diff --git a/Makefile b/Makefile
-index caffc3b..5b07e81 100644
+index 3e5a7d98..a45181bc 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -2,7 +2,7 @@
  VERSION = 4
  PATCHLEVEL = 14
- SUBLEVEL = 329
+ SUBLEVEL = 336
 -EXTRAVERSION =
 +EXTRAVERSION = -gentoo
  NAME = Petit Gorille
  
  # *DOCUMENTATION*
 diff --git a/arch/alpha/Kconfig b/arch/alpha/Kconfig
-index 69b8758..c891b46 100644
+index 69b87588..c891b466 100644
 --- a/arch/alpha/Kconfig
 +++ b/arch/alpha/Kconfig
 @@ -697,6 +697,33 @@ config HZ
@@ -60,7 +60,7 @@ index 69b8758..c891b46 100644
  source "drivers/eisa/Kconfig"
  
 diff --git a/arch/alpha/kernel/traps.c b/arch/alpha/kernel/traps.c
-index 482c636..99c768c 100644
+index 482c6369..99c768c2 100644
 --- a/arch/alpha/kernel/traps.c
 +++ b/arch/alpha/kernel/traps.c
 @@ -105,6 +105,49 @@ static char * ireg_name[] = {"v0", "t0", "t1", "t2", "t3", "t4", "t5", "t6",
@@ -134,7 +134,7 @@ index 482c636..99c768c 100644
 +       __initcall(init_uac_sysctl);
 +#endif
 diff --git a/arch/ia64/include/asm/sections.h b/arch/ia64/include/asm/sections.h
-index f348140..0fc4f17 100644
+index f3481408..0fc4f175 100644
 --- a/arch/ia64/include/asm/sections.h
 +++ b/arch/ia64/include/asm/sections.h
 @@ -24,7 +24,6 @@ extern char __start_gate_mckinley_e9_patchlist[], __end_gate_mckinley_e9_patchli
@@ -146,7 +146,7 @@ index f348140..0fc4f17 100644
  
  #undef dereference_function_descriptor
 diff --git a/arch/ia64/kernel/unwind.c b/arch/ia64/kernel/unwind.c
-index e04efa0..025ba67 100644
+index e04efa08..025ba670 100644
 --- a/arch/ia64/kernel/unwind.c
 +++ b/arch/ia64/kernel/unwind.c
 @@ -2243,7 +2243,20 @@ __initcall(create_gate_table);
@@ -173,7 +173,7 @@ index e04efa0..025ba67 100644
  
 diff --git a/distro/Kconfig b/distro/Kconfig
 new file mode 100644
-index 0000000..fdc554c
+index 00000000..fdc554c1
 --- /dev/null
 +++ b/distro/Kconfig
 @@ -0,0 +1,172 @@
@@ -350,7 +350,7 @@ index 0000000..fdc554c
 +
 +endmenu
 diff --git a/drivers/base/firmware_class.c b/drivers/base/firmware_class.c
-index 4b57cf5..3b234a4 100644
+index 4b57cf5b..3b234a45 100644
 --- a/drivers/base/firmware_class.c
 +++ b/drivers/base/firmware_class.c
 @@ -1210,6 +1210,10 @@ _request_firmware(const struct firmware **firmware_p, const char *name,
@@ -365,7 +365,7 @@ index 4b57cf5..3b234a4 100644
  	if (ret <= 0) /* error or already assigned */
  		goto out;
 diff --git a/drivers/hid/hid-apple.c b/drivers/hid/hid-apple.c
-index 80ecbf1..d59e283 100644
+index 80ecbf14..d59e283c 100644
 --- a/drivers/hid/hid-apple.c
 +++ b/drivers/hid/hid-apple.c
 @@ -54,6 +54,22 @@ MODULE_PARM_DESC(swap_opt_cmd, "Swap the Option (\"Alt\") and Command (\"Flag\")
@@ -481,7 +481,7 @@ index 80ecbf1..d59e283 100644
  
  static int apple_input_mapping(struct hid_device *hdev, struct hid_input *hi,
 diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index e321479..ed3fd2d 100644
+index e3214792..ed3fd2d1 100644
 --- a/drivers/pci/quirks.c
 +++ b/drivers/pci/quirks.c
 @@ -2882,6 +2882,26 @@ static void quirk_hotplug_bridge(struct pci_dev *dev)
@@ -512,7 +512,7 @@ index e321479..ed3fd2d 100644
   * This is a quirk for the Ricoh MMC controller found as a part of
   * some mulifunction chips.
 diff --git a/fs/exec.c b/fs/exec.c
-index 2e26ba4..14851d4 100644
+index 2e26ba4f..14851d4c 100644
 --- a/fs/exec.c
 +++ b/fs/exec.c
 @@ -1560,7 +1560,7 @@ static void bprm_fill_uid(struct linux_binprm *bprm)
@@ -525,7 +525,7 @@ index 2e26ba4..14851d4 100644
   * This may be called multiple times for binary chains (scripts for example).
   */
 diff --git a/fs/namei.c b/fs/namei.c
-index b6de8f0..3e9e757 100644
+index b6de8f0a..3e9e757d 100644
 --- a/fs/namei.c
 +++ b/fs/namei.c
 @@ -902,10 +902,10 @@ static inline void put_link(struct nameidata *nd)
@@ -544,7 +544,7 @@ index b6de8f0..3e9e757 100644
  /**
   * may_follow_link - Check symlink following for unsafe situations
 diff --git a/include/uapi/linux/binfmts.h b/include/uapi/linux/binfmts.h
-index 4abad03..689025d 100644
+index 4abad03a..689025d9 100644
 --- a/include/uapi/linux/binfmts.h
 +++ b/include/uapi/linux/binfmts.h
 @@ -16,6 +16,6 @@ struct pt_regs;
@@ -556,7 +556,7 @@ index 4abad03..689025d 100644
  
  #endif /* _UAPI_LINUX_BINFMTS_H */
 diff --git a/include/uapi/linux/xattr.h b/include/uapi/linux/xattr.h
-index a92be0f..7b5fec8 100644
+index a92be0f4..7b5fec85 100644
 --- a/include/uapi/linux/xattr.h
 +++ b/include/uapi/linux/xattr.h
 @@ -74,5 +74,9 @@
@@ -570,7 +570,7 @@ index a92be0f..7b5fec8 100644
  
  #endif /* _UAPI_LINUX_XATTR_H */
 diff --git a/init/do_mounts.c b/init/do_mounts.c
-index 7cf4f6d..eb59642 100644
+index 7cf4f6da..eb59642d 100644
 --- a/init/do_mounts.c
 +++ b/init/do_mounts.c
 @@ -489,7 +489,11 @@ void __init change_floppy(char *fmt, ...)
@@ -610,7 +610,7 @@ index 7cf4f6d..eb59642 100644
  #endif
  }
 diff --git a/kernel/sysctl.c b/kernel/sysctl.c
-index de4a197..5959991 100644
+index de4a1975..59599913 100644
 --- a/kernel/sysctl.c
 +++ b/kernel/sysctl.c
 @@ -154,6 +154,11 @@ static unsigned long hung_task_timeout_max = (LONG_MAX/HZ);
@@ -640,7 +640,7 @@ index de4a197..5959991 100644
  };
  
 diff --git a/mm/shmem.c b/mm/shmem.c
-index e639188..97bedae 100644
+index e639188f..97bedae5 100644
 --- a/mm/shmem.c
 +++ b/mm/shmem.c
 @@ -3411,6 +3411,14 @@ static int shmem_xattr_handler_set(const struct xattr_handler *handler,
@@ -680,7 +680,7 @@ index e639188..97bedae 100644
  };
  
 diff --git a/net/bluetooth/hci_conn.c b/net/bluetooth/hci_conn.c
-index ce4bbc4..c9ba424 100644
+index ce4bbc42..c9ba424b 100644
 --- a/net/bluetooth/hci_conn.c
 +++ b/net/bluetooth/hci_conn.c
 @@ -1189,8 +1189,13 @@ int hci_conn_check_link_mode(struct hci_conn *conn)
