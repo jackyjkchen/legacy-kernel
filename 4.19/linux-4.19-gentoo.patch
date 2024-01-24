@@ -1,5 +1,5 @@
 diff --git a/Kconfig b/Kconfig
-index 48a80be..a5ad73c 100644
+index 48a80beab..a5ad73c66 100644
 --- a/Kconfig
 +++ b/Kconfig
 @@ -30,3 +30,5 @@ source "crypto/Kconfig"
@@ -9,20 +9,20 @@ index 48a80be..a5ad73c 100644
 +
 +source "distro/Kconfig"
 diff --git a/Makefile b/Makefile
-index 0c2244a..6d28584 100644
+index 8887412d6..349bb3797 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -2,7 +2,7 @@
  VERSION = 4
  PATCHLEVEL = 19
- SUBLEVEL = 298
+ SUBLEVEL = 305
 -EXTRAVERSION =
 +EXTRAVERSION = -gentoo
  NAME = "People's Front"
  
  # *DOCUMENTATION*
 diff --git a/arch/alpha/Kconfig b/arch/alpha/Kconfig
-index 5b4f883..47268c1 100644
+index 5b4f88363..47268c135 100644
 --- a/arch/alpha/Kconfig
 +++ b/arch/alpha/Kconfig
 @@ -681,6 +681,33 @@ config HZ
@@ -60,7 +60,7 @@ index 5b4f883..47268c1 100644
  source "drivers/eisa/Kconfig"
  
 diff --git a/arch/alpha/kernel/traps.c b/arch/alpha/kernel/traps.c
-index e2c96f3..d69c5eb 100644
+index e2c96f309..d69c5ebf8 100644
 --- a/arch/alpha/kernel/traps.c
 +++ b/arch/alpha/kernel/traps.c
 @@ -105,6 +105,49 @@ static char * ireg_name[] = {"v0", "t0", "t1", "t2", "t3", "t4", "t5", "t6",
@@ -135,7 +135,7 @@ index e2c96f3..d69c5eb 100644
 +#endif
 diff --git a/distro/Kconfig b/distro/Kconfig
 new file mode 100644
-index 0000000..4b4d677
+index 000000000..4b4d6770f
 --- /dev/null
 +++ b/distro/Kconfig
 @@ -0,0 +1,172 @@
@@ -312,7 +312,7 @@ index 0000000..4b4d677
 +
 +endmenu
 diff --git a/drivers/base/firmware_loader/main.c b/drivers/base/firmware_loader/main.c
-index cfa5e59..5755cde 100644
+index cfa5e598a..5755cdef1 100644
 --- a/drivers/base/firmware_loader/main.c
 +++ b/drivers/base/firmware_loader/main.c
 @@ -582,6 +582,10 @@ _request_firmware(const struct firmware **firmware_p, const char *name,
@@ -327,7 +327,7 @@ index cfa5e59..5755cde 100644
  					opt_flags);
  	if (ret <= 0) /* error or already assigned */
 diff --git a/drivers/hid/hid-apple.c b/drivers/hid/hid-apple.c
-index 80ecbf1..d59e283 100644
+index 80ecbf14d..d59e283cb 100644
 --- a/drivers/hid/hid-apple.c
 +++ b/drivers/hid/hid-apple.c
 @@ -54,6 +54,22 @@ MODULE_PARM_DESC(swap_opt_cmd, "Swap the Option (\"Alt\") and Command (\"Flag\")
@@ -443,7 +443,7 @@ index 80ecbf1..d59e283 100644
  
  static int apple_input_mapping(struct hid_device *hdev, struct hid_input *hi,
 diff --git a/fs/exec.c b/fs/exec.c
-index 28e3b5e..3f8d4ef 100644
+index 28e3b5eb2..3f8d4efcb 100644
 --- a/fs/exec.c
 +++ b/fs/exec.c
 @@ -1575,7 +1575,7 @@ static void bprm_fill_uid(struct linux_binprm *bprm)
@@ -456,7 +456,7 @@ index 28e3b5e..3f8d4ef 100644
   * This may be called multiple times for binary chains (scripts for example).
   */
 diff --git a/fs/namei.c b/fs/namei.c
-index 60b57e0..2dd8fef 100644
+index 60b57e0bc..2dd8fef5d 100644
 --- a/fs/namei.c
 +++ b/fs/namei.c
 @@ -885,10 +885,10 @@ static inline void put_link(struct nameidata *nd)
@@ -475,7 +475,7 @@ index 60b57e0..2dd8fef 100644
  /**
   * may_follow_link - Check symlink following for unsafe situations
 diff --git a/include/uapi/linux/binfmts.h b/include/uapi/linux/binfmts.h
-index 4abad03..689025d 100644
+index 4abad03a8..689025d9c 100644
 --- a/include/uapi/linux/binfmts.h
 +++ b/include/uapi/linux/binfmts.h
 @@ -16,6 +16,6 @@ struct pt_regs;
@@ -487,7 +487,7 @@ index 4abad03..689025d 100644
  
  #endif /* _UAPI_LINUX_BINFMTS_H */
 diff --git a/include/uapi/linux/xattr.h b/include/uapi/linux/xattr.h
-index c1395b5..bac6d48 100644
+index c1395b5bd..bac6d48ec 100644
 --- a/include/uapi/linux/xattr.h
 +++ b/include/uapi/linux/xattr.h
 @@ -77,5 +77,9 @@
@@ -501,7 +501,7 @@ index c1395b5..bac6d48 100644
  
  #endif /* _UAPI_LINUX_XATTR_H */
 diff --git a/kernel/sysctl.c b/kernel/sysctl.c
-index 4bb194f..5965fd3 100644
+index 4bb194f09..5965fd30d 100644
 --- a/kernel/sysctl.c
 +++ b/kernel/sysctl.c
 @@ -160,6 +160,11 @@ static unsigned long hung_task_timeout_max = (LONG_MAX/HZ);
@@ -531,7 +531,7 @@ index 4bb194f..5965fd3 100644
  };
  
 diff --git a/mm/shmem.c b/mm/shmem.c
-index 0788616..bab2185 100644
+index 078861669..bab2185af 100644
 --- a/mm/shmem.c
 +++ b/mm/shmem.c
 @@ -3206,6 +3206,14 @@ static int shmem_xattr_handler_set(const struct xattr_handler *handler,
@@ -571,10 +571,10 @@ index 0788616..bab2185 100644
  };
  
 diff --git a/net/bluetooth/hci_conn.c b/net/bluetooth/hci_conn.c
-index b876e97..7528ee7 100644
+index 0e837feaa..0b442c2f9 100644
 --- a/net/bluetooth/hci_conn.c
 +++ b/net/bluetooth/hci_conn.c
-@@ -1308,8 +1308,13 @@ int hci_conn_check_link_mode(struct hci_conn *conn)
+@@ -1306,8 +1306,13 @@ int hci_conn_check_link_mode(struct hci_conn *conn)
  		return 0;
  	}
  
