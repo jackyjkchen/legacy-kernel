@@ -1,8 +1,8 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/x86 5.15.147-gentoo Kernel Configuration
+# Linux/x86 5.15.151-gentoo Kernel Configuration
 #
-CONFIG_CC_VERSION_TEXT="gcc (Gentoo 13.2.1_p20230826 p7) 13.2.1 20230826"
+CONFIG_CC_VERSION_TEXT="gcc (Gentoo 13.2.1_p20240113-r1 p12) 13.2.1 20240113"
 CONFIG_CC_IS_GCC=y
 CONFIG_GCC_VERSION=130201
 CONFIG_CLANG_VERSION=0
@@ -1365,7 +1365,6 @@ CONFIG_NET_SCHED=y
 #
 # Queueing/Scheduling
 #
-# CONFIG_NET_SCH_CBQ is not set
 # CONFIG_NET_SCH_HTB is not set
 # CONFIG_NET_SCH_HFSC is not set
 # CONFIG_NET_SCH_PRIO is not set
@@ -1379,7 +1378,6 @@ CONFIG_NET_SCHED=y
 # CONFIG_NET_SCH_ETF is not set
 # CONFIG_NET_SCH_TAPRIO is not set
 # CONFIG_NET_SCH_GRED is not set
-# CONFIG_NET_SCH_DSMARK is not set
 # CONFIG_NET_SCH_NETEM is not set
 # CONFIG_NET_SCH_DRR is not set
 # CONFIG_NET_SCH_MQPRIO is not set
@@ -3462,7 +3460,6 @@ CONFIG_MFD_INTEL_LPSS_PCI=m
 # CONFIG_MFD_SM501 is not set
 # CONFIG_MFD_SKY81452 is not set
 # CONFIG_MFD_SYSCON is not set
-# CONFIG_MFD_TI_AM335X_TSCADC is not set
 # CONFIG_MFD_LP3943 is not set
 # CONFIG_MFD_TI_LMU is not set
 # CONFIG_TPS6105X is not set
