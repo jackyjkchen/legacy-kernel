@@ -28,13 +28,13 @@ index 2040c2f76..9d3f8ebb4 100644
  M:	Miloslav Trmac <mitr@volny.cz>
  S:	Maintained
 diff --git a/Makefile b/Makefile
-index 3936ad84e..6d3f37d38 100644
+index 56e53f77c..0f744e34e 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -2,7 +2,7 @@
  VERSION = 5
  PATCHLEVEL = 4
- SUBLEVEL = 263
+ SUBLEVEL = 271
 -EXTRAVERSION =
 +EXTRAVERSION = -gentoo
  NAME = Kleptomaniac Octopus
@@ -21029,19 +21029,13 @@ index 000000000..75bf3fd8b
 +
 +endmenu
 diff --git a/drivers/hid/hid-apple.c b/drivers/hid/hid-apple.c
-index efce31d03..fe64ca423 100644
+index 05d79b01d..c6c0b86af 100644
 --- a/drivers/hid/hid-apple.c
 +++ b/drivers/hid/hid-apple.c
-@@ -51,6 +51,22 @@ MODULE_PARM_DESC(swap_opt_cmd, "Swap the Option (\"Alt\") and Command (\"Flag\")
- 		"(For people who want to keep Windows PC keyboard muscle memory. "
- 		"[0] = as-is, Mac layout. 1 = swapped, Windows layout.)");
+@@ -57,6 +57,16 @@ MODULE_PARM_DESC(swap_fn_leftctrl, "Swap the Fn and left Control keys. "
+ 		"(For people who want to keep PC keyboard muscle memory. "
+ 		"[0] = as-is, Mac layout, 1 = swapped, PC layout)");
  
-+static unsigned int swap_fn_leftctrl;
-+module_param(swap_fn_leftctrl, uint, 0644);
-+MODULE_PARM_DESC(swap_fn_leftctrl, "Swap the Fn and left Control keys. "
-+		"(For people who want to keep PC keyboard muscle memory. "
-+		"[0] = as-is, Mac layout, 1 = swapped, PC layout)");
-+
 +static unsigned int rightalt_as_rightctrl;
 +module_param(rightalt_as_rightctrl, uint, 0644);
 +MODULE_PARM_DESC(rightalt_as_rightctrl, "Use the right Alt key as a right Ctrl key. "
@@ -21055,15 +21049,10 @@ index efce31d03..fe64ca423 100644
  struct apple_sc {
  	unsigned long quirks;
  	unsigned int fn_on;
-@@ -163,6 +179,21 @@ static const struct apple_key_translation swapped_option_cmd_keys[] = {
+@@ -196,6 +206,16 @@ static const struct apple_key_translation swapped_fn_leftctrl_keys[] = {
  	{ }
  };
  
-+static const struct apple_key_translation swapped_fn_leftctrl_keys[] = {
-+	{ KEY_FN, KEY_LEFTCTRL },
-+	{ }
-+};
-+
 +static const struct apple_key_translation rightalt_as_rightctrl_keys[] = {
 +	{ KEY_RIGHTALT, KEY_RIGHTCTRL },
 +	{ }
@@ -21077,32 +21066,10 @@ index efce31d03..fe64ca423 100644
  static const struct apple_key_translation *apple_find_translation(
  		const struct apple_key_translation *table, u16 from)
  {
-@@ -184,9 +215,11 @@ static int hidinput_apple_event(struct hid_device *hid, struct input_dev *input,
- 	bool do_translate;
- 	u16 code = 0;
- 
--	if (usage->code == KEY_FN) {
-+	u16 fn_keycode = (swap_fn_leftctrl) ? (KEY_LEFTCTRL) : (KEY_FN);
-+
-+	if (usage->code == fn_keycode) {
- 		asc->fn_on = !!value;
--		input_event(input, usage->type, usage->code, value);
-+		input_event(input, usage->type, KEY_FN, value);
- 		return 1;
- 	}
- 
-@@ -271,6 +304,30 @@ static int hidinput_apple_event(struct hid_device *hid, struct input_dev *input,
+@@ -316,6 +336,22 @@ static int hidinput_apple_event(struct hid_device *hid, struct input_dev *input,
  		}
  	}
  
-+	if (swap_fn_leftctrl) {
-+		trans = apple_find_translation(swapped_fn_leftctrl_keys, usage->code);
-+		if (trans) {
-+			input_event(input, usage->type, trans->to, value);
-+			return 1;
-+		}
-+	}
-+
 +	if (ejectcd_as_delete) {
 +		trans = apple_find_translation(ejectcd_as_delete_keys, usage->code);
 +		if (trans) {
@@ -21122,22 +21089,17 @@ index efce31d03..fe64ca423 100644
  	return 0;
  }
  
-@@ -341,6 +398,21 @@ static void apple_setup_input(struct input_dev *input)
- 
- 	for (trans = apple_iso_keyboard; trans->from; trans++)
- 		set_bit(trans->to, input->keybit);
-+
-+	if (swap_fn_leftctrl) {
-+		for (trans = swapped_fn_leftctrl_keys; trans->from; trans++)
-+			set_bit(trans->to, input->keybit);
-+	}
+@@ -394,6 +430,16 @@ static void apple_setup_input(struct input_dev *input)
+ 		for (trans = swapped_fn_leftctrl_keys; trans->from; trans++)
+ 			set_bit(trans->to, input->keybit);
+ 	}
 +
 +	if (ejectcd_as_delete) {
 +		for (trans = ejectcd_as_delete_keys; trans->from; trans++)
 +			set_bit(trans->to, input->keybit);
 +	}
 +
-+        if (rightalt_as_rightctrl) {
++	if (rightalt_as_rightctrl) {
 +		for (trans = rightalt_as_rightctrl_keys; trans->from; trans++)
 +			set_bit(trans->to, input->keybit);
 +	}
@@ -28490,7 +28452,7 @@ index 000000000..a1a269a11
 @@ -0,0 +1 @@
 +#define WIREGUARD_VERSION "1.0.0"
 diff --git a/fs/namei.c b/fs/namei.c
-index f6708ab8e..1883a2e30 100644
+index a4cba6991..be211857d 100644
 --- a/fs/namei.c
 +++ b/fs/namei.c
 @@ -877,8 +877,8 @@ static inline void put_link(struct nameidata *nd)
@@ -42577,7 +42539,7 @@ index 264229680..289bc70e4 100644
  };
  
 diff --git a/net/bluetooth/hci_conn.c b/net/bluetooth/hci_conn.c
-index e129b7fb6..383967b60 100644
+index d55973cb5..4abea9ec5 100644
 --- a/net/bluetooth/hci_conn.c
 +++ b/net/bluetooth/hci_conn.c
 @@ -1309,8 +1309,13 @@ int hci_conn_check_link_mode(struct hci_conn *conn)
@@ -42779,7 +42741,7 @@ index 9e95862f2..37dc18926 100644
  $(obj)/randomize_layout_plugin.o: $(objtree)/$(obj)/randomize_layout_seed.h
  quiet_cmd_create_randomize_layout_seed = GENSEED $@
 diff --git a/scripts/sign-file.c b/scripts/sign-file.c
-index 7434e9ea9..06e143ab0 100644
+index 12acc70e5..fcf3ed62e 100644
 --- a/scripts/sign-file.c
 +++ b/scripts/sign-file.c
 @@ -48,9 +48,10 @@
