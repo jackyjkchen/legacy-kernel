@@ -1,13 +1,13 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/x86 5.4.271-gentoo Kernel Configuration
+# Linux/x86 5.4.282-gentoo Kernel Configuration
 #
 
 #
-# Compiler: gcc-12 (Gentoo 12.3.1_p20240112 p2) 12.3.1 20240112
+# Compiler: gcc-12 (Gentoo 12.4.0 p3) 12.4.0
 #
 CONFIG_CC_IS_GCC=y
-CONFIG_GCC_VERSION=120301
+CONFIG_GCC_VERSION=120400
 CONFIG_CLANG_VERSION=0
 CONFIG_CC_CAN_LINK=y
 CONFIG_CC_HAS_ASM_GOTO=y

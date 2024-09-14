@@ -1,13 +1,13 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/x86 4.19.305-gentoo Kernel Configuration
+# Linux/x86 4.19.320-gentoo Kernel Configuration
 #
 
 #
-# Compiler: gcc (Gentoo 13.2.1_p20230826 p7) 13.2.1 20230826
+# Compiler: gcc-11 (Gentoo 11.5.0-r3 p12) 11.5.0
 #
 CONFIG_CC_IS_GCC=y
-CONFIG_GCC_VERSION=130201
+CONFIG_GCC_VERSION=110500
 CONFIG_CLANG_VERSION=0
 CONFIG_CC_HAS_ASM_GOTO=y
 CONFIG_IRQ_WORK=y
@@ -1330,7 +1330,6 @@ CONFIG_NET_SCHED=y
 #
 # Queueing/Scheduling
 #
-# CONFIG_NET_SCH_CBQ is not set
 # CONFIG_NET_SCH_HTB is not set
 # CONFIG_NET_SCH_HFSC is not set
 # CONFIG_NET_SCH_PRIO is not set
@@ -1343,7 +1342,6 @@ CONFIG_NET_SCHED=y
 # CONFIG_NET_SCH_CBS is not set
 # CONFIG_NET_SCH_ETF is not set
 # CONFIG_NET_SCH_GRED is not set
-# CONFIG_NET_SCH_DSMARK is not set
 # CONFIG_NET_SCH_NETEM is not set
 # CONFIG_NET_SCH_DRR is not set
 # CONFIG_NET_SCH_MQPRIO is not set
@@ -3097,7 +3095,6 @@ CONFIG_MFD_INTEL_LPSS_PCI=m
 # CONFIG_MFD_SKY81452 is not set
 # CONFIG_ABX500_CORE is not set
 # CONFIG_MFD_SYSCON is not set
-# CONFIG_MFD_TI_AM335X_TSCADC is not set
 # CONFIG_MFD_LP3943 is not set
 # CONFIG_MFD_TI_LMU is not set
 # CONFIG_TPS6105X is not set

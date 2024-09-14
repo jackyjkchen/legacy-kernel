@@ -15,7 +15,7 @@ do
   cd /usr/src/linux-$ver-gentoo && \
   make clean && rm -rf target_dir && \
   make CROSS_COMPILE=${CROSS_COMPILE} HOSTCC="${HOSTCC-gcc} -fuse-ld=bfd" -j`cat /proc/cpuinfo | grep process | wc -l` && \
-  mkdir -p target_dir/{boot,lib} && \
+  mkdir -p target_dir/{boot,usr/lib} && ln -sv usr/lib target_dir/lib && \
   make CROSS_COMPILE=${CROSS_COMPILE} HOSTCC="${HOSTCC-gcc} -fuse-ld=bfd" INSTALL_MOD_PATH=./target_dir modules_install && \
   make CROSS_COMPILE=${CROSS_COMPILE} HOSTCC="${HOSTCC-gcc} -fuse-ld=bfd" INSTALL_PATH=./target_dir/boot install && \
   genkernel initramfs --kernel-modules-prefix=./target_dir --kerneldir=/usr/src/linux-$ver-gentoo && \

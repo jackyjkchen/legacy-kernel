@@ -28,13 +28,13 @@ index 2040c2f76..9d3f8ebb4 100644
  M:	Miloslav Trmac <mitr@volny.cz>
  S:	Maintained
 diff --git a/Makefile b/Makefile
-index 56e53f77c..0f744e34e 100644
+index 4e9e7945f..df6765f2b 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -2,7 +2,7 @@
  VERSION = 5
  PATCHLEVEL = 4
- SUBLEVEL = 271
+ SUBLEVEL = 282
 -EXTRAVERSION =
 +EXTRAVERSION = -gentoo
  NAME = Kleptomaniac Octopus
@@ -28964,7 +28964,7 @@ index 67634675e..df6622a5f 100644
   *	dst_cache_init - initialize the cache, allocating the required storage
   *	@dst_cache: the cache
 diff --git a/include/net/ip_tunnels.h b/include/net/ip_tunnels.h
-index 36376f8b8..3b254fe91 100644
+index 3a04e2ccf..258f8ddb0 100644
 --- a/include/net/ip_tunnels.h
 +++ b/include/net/ip_tunnels.h
 @@ -289,6 +289,9 @@ int ip_tunnel_newlink(struct net_device *dev, struct nlattr *tb[],

@@ -1,5 +1,5 @@
 diff --git a/Kconfig b/Kconfig
-index 48a80beab..a5ad73c66 100644
+index 48a80be..a5ad73c 100644
 --- a/Kconfig
 +++ b/Kconfig
 @@ -30,3 +30,5 @@ source "crypto/Kconfig"
@@ -9,20 +9,20 @@ index 48a80beab..a5ad73c66 100644
 +
 +source "distro/Kconfig"
 diff --git a/Makefile b/Makefile
-index 8887412d6..349bb3797 100644
+index eff48a0..9dfd31f 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -2,7 +2,7 @@
  VERSION = 4
  PATCHLEVEL = 19
- SUBLEVEL = 305
+ SUBLEVEL = 320
 -EXTRAVERSION =
 +EXTRAVERSION = -gentoo
  NAME = "People's Front"
  
  # *DOCUMENTATION*
 diff --git a/arch/alpha/Kconfig b/arch/alpha/Kconfig
-index 5b4f88363..47268c135 100644
+index 5b4f883..47268c1 100644
 --- a/arch/alpha/Kconfig
 +++ b/arch/alpha/Kconfig
 @@ -681,6 +681,33 @@ config HZ
@@ -60,7 +60,7 @@ index 5b4f88363..47268c135 100644
  source "drivers/eisa/Kconfig"
  
 diff --git a/arch/alpha/kernel/traps.c b/arch/alpha/kernel/traps.c
-index e2c96f309..d69c5ebf8 100644
+index e2c96f3..d69c5eb 100644
 --- a/arch/alpha/kernel/traps.c
 +++ b/arch/alpha/kernel/traps.c
 @@ -105,6 +105,49 @@ static char * ireg_name[] = {"v0", "t0", "t1", "t2", "t3", "t4", "t5", "t6",
@@ -135,7 +135,7 @@ index e2c96f309..d69c5ebf8 100644
 +#endif
 diff --git a/distro/Kconfig b/distro/Kconfig
 new file mode 100644
-index 000000000..4b4d6770f
+index 0000000..4b4d677
 --- /dev/null
 +++ b/distro/Kconfig
 @@ -0,0 +1,172 @@
@@ -312,7 +312,7 @@ index 000000000..4b4d6770f
 +
 +endmenu
 diff --git a/drivers/base/firmware_loader/main.c b/drivers/base/firmware_loader/main.c
-index cfa5e598a..5755cdef1 100644
+index cfa5e59..5755cde 100644
 --- a/drivers/base/firmware_loader/main.c
 +++ b/drivers/base/firmware_loader/main.c
 @@ -582,6 +582,10 @@ _request_firmware(const struct firmware **firmware_p, const char *name,
@@ -327,19 +327,13 @@ index cfa5e598a..5755cdef1 100644
  					opt_flags);
  	if (ret <= 0) /* error or already assigned */
 diff --git a/drivers/hid/hid-apple.c b/drivers/hid/hid-apple.c
-index 80ecbf14d..d59e283cb 100644
+index 8ba8f76..c453db1 100644
 --- a/drivers/hid/hid-apple.c
 +++ b/drivers/hid/hid-apple.c
-@@ -54,6 +54,22 @@ MODULE_PARM_DESC(swap_opt_cmd, "Swap the Option (\"Alt\") and Command (\"Flag\")
- 		"(For people who want to keep Windows PC keyboard muscle memory. "
- 		"[0] = as-is, Mac layout. 1 = swapped, Windows layout.)");
+@@ -60,6 +60,16 @@ MODULE_PARM_DESC(swap_fn_leftctrl, "Swap the Fn and left Control keys. "
+ 		"(For people who want to keep PC keyboard muscle memory. "
+ 		"[0] = as-is, Mac layout, 1 = swapped, PC layout)");
  
-+static unsigned int swap_fn_leftctrl;
-+module_param(swap_fn_leftctrl, uint, 0644);
-+MODULE_PARM_DESC(swap_fn_leftctrl, "Swap the Fn and left Control keys. "
-+		"(For people who want to keep PC keyboard muscle memory. "
-+		"[0] = as-is, Mac layout, 1 = swapped, PC layout)");
-+
 +static unsigned int rightalt_as_rightctrl;
 +module_param(rightalt_as_rightctrl, uint, 0644);
 +MODULE_PARM_DESC(rightalt_as_rightctrl, "Use the right Alt key as a right Ctrl key. "
@@ -353,15 +347,10 @@ index 80ecbf14d..d59e283cb 100644
  struct apple_sc {
  	unsigned long quirks;
  	unsigned int fn_on;
-@@ -166,6 +182,21 @@ static const struct apple_key_translation swapped_option_cmd_keys[] = {
+@@ -199,6 +209,16 @@ static const struct apple_key_translation swapped_fn_leftctrl_keys[] = {
  	{ }
  };
  
-+static const struct apple_key_translation swapped_fn_leftctrl_keys[] = {
-+	{ KEY_FN, KEY_LEFTCTRL },
-+	{ }
-+};
-+
 +static const struct apple_key_translation rightalt_as_rightctrl_keys[] = {
 +	{ KEY_RIGHTALT, KEY_RIGHTCTRL },
 +	{ }
@@ -375,32 +364,10 @@ index 80ecbf14d..d59e283cb 100644
  static const struct apple_key_translation *apple_find_translation(
  		const struct apple_key_translation *table, u16 from)
  {
-@@ -187,9 +218,11 @@ static int hidinput_apple_event(struct hid_device *hid, struct input_dev *input,
- 	bool do_translate;
- 	u16 code = 0;
- 
--	if (usage->code == KEY_FN) {
-+	u16 fn_keycode = (swap_fn_leftctrl) ? (KEY_LEFTCTRL) : (KEY_FN);
-+
-+	if (usage->code == fn_keycode) {
- 		asc->fn_on = !!value;
--		input_event(input, usage->type, usage->code, value);
-+		input_event(input, usage->type, KEY_FN, value);
- 		return 1;
- 	}
- 
-@@ -274,6 +307,30 @@ static int hidinput_apple_event(struct hid_device *hid, struct input_dev *input,
+@@ -319,6 +339,22 @@ static int hidinput_apple_event(struct hid_device *hid, struct input_dev *input,
  		}
  	}
  
-+	if (swap_fn_leftctrl) {
-+		trans = apple_find_translation(swapped_fn_leftctrl_keys, usage->code);
-+		if (trans) {
-+			input_event(input, usage->type, trans->to, value);
-+			return 1;
-+		}
-+	}
-+
 +	if (ejectcd_as_delete) {
 +		trans = apple_find_translation(ejectcd_as_delete_keys, usage->code);
 +		if (trans) {
@@ -420,22 +387,17 @@ index 80ecbf14d..d59e283cb 100644
  	return 0;
  }
  
-@@ -344,6 +401,21 @@ static void apple_setup_input(struct input_dev *input)
- 
- 	for (trans = apple_iso_keyboard; trans->from; trans++)
- 		set_bit(trans->to, input->keybit);
-+
-+	if (swap_fn_leftctrl) {
-+		for (trans = swapped_fn_leftctrl_keys; trans->from; trans++)
-+			set_bit(trans->to, input->keybit);
-+	}
+@@ -397,6 +433,16 @@ static void apple_setup_input(struct input_dev *input)
+ 		for (trans = swapped_fn_leftctrl_keys; trans->from; trans++)
+ 			set_bit(trans->to, input->keybit);
+ 	}
 +
 +	if (ejectcd_as_delete) {
 +		for (trans = ejectcd_as_delete_keys; trans->from; trans++)
 +			set_bit(trans->to, input->keybit);
 +	}
 +
-+        if (rightalt_as_rightctrl) {
++	if (rightalt_as_rightctrl) {
 +		for (trans = rightalt_as_rightctrl_keys; trans->from; trans++)
 +			set_bit(trans->to, input->keybit);
 +	}
@@ -443,10 +405,10 @@ index 80ecbf14d..d59e283cb 100644
  
  static int apple_input_mapping(struct hid_device *hdev, struct hid_input *hi,
 diff --git a/fs/exec.c b/fs/exec.c
-index 28e3b5eb2..3f8d4efcb 100644
+index fb9430f..a0be540 100644
 --- a/fs/exec.c
 +++ b/fs/exec.c
-@@ -1575,7 +1575,7 @@ static void bprm_fill_uid(struct linux_binprm *bprm)
+@@ -1582,7 +1582,7 @@ static void bprm_fill_uid(struct linux_binprm *bprm)
  
  /*
   * Fill the binprm structure from the inode.
@@ -456,7 +418,7 @@ index 28e3b5eb2..3f8d4efcb 100644
   * This may be called multiple times for binary chains (scripts for example).
   */
 diff --git a/fs/namei.c b/fs/namei.c
-index 60b57e0bc..2dd8fef5d 100644
+index 60b57e0..2dd8fef 100644
 --- a/fs/namei.c
 +++ b/fs/namei.c
 @@ -885,10 +885,10 @@ static inline void put_link(struct nameidata *nd)
@@ -475,7 +437,7 @@ index 60b57e0bc..2dd8fef5d 100644
  /**
   * may_follow_link - Check symlink following for unsafe situations
 diff --git a/include/uapi/linux/binfmts.h b/include/uapi/linux/binfmts.h
-index 4abad03a8..689025d9c 100644
+index 4abad03..689025d 100644
 --- a/include/uapi/linux/binfmts.h
 +++ b/include/uapi/linux/binfmts.h
 @@ -16,6 +16,6 @@ struct pt_regs;
@@ -487,7 +449,7 @@ index 4abad03a8..689025d9c 100644
  
  #endif /* _UAPI_LINUX_BINFMTS_H */
 diff --git a/include/uapi/linux/xattr.h b/include/uapi/linux/xattr.h
-index c1395b5bd..bac6d48ec 100644
+index c1395b5..bac6d48 100644
 --- a/include/uapi/linux/xattr.h
 +++ b/include/uapi/linux/xattr.h
 @@ -77,5 +77,9 @@
@@ -501,10 +463,10 @@ index c1395b5bd..bac6d48ec 100644
  
  #endif /* _UAPI_LINUX_XATTR_H */
 diff --git a/kernel/sysctl.c b/kernel/sysctl.c
-index 4bb194f09..5965fd30d 100644
+index 6ce9f10..f968fda 100644
 --- a/kernel/sysctl.c
 +++ b/kernel/sysctl.c
-@@ -160,6 +160,11 @@ static unsigned long hung_task_timeout_max = (LONG_MAX/HZ);
+@@ -161,6 +161,11 @@ static unsigned long hung_task_timeout_max = (LONG_MAX/HZ);
  #ifdef CONFIG_INOTIFY_USER
  #include <linux/inotify.h>
  #endif
@@ -516,7 +478,7 @@ index 4bb194f09..5965fd30d 100644
  #ifdef CONFIG_SPARC
  #endif
  
-@@ -1929,6 +1934,13 @@ static struct ctl_table debug_table[] = {
+@@ -1934,6 +1939,13 @@ static struct ctl_table debug_table[] = {
  		.extra2		= &one,
  	},
  #endif
@@ -531,7 +493,7 @@ index 4bb194f09..5965fd30d 100644
  };
  
 diff --git a/mm/shmem.c b/mm/shmem.c
-index 078861669..bab2185af 100644
+index 0788616..bab2185 100644
 --- a/mm/shmem.c
 +++ b/mm/shmem.c
 @@ -3206,6 +3206,14 @@ static int shmem_xattr_handler_set(const struct xattr_handler *handler,
@@ -571,7 +533,7 @@ index 078861669..bab2185af 100644
  };
  
 diff --git a/net/bluetooth/hci_conn.c b/net/bluetooth/hci_conn.c
-index 0e837feaa..0b442c2f9 100644
+index b8730c5..736a0ad 100644
 --- a/net/bluetooth/hci_conn.c
 +++ b/net/bluetooth/hci_conn.c
 @@ -1306,8 +1306,13 @@ int hci_conn_check_link_mode(struct hci_conn *conn)

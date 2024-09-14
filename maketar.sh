@@ -17,6 +17,7 @@ IMAGE_DICT=(
   ["ppc"]="rootfs-gentoo-allgcc-generic-ppc"
   ["alpha"]="rootfs-gentoo-allgcc-generic-alpha"
   ["riscv64"]="rootfs-gentoo-allgcc-lp64d-riscv64"
+  ["riscv32"]="rootfs-gentoo-allgcc-ilp32d-riscv32"
   ["sparc64"]="rootfs-gentoo-allgcc-multilib-sparc64"
   ["s390x"]="rootfs-gentoo-allgcc-ibm-s390x"
   ["hppa1.1"]="rootfs-gentoo-allgcc-generic-hppa1.1"
@@ -30,10 +31,7 @@ IMAGE_DICT=(
 dir=$1
 image=${IMAGE_DICT[$dir]}
 find $dir/ | grep '\.pyc\|\.pyo\|\.keep\|\.bash_history\|\.nfs0' | xargs rm -v
-chmod -s $dir/bin/arping $dir/bin/ping $dir/usr/bin/arping $dir/usr/bin/ping
-setcap cap_net_raw=ep $dir/bin/arping $dir/bin/ping $dir/usr/bin/arping $dir/usr/bin/ping
 chmod -s $dir/sbin/unix_chkpwd
-setcap cap_dac_override=ep $dir/sbin/unix_chkpwd
 rm -v $dir/usr/local/bin/qemu-*
 dest=$2
 if [[ $dest == "" ]]; then
@@ -42,6 +40,6 @@ fi
 dlist=
 cd $dir && dlist=$(echo *) && cd ..
 rm -v $image.tar
-tar --numeric-owner --xattrs -pcf $dest/$image.tar -C $dir $dlist
+tar --sort=name --numeric-owner -pcf $dest/$image.tar -C $dir $dlist
 rm -v $image.tar.xz
 exit 0
