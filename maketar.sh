@@ -6,6 +6,7 @@ IMAGE_DICT=(
   ["x64"]="rootfs-gentoo-allgcc-sandybridge-x86_64"
   ["x86"]="rootfs-gentoo-allgcc-core2-x86"
   ["xfce"]="rootfs-gentoo-xfce-sandybridge-x86_64"
+  ["glibc217"]="rootfs-gentoo-glibc217-nehalem-x86_64"
   ["aarch64"]="rootfs-gentoo-allgcc-generic-aarch64"
   ["armhf"]="rootfs-gentoo-allgcc-generic-armv7hf"
   ["armel"]="rootfs-gentoo-allgcc-generic-armv5tel"
