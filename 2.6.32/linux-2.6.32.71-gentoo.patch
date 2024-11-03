@@ -1,7 +1,7 @@
-diff --git a/linux-2.6.32.71/Documentation/fb/00-INDEX b/linux-2.6.32.71/Documentation/fb/00-INDEX
-index a618fd99c9..6eb4dc4be3 100644
---- a/linux-2.6.32.71/Documentation/fb/00-INDEX
-+++ b/linux-2.6.32.71/Documentation/fb/00-INDEX
+diff --git a/Documentation/fb/00-INDEX b/Documentation/fb/00-INDEX
+index a618fd99..6eb4dc4b 100644
+--- a/Documentation/fb/00-INDEX
++++ b/Documentation/fb/00-INDEX
 @@ -15,6 +15,8 @@ deferred_io.txt
  	- an introduction to deferred IO.
  fbcon.txt
@@ -11,11 +11,11 @@ index a618fd99c9..6eb4dc4be3 100644
  framebuffer.txt
  	- introduction to frame buffer devices.
  imacfb.txt
-diff --git a/linux-2.6.32.71/Documentation/fb/fbcondecor.txt b/linux-2.6.32.71/Documentation/fb/fbcondecor.txt
+diff --git a/Documentation/fb/fbcondecor.txt b/Documentation/fb/fbcondecor.txt
 new file mode 100644
-index 0000000000..15889f3d11
+index 00000000..15889f3d
 --- /dev/null
-+++ b/linux-2.6.32.71/Documentation/fb/fbcondecor.txt
++++ b/Documentation/fb/fbcondecor.txt
 @@ -0,0 +1,207 @@
 +What is it?
 +-----------
@@ -224,10 +224,10 @@ index 0000000000..15889f3d11
 +Fbcondecor, fbcondecor protocol design, current implementation & docs by:
 +  Michal Januszewski <spock@gentoo.org>
 +
-diff --git a/linux-2.6.32.71/Makefile b/linux-2.6.32.71/Makefile
-index 9753bf0ff0..082b7daf9a 100644
---- a/linux-2.6.32.71/Makefile
-+++ b/linux-2.6.32.71/Makefile
+diff --git a/Makefile b/Makefile
+index 9753bf0f..082b7daf 100644
+--- a/Makefile
++++ b/Makefile
 @@ -1,7 +1,7 @@
  VERSION = 2
  PATCHLEVEL = 6
@@ -237,10 +237,10 @@ index 9753bf0ff0..082b7daf9a 100644
  NAME = Man-Eating Seals of Antiquity
  
  # *DOCUMENTATION*
-diff --git a/linux-2.6.32.71/arch/alpha/Kconfig b/linux-2.6.32.71/arch/alpha/Kconfig
-index 443448154f..691a04aa4c 100644
---- a/linux-2.6.32.71/arch/alpha/Kconfig
-+++ b/linux-2.6.32.71/arch/alpha/Kconfig
+diff --git a/arch/alpha/Kconfig b/arch/alpha/Kconfig
+index 44344815..691a04aa 100644
+--- a/arch/alpha/Kconfig
++++ b/arch/alpha/Kconfig
 @@ -627,6 +627,32 @@ config HZ
  	default 1200 if ALPHA_RAWHIDE
  	default 1024
@@ -274,10 +274,10 @@ index 443448154f..691a04aa4c 100644
  source "drivers/pci/Kconfig"
  source "drivers/eisa/Kconfig"
  
-diff --git a/linux-2.6.32.71/arch/alpha/kernel/traps.c b/linux-2.6.32.71/arch/alpha/kernel/traps.c
-index 6ee7655b75..d30dc3d366 100644
---- a/linux-2.6.32.71/arch/alpha/kernel/traps.c
-+++ b/linux-2.6.32.71/arch/alpha/kernel/traps.c
+diff --git a/arch/alpha/kernel/traps.c b/arch/alpha/kernel/traps.c
+index 6ee7655b..d30dc3d3 100644
+--- a/arch/alpha/kernel/traps.c
++++ b/arch/alpha/kernel/traps.c
 @@ -103,6 +103,52 @@ static char * ireg_name[] = {"v0", "t0", "t1", "t2", "t3", "t4", "t5", "t6",
  			   "t10", "t11", "ra", "pv", "at", "gp", "sp", "zero"};
  #endif
@@ -370,10 +370,10 @@ index 6ee7655b75..d30dc3d366 100644
 +#ifdef CONFIG_ALPHA_UAC_SYSCTL
 +	__initcall(init_uac_sysctl);
 +#endif
-diff --git a/linux-2.6.32.71/drivers/Makefile b/linux-2.6.32.71/drivers/Makefile
-index 8b0b948eb1..a1ce9b3d15 100644
---- a/linux-2.6.32.71/drivers/Makefile
-+++ b/linux-2.6.32.71/drivers/Makefile
+diff --git a/drivers/Makefile b/drivers/Makefile
+index 8b0b948e..a1ce9b3d 100644
+--- a/drivers/Makefile
++++ b/drivers/Makefile
 @@ -9,6 +9,9 @@ obj-y				+= gpio/
  obj-$(CONFIG_PCI)		+= pci/
  obj-$(CONFIG_PARISC)		+= parisc/
@@ -395,10 +395,10 @@ index 8b0b948eb1..a1ce9b3d15 100644
  # gpu/ comes after char for AGP vs DRM startup
  obj-y				+= gpu/
  
-diff --git a/linux-2.6.32.71/drivers/md/Kconfig b/linux-2.6.32.71/drivers/md/Kconfig
-index 2158377a13..504c5351c5 100644
---- a/linux-2.6.32.71/drivers/md/Kconfig
-+++ b/linux-2.6.32.71/drivers/md/Kconfig
+diff --git a/drivers/md/Kconfig b/drivers/md/Kconfig
+index 2158377a..504c5351 100644
+--- a/drivers/md/Kconfig
++++ b/drivers/md/Kconfig
 @@ -320,4 +320,15 @@ config DM_UEVENT
  	---help---
  	Generate udev events for DM events.
@@ -415,10 +415,10 @@ index 2158377a13..504c5351c5 100644
 +	  If unsure, say N.
 +
  endif # MD
-diff --git a/linux-2.6.32.71/drivers/md/Makefile b/linux-2.6.32.71/drivers/md/Makefile
-index e355e7f6a5..83e3627164 100644
---- a/linux-2.6.32.71/drivers/md/Makefile
-+++ b/linux-2.6.32.71/drivers/md/Makefile
+diff --git a/drivers/md/Makefile b/drivers/md/Makefile
+index e355e7f6..83e36271 100644
+--- a/drivers/md/Makefile
++++ b/drivers/md/Makefile
 @@ -44,6 +44,7 @@ obj-$(CONFIG_DM_SNAPSHOT)	+= dm-snapshot.o
  obj-$(CONFIG_DM_MIRROR)		+= dm-mirror.o dm-log.o dm-region-hash.o
  obj-$(CONFIG_DM_LOG_USERSPACE)	+= dm-log-userspace.o
@@ -427,11 +427,11 @@ index e355e7f6a5..83e3627164 100644
  
  quiet_cmd_unroll = UNROLL  $@
        cmd_unroll = $(AWK) -f$(srctree)/$(src)/unroll.awk -vN=$(UNROLL) \
-diff --git a/linux-2.6.32.71/drivers/md/dm-bbr.c b/linux-2.6.32.71/drivers/md/dm-bbr.c
+diff --git a/drivers/md/dm-bbr.c b/drivers/md/dm-bbr.c
 new file mode 100644
-index 0000000000..6df7f15d5e
+index 00000000..6df7f15d
 --- /dev/null
-+++ b/linux-2.6.32.71/drivers/md/dm-bbr.c
++++ b/drivers/md/dm-bbr.c
 @@ -0,0 +1,1012 @@
 +/*
 + *   (C) Copyright IBM Corp. 2002, 2004
@@ -1445,11 +1445,11 @@ index 0000000000..6df7f15d5e
 +module_init(dm_bbr_init);
 +module_exit(dm_bbr_exit);
 +MODULE_LICENSE("GPL");
-diff --git a/linux-2.6.32.71/drivers/md/dm-bbr.h b/linux-2.6.32.71/drivers/md/dm-bbr.h
+diff --git a/drivers/md/dm-bbr.h b/drivers/md/dm-bbr.h
 new file mode 100644
-index 0000000000..e8b50c6f59
+index 00000000..e8b50c6f
 --- /dev/null
-+++ b/linux-2.6.32.71/drivers/md/dm-bbr.h
++++ b/drivers/md/dm-bbr.h
 @@ -0,0 +1,130 @@
 +/*
 + *   (C) Copyright IBM Corp. 2002, 2004
@@ -1581,10 +1581,10 @@ index 0000000000..e8b50c6f59
 +	atomic_t			in_use_replacement_blks;
 +};
 +
-diff --git a/linux-2.6.32.71/drivers/video/Kconfig b/linux-2.6.32.71/drivers/video/Kconfig
-index 188e1ba3b6..9038e042a5 100644
---- a/linux-2.6.32.71/drivers/video/Kconfig
-+++ b/linux-2.6.32.71/drivers/video/Kconfig
+diff --git a/drivers/video/Kconfig b/drivers/video/Kconfig
+index 188e1ba3..9038e042 100644
+--- a/drivers/video/Kconfig
++++ b/drivers/video/Kconfig
 @@ -1162,7 +1162,6 @@ config FB_MATROX
  	select FB_CFB_FILLRECT
  	select FB_CFB_COPYAREA
@@ -1593,10 +1593,10 @@ index 188e1ba3b6..9038e042a5 100644
  	select FB_MACMODES if PPC_PMAC
  	---help---
  	  Say Y here if you have a Matrox Millennium, Matrox Millennium II,
-diff --git a/linux-2.6.32.71/drivers/video/console/Kconfig b/linux-2.6.32.71/drivers/video/console/Kconfig
-index fc7d9bbb54..cb8412ecb3 100644
---- a/linux-2.6.32.71/drivers/video/console/Kconfig
-+++ b/linux-2.6.32.71/drivers/video/console/Kconfig
+diff --git a/drivers/video/console/Kconfig b/drivers/video/console/Kconfig
+index fc7d9bbb..cb8412ec 100644
+--- a/drivers/video/console/Kconfig
++++ b/drivers/video/console/Kconfig
 @@ -121,6 +121,19 @@ config FRAMEBUFFER_CONSOLE_ROTATION
           such that other users of the framebuffer will remain normally
           oriented.
@@ -1617,10 +1617,10 @@ index fc7d9bbb54..cb8412ecb3 100644
  config STI_CONSOLE
          bool "STI text console"
          depends on PARISC
-diff --git a/linux-2.6.32.71/drivers/video/console/Makefile b/linux-2.6.32.71/drivers/video/console/Makefile
-index a862e9173e..86bfcff45b 100644
---- a/linux-2.6.32.71/drivers/video/console/Makefile
-+++ b/linux-2.6.32.71/drivers/video/console/Makefile
+diff --git a/drivers/video/console/Makefile b/drivers/video/console/Makefile
+index a862e917..86bfcff4 100644
+--- a/drivers/video/console/Makefile
++++ b/drivers/video/console/Makefile
 @@ -34,6 +34,7 @@ obj-$(CONFIG_FRAMEBUFFER_CONSOLE)     += fbcon_rotate.o fbcon_cw.o fbcon_ud.o \
                                           fbcon_ccw.o
  endif
@@ -1629,10 +1629,10 @@ index a862e9173e..86bfcff45b 100644
  obj-$(CONFIG_FB_STI)              += sticore.o font.o
  
  ifeq ($(CONFIG_USB_SISUSBVGA_CON),y)
-diff --git a/linux-2.6.32.71/drivers/video/console/bitblit.c b/linux-2.6.32.71/drivers/video/console/bitblit.c
-index 6b7c8fbc54..6b4d555f06 100644
---- a/linux-2.6.32.71/drivers/video/console/bitblit.c
-+++ b/linux-2.6.32.71/drivers/video/console/bitblit.c
+diff --git a/drivers/video/console/bitblit.c b/drivers/video/console/bitblit.c
+index 6b7c8fbc..6b4d555f 100644
+--- a/drivers/video/console/bitblit.c
++++ b/drivers/video/console/bitblit.c
 @@ -17,6 +17,7 @@
  #include <linux/console.h>
  #include <asm/types.h>
@@ -1675,11 +1675,11 @@ index 6b7c8fbc54..6b4d555f06 100644
  
  	ops->cursor_reset = 0;
  }
-diff --git a/linux-2.6.32.71/drivers/video/console/cfbcondecor.c b/linux-2.6.32.71/drivers/video/console/cfbcondecor.c
+diff --git a/drivers/video/console/cfbcondecor.c b/drivers/video/console/cfbcondecor.c
 new file mode 100644
-index 0000000000..7654ec6779
+index 00000000..7654ec67
 --- /dev/null
-+++ b/linux-2.6.32.71/drivers/video/console/cfbcondecor.c
++++ b/drivers/video/console/cfbcondecor.c
 @@ -0,0 +1,471 @@
 +/*
 + *  linux/drivers/video/cfbcon_decor.c -- Framebuffer decor render functions
@@ -2152,10 +2152,10 @@ index 0000000000..7654ec6779
 +	}
 +}
 +
-diff --git a/linux-2.6.32.71/drivers/video/console/fbcon.c b/linux-2.6.32.71/drivers/video/console/fbcon.c
-index 3681c6a882..9d4013c11b 100644
---- a/linux-2.6.32.71/drivers/video/console/fbcon.c
-+++ b/linux-2.6.32.71/drivers/video/console/fbcon.c
+diff --git a/drivers/video/console/fbcon.c b/drivers/video/console/fbcon.c
+index 3681c6a8..9d4013c1 100644
+--- a/drivers/video/console/fbcon.c
++++ b/drivers/video/console/fbcon.c
 @@ -80,6 +80,7 @@
  #include <asm/system.h>
  
@@ -2515,11 +2515,11 @@ index 3681c6a882..9d4013c11b 100644
  	fbcon_has_exited = 1;
  }
  
-diff --git a/linux-2.6.32.71/drivers/video/console/fbcondecor.c b/linux-2.6.32.71/drivers/video/console/fbcondecor.c
+diff --git a/drivers/video/console/fbcondecor.c b/drivers/video/console/fbcondecor.c
 new file mode 100644
-index 0000000000..a0b4ae33f0
+index 00000000..a0b4ae33
 --- /dev/null
-+++ b/linux-2.6.32.71/drivers/video/console/fbcondecor.c
++++ b/drivers/video/console/fbcondecor.c
 @@ -0,0 +1,561 @@
 +/*
 + *  linux/drivers/video/console/fbcondecor.c -- Framebuffer console decorations
@@ -3082,11 +3082,11 @@ index 0000000000..a0b4ae33f0
 +}
 +
 +EXPORT_SYMBOL(fbcon_decor_path);
-diff --git a/linux-2.6.32.71/drivers/video/console/fbcondecor.h b/linux-2.6.32.71/drivers/video/console/fbcondecor.h
+diff --git a/drivers/video/console/fbcondecor.h b/drivers/video/console/fbcondecor.h
 new file mode 100644
-index 0000000000..1d852dd95e
+index 00000000..1d852dd9
 --- /dev/null
-+++ b/linux-2.6.32.71/drivers/video/console/fbcondecor.h
++++ b/drivers/video/console/fbcondecor.h
 @@ -0,0 +1,78 @@
 +/* 
 + *  linux/drivers/video/console/fbcondecor.h -- Framebuffer Console Decoration headers
@@ -3166,10 +3166,10 @@ index 0000000000..1d852dd95e
 +#endif /* CONFIG_FB_CON_DECOR */
 +
 +#endif /* __FBCON_DECOR_H */
-diff --git a/linux-2.6.32.71/drivers/video/fbcmap.c b/linux-2.6.32.71/drivers/video/fbcmap.c
-index f53b9f1d6a..467f921af2 100644
---- a/linux-2.6.32.71/drivers/video/fbcmap.c
-+++ b/linux-2.6.32.71/drivers/video/fbcmap.c
+diff --git a/drivers/video/fbcmap.c b/drivers/video/fbcmap.c
+index f53b9f1d..467f921a 100644
+--- a/drivers/video/fbcmap.c
++++ b/drivers/video/fbcmap.c
 @@ -17,6 +17,8 @@
  #include <linux/slab.h>
  #include <linux/uaccess.h>
@@ -3200,10 +3200,10 @@ index f53b9f1d6a..467f921af2 100644
  	return rc;
  }
  
-diff --git a/linux-2.6.32.71/drivers/video/fbmem.c b/linux-2.6.32.71/drivers/video/fbmem.c
-index 99bbd282ce..893bca43f1 100644
---- a/linux-2.6.32.71/drivers/video/fbmem.c
-+++ b/linux-2.6.32.71/drivers/video/fbmem.c
+diff --git a/drivers/video/fbmem.c b/drivers/video/fbmem.c
+index 99bbd282..893bca43 100644
+--- a/drivers/video/fbmem.c
++++ b/drivers/video/fbmem.c
 @@ -1184,15 +1184,6 @@ struct fb_fix_screeninfo32 {
  	u16			reserved[3];
  };
@@ -3220,11 +3220,11 @@ index 99bbd282ce..893bca43f1 100644
  static int fb_getput_cmap(struct fb_info *info, unsigned int cmd,
  			  unsigned long arg)
  {
-diff --git a/linux-2.6.32.71/include/linux/console_decor.h b/linux-2.6.32.71/include/linux/console_decor.h
+diff --git a/include/linux/console_decor.h b/include/linux/console_decor.h
 new file mode 100644
-index 0000000000..04b8d80c34
+index 00000000..04b8d80c
 --- /dev/null
-+++ b/linux-2.6.32.71/include/linux/console_decor.h
++++ b/include/linux/console_decor.h
 @@ -0,0 +1,46 @@
 +#ifndef _LINUX_CONSOLE_DECOR_H_
 +#define _LINUX_CONSOLE_DECOR_H_ 1
@@ -3272,10 +3272,10 @@ index 0000000000..04b8d80c34
 +#endif /* __KERNEL__ */
 +
 +#endif
-diff --git a/linux-2.6.32.71/include/linux/console_struct.h b/linux-2.6.32.71/include/linux/console_struct.h
-index 38fe59dc89..8e4058b03b 100644
---- a/linux-2.6.32.71/include/linux/console_struct.h
-+++ b/linux-2.6.32.71/include/linux/console_struct.h
+diff --git a/include/linux/console_struct.h b/include/linux/console_struct.h
+index 38fe59dc..8e4058b0 100644
+--- a/include/linux/console_struct.h
++++ b/include/linux/console_struct.h
 @@ -19,6 +19,7 @@
  struct vt_struct;
  
@@ -3293,10 +3293,10 @@ index 38fe59dc89..8e4058b03b 100644
  	/* additional information is in vt_kern.h */
  };
  
-diff --git a/linux-2.6.32.71/include/linux/fb.h b/linux-2.6.32.71/include/linux/fb.h
-index 862e7d4a78..9014f83f12 100644
---- a/linux-2.6.32.71/include/linux/fb.h
-+++ b/linux-2.6.32.71/include/linux/fb.h
+diff --git a/include/linux/fb.h b/include/linux/fb.h
+index 862e7d4a..9014f83f 100644
+--- a/include/linux/fb.h
++++ b/include/linux/fb.h
 @@ -3,13 +3,31 @@
  
  #include <linux/types.h>
@@ -3429,10 +3429,10 @@ index 862e7d4a78..9014f83f12 100644
  	/* From here on everything is device dependent */
  	void *par;
  	/* we need the PCI or similiar aperture base/size not
-diff --git a/linux-2.6.32.71/kernel/sysctl.c b/linux-2.6.32.71/kernel/sysctl.c
-index b8bd058c5c..39b7b63611 100644
---- a/linux-2.6.32.71/kernel/sysctl.c
-+++ b/linux-2.6.32.71/kernel/sysctl.c
+diff --git a/kernel/sysctl.c b/kernel/sysctl.c
+index b8bd058c..39b7b636 100644
+--- a/kernel/sysctl.c
++++ b/kernel/sysctl.c
 @@ -124,6 +124,9 @@ static int ngroups_max = NGROUPS_MAX;
  extern char modprobe_path[];
  extern int modules_disabled;
