@@ -14,5 +14,5 @@ umount -R $target $merge $tmpfs > /dev/null 2>&1
 mkdir -p $tmpfs
 mount -t tmpfs tmpfs $tmpfs
 mkdir -p $upper $work $merge $target > /dev/null 2>&1
-mount -t overlay -o lowerdir=$lower,upperdir=$upper,workdir=$work overlay $merge
+mount -t overlay overlay -o lowerdir=$lower,upperdir=$upper,workdir=$work $merge
 mount --bind $merge $target
