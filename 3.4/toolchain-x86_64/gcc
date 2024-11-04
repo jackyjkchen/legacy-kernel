@@ -1,2 +1,1 @@
-#!/bin/sh
-gcc-4.6.4 -B$(dirname ${0}) "$@"
+/usr/x86_64-glibc217-linux-gnu/gcc-bin/4.6.4/gcc

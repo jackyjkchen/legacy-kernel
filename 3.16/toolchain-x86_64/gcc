@@ -1,2 +1,1 @@
-#!/bin/sh
-gcc-5.5.0 -B$(dirname ${0}) "$@"
+/usr/x86_64-glibc217-linux-gnu/gcc-bin/5.5.0/gcc
