@@ -1,10 +1,10 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/x86 4.19.320-gentoo Kernel Configuration
+# Linux/x86 4.19.324-gentoo Kernel Configuration
 #
 
 #
-# Compiler: gcc-11 (Gentoo 11.5.0-r3 p12) 11.5.0
+# Compiler: gcc (Gentoo 11.5.0-r13 p12) 11.5.0
 #
 CONFIG_CC_IS_GCC=y
 CONFIG_GCC_VERSION=110500

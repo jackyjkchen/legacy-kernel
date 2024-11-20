@@ -9,11 +9,11 @@ case ${0} in
     ;;
 esac
 
+mount -t tmpfs tmpfs /boot
 for ver in $@
 do
   [[ $ver < 3.0 ]] && nocompress="--no-compress-initramfs"
   gcc -v && ld -v
-  mount -t tmpfs tmpfs /boot
   cd /usr/src/linux-$ver-gentoo && \
   make clean && rm -rf target_dir && \
   make CROSS_COMPILE=${CROSS_COMPILE} HOSTCC="${HOSTCC-gcc}" -j`cat /proc/cpuinfo | grep process | wc -l` && \
@@ -26,7 +26,7 @@ do
   rm -rfv  ../kernel-$ver-gentoo-cjk-${arch}.tar.xz && \
   tar -pcf ../kernel-$ver-gentoo-cjk-${arch}.tar -C ./target_dir ./ && \
   xz -z9ev ../kernel-$ver-gentoo-cjk-${arch}.tar || (echo Failed in kernel: $ver && exit -1)
-  umount /boot
 done
+umount /boot
 
 echo Complete built $@.

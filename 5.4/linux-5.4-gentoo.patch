@@ -28,13 +28,13 @@ index 2040c2f76..9d3f8ebb4 100644
  M:	Miloslav Trmac <mitr@volny.cz>
  S:	Maintained
 diff --git a/Makefile b/Makefile
-index 4e9e7945f..df6765f2b 100644
+index 8849e295c..b480b1088 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -2,7 +2,7 @@
  VERSION = 5
  PATCHLEVEL = 4
- SUBLEVEL = 282
+ SUBLEVEL = 286
 -EXTRAVERSION =
 +EXTRAVERSION = -gentoo
  NAME = Kleptomaniac Octopus
@@ -21107,7 +21107,7 @@ index 05d79b01d..c6c0b86af 100644
  
  static int apple_input_mapping(struct hid_device *hdev, struct hid_input *hi,
 diff --git a/drivers/net/Kconfig b/drivers/net/Kconfig
-index df3cd2589..c96f8611c 100644
+index e148bbd9e..5f8b93cbf 100644
 --- a/drivers/net/Kconfig
 +++ b/drivers/net/Kconfig
 @@ -71,6 +71,47 @@ config DUMMY
@@ -42499,10 +42499,10 @@ index 000000000..26d87fc38
 +MODULE_LICENSE("GPL");
 +MODULE_AUTHOR("Martin Willi <martin@strongswan.org>");
 diff --git a/mm/shmem.c b/mm/shmem.c
-index 264229680..289bc70e4 100644
+index 6bd14e590..41681e3e8 100644
 --- a/mm/shmem.c
 +++ b/mm/shmem.c
-@@ -3246,6 +3246,14 @@ static int shmem_xattr_handler_set(const struct xattr_handler *handler,
+@@ -3248,6 +3248,14 @@ static int shmem_xattr_handler_set(const struct xattr_handler *handler,
  	struct shmem_inode_info *info = SHMEM_I(inode);
  
  	name = xattr_full_name(handler, name);
@@ -42517,7 +42517,7 @@ index 264229680..289bc70e4 100644
  	return simple_xattr_set(&info->xattrs, name, value, size, flags);
  }
  
-@@ -3261,6 +3269,12 @@ static const struct xattr_handler shmem_trusted_xattr_handler = {
+@@ -3263,6 +3271,12 @@ static const struct xattr_handler shmem_trusted_xattr_handler = {
  	.set = shmem_xattr_handler_set,
  };
  
@@ -42530,7 +42530,7 @@ index 264229680..289bc70e4 100644
  static const struct xattr_handler *shmem_xattr_handlers[] = {
  #ifdef CONFIG_TMPFS_POSIX_ACL
  	&posix_acl_access_xattr_handler,
-@@ -3268,6 +3282,7 @@ static const struct xattr_handler *shmem_xattr_handlers[] = {
+@@ -3270,6 +3284,7 @@ static const struct xattr_handler *shmem_xattr_handlers[] = {
  #endif
  	&shmem_security_xattr_handler,
  	&shmem_trusted_xattr_handler,

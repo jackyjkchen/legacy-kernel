@@ -1,2 +1,1 @@
-#!/bin/sh
-gcc-12 -B$(dirname ${0}) "$@"
+/usr/x86_64-pc-linux-gnu/gcc-bin/12/gcc
