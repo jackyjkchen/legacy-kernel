@@ -1,0 +1,14 @@
+diff --git a/drivers/char/random.c b/drivers/char/random.c
+index 08d96d58..27eb0293 100644
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -924,7 +924,8 @@ void add_interrupt_randomness(int irq, int irq_flags)
+ 	add_interrupt_bench(cycles);
+ 
+ 	if ((fast_pool->count < 64) &&
+-	    !time_after(now, fast_pool->last + HZ))
++	    !time_after(now, fast_pool->last + HZ) &&
++		nonblocking_pool.initialized)
+ 		return;
+ 
+ 	r = nonblocking_pool.initialized ? &input_pool : &nonblocking_pool;
