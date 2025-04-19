@@ -9,13 +9,13 @@ index 48a80beab..a5ad73c66 100644
 +
 +source "distro/Kconfig"
 diff --git a/Makefile b/Makefile
-index bb5071b9a..53d4f9271 100644
+index 8df76f9b0..87ced3721 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -2,7 +2,7 @@
  VERSION = 4
  PATCHLEVEL = 19
- SUBLEVEL = 324
+ SUBLEVEL = 325
 -EXTRAVERSION =
 +EXTRAVERSION = -gentoo
  NAME = "People's Front"
@@ -493,10 +493,10 @@ index 6ce9f10b9..f968fdab2 100644
  };
  
 diff --git a/mm/shmem.c b/mm/shmem.c
-index 6e9027cb7..f1d572102 100644
+index 078861669..bab2185af 100644
 --- a/mm/shmem.c
 +++ b/mm/shmem.c
-@@ -3208,6 +3208,14 @@ static int shmem_xattr_handler_set(const struct xattr_handler *handler,
+@@ -3206,6 +3206,14 @@ static int shmem_xattr_handler_set(const struct xattr_handler *handler,
  	struct shmem_inode_info *info = SHMEM_I(inode);
  
  	name = xattr_full_name(handler, name);
@@ -511,7 +511,7 @@ index 6e9027cb7..f1d572102 100644
  	return simple_xattr_set(&info->xattrs, name, value, size, flags);
  }
  
-@@ -3223,6 +3231,12 @@ static const struct xattr_handler shmem_trusted_xattr_handler = {
+@@ -3221,6 +3229,12 @@ static const struct xattr_handler shmem_trusted_xattr_handler = {
  	.set = shmem_xattr_handler_set,
  };
  
@@ -524,7 +524,7 @@ index 6e9027cb7..f1d572102 100644
  static const struct xattr_handler *shmem_xattr_handlers[] = {
  #ifdef CONFIG_TMPFS_POSIX_ACL
  	&posix_acl_access_xattr_handler,
-@@ -3230,6 +3244,7 @@ static const struct xattr_handler *shmem_xattr_handlers[] = {
+@@ -3228,6 +3242,7 @@ static const struct xattr_handler *shmem_xattr_handlers[] = {
  #endif
  	&shmem_security_xattr_handler,
  	&shmem_trusted_xattr_handler,

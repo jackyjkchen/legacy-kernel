@@ -28,13 +28,13 @@ index 2040c2f76..9d3f8ebb4 100644
  M:	Miloslav Trmac <mitr@volny.cz>
  S:	Maintained
 diff --git a/Makefile b/Makefile
-index 8849e295c..b480b1088 100644
+index 6cb965fe2..3a11cf2d2 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -2,7 +2,7 @@
  VERSION = 5
  PATCHLEVEL = 4
- SUBLEVEL = 286
+ SUBLEVEL = 292
 -EXTRAVERSION =
 +EXTRAVERSION = -gentoo
  NAME = Kleptomaniac Octopus
@@ -8784,7 +8784,7 @@ index 000000000..01e22fe40
 +MODULE_ALIAS_CRYPTO("poly1305");
 +MODULE_ALIAS_CRYPTO("poly1305-neon");
 diff --git a/arch/mips/Makefile b/arch/mips/Makefile
-index 9ff2c7076..a0726f972 100644
+index e2a2e5df4..7b4f5ec89 100644
 --- a/arch/mips/Makefile
 +++ b/arch/mips/Makefile
 @@ -334,7 +334,7 @@ libs-$(CONFIG_MIPS_FP_SUPPORT) += arch/mips/math-emu/
@@ -19627,10 +19627,10 @@ index 7473c5bc0..48705f2b2 100644
  		.alg = "deflate",
  		.test = alg_test_comp,
 diff --git a/crypto/testmgr.h b/crypto/testmgr.h
-index ef7d21f39..66c1920e5 100644
+index 601cbee29..f0ab40257 100644
 --- a/crypto/testmgr.h
 +++ b/crypto/testmgr.h
-@@ -1030,6 +1030,1231 @@ static const struct kpp_testvec dh_tv_template[] = {
+@@ -1133,6 +1133,1231 @@ static const struct kpp_testvec dh_tv_template[] = {
  	}
  };
  
@@ -28452,7 +28452,7 @@ index 000000000..a1a269a11
 @@ -0,0 +1 @@
 +#define WIREGUARD_VERSION "1.0.0"
 diff --git a/fs/namei.c b/fs/namei.c
-index a4cba6991..be211857d 100644
+index 038a9a4b9..f3819b469 100644
 --- a/fs/namei.c
 +++ b/fs/namei.c
 @@ -877,8 +877,8 @@ static inline void put_link(struct nameidata *nd)
@@ -42499,10 +42499,10 @@ index 000000000..26d87fc38
 +MODULE_LICENSE("GPL");
 +MODULE_AUTHOR("Martin Willi <martin@strongswan.org>");
 diff --git a/mm/shmem.c b/mm/shmem.c
-index 6bd14e590..41681e3e8 100644
+index 264229680..289bc70e4 100644
 --- a/mm/shmem.c
 +++ b/mm/shmem.c
-@@ -3248,6 +3248,14 @@ static int shmem_xattr_handler_set(const struct xattr_handler *handler,
+@@ -3246,6 +3246,14 @@ static int shmem_xattr_handler_set(const struct xattr_handler *handler,
  	struct shmem_inode_info *info = SHMEM_I(inode);
  
  	name = xattr_full_name(handler, name);
@@ -42517,7 +42517,7 @@ index 6bd14e590..41681e3e8 100644
  	return simple_xattr_set(&info->xattrs, name, value, size, flags);
  }
  
-@@ -3263,6 +3271,12 @@ static const struct xattr_handler shmem_trusted_xattr_handler = {
+@@ -3261,6 +3269,12 @@ static const struct xattr_handler shmem_trusted_xattr_handler = {
  	.set = shmem_xattr_handler_set,
  };
  
@@ -42530,7 +42530,7 @@ index 6bd14e590..41681e3e8 100644
  static const struct xattr_handler *shmem_xattr_handlers[] = {
  #ifdef CONFIG_TMPFS_POSIX_ACL
  	&posix_acl_access_xattr_handler,
-@@ -3270,6 +3284,7 @@ static const struct xattr_handler *shmem_xattr_handlers[] = {
+@@ -3268,6 +3282,7 @@ static const struct xattr_handler *shmem_xattr_handlers[] = {
  #endif
  	&shmem_security_xattr_handler,
  	&shmem_trusted_xattr_handler,

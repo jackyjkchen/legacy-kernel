@@ -1,10 +1,10 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/x86 5.4.286-gentoo Kernel Configuration
+# Linux/x86 5.4.292-gentoo Kernel Configuration
 #
 
 #
-# Compiler: gcc (Gentoo 12.4.1_p20241031 p1) 12.4.1 20241031
+# Compiler: gcc (Gentoo 12.4.1_p20241219 p2) 12.4.1 20241219
 #
 CONFIG_CC_IS_GCC=y
 CONFIG_GCC_VERSION=120401
@@ -1522,8 +1522,6 @@ CONFIG_HAVE_EBPF_JIT=y
 #
 # Device Drivers
 #
-CONFIG_HAVE_EISA=y
-# CONFIG_EISA is not set
 CONFIG_HAVE_PCI=y
 CONFIG_PCI=y
 CONFIG_PCI_DOMAINS=y
