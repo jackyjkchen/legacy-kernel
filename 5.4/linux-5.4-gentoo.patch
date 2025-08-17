@@ -9,10 +9,10 @@ index e10b3ee08..3f5d23538 100644
 +
 +source "distro/Kconfig"
 diff --git a/MAINTAINERS b/MAINTAINERS
-index 2040c2f76..9d3f8ebb4 100644
+index 474daf91a..975e4a9a1 100644
 --- a/MAINTAINERS
 +++ b/MAINTAINERS
-@@ -17579,6 +17579,14 @@ L:	linux-gpio@vger.kernel.org
+@@ -17588,6 +17588,14 @@ L:	linux-gpio@vger.kernel.org
  S:	Maintained
  F:	drivers/gpio/gpio-ws16c48.c
  
@@ -28,13 +28,13 @@ index 2040c2f76..9d3f8ebb4 100644
  M:	Miloslav Trmac <mitr@volny.cz>
  S:	Maintained
 diff --git a/Makefile b/Makefile
-index 6cb965fe2..3a11cf2d2 100644
+index f65e282f4..7368f745c 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -2,7 +2,7 @@
  VERSION = 5
  PATCHLEVEL = 4
- SUBLEVEL = 292
+ SUBLEVEL = 296
 -EXTRAVERSION =
 +EXTRAVERSION = -gentoo
  NAME = Kleptomaniac Octopus
@@ -8784,7 +8784,7 @@ index 000000000..01e22fe40
 +MODULE_ALIAS_CRYPTO("poly1305");
 +MODULE_ALIAS_CRYPTO("poly1305-neon");
 diff --git a/arch/mips/Makefile b/arch/mips/Makefile
-index e2a2e5df4..7b4f5ec89 100644
+index 454225802..160d535af 100644
 --- a/arch/mips/Makefile
 +++ b/arch/mips/Makefile
 @@ -334,7 +334,7 @@ libs-$(CONFIG_MIPS_FP_SUPPORT) += arch/mips/math-emu/
