@@ -5519,8 +5519,8 @@ CONFIG_IO_STRICT_DEVMEM=y
 #
 # loongarch Debugging
 #
-# CONFIG_UNWINDER_GUESS is not set
-CONFIG_UNWINDER_PROLOGUE=y
+CONFIG_UNWINDER_GUESS=y
+# CONFIG_UNWINDER_PROLOGUE is not set
 # end of loongarch Debugging
 
 #
