@@ -1,1 +1,0 @@
-build_gentoo_kernel.sh

@@ -1,13 +1,6 @@
 #!/bin/sh
 
-case ${0} in
-  *_loongson3.sh)
-    arch="loongson3"
-    ;;
-  *)
-    arch="x86_64"
-    ;;
-esac
+arch=$(uname -m)
 
 for ver in $@
 do
