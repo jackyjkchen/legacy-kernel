@@ -1,0 +1,13 @@
+diff --git a/Makefile b/Makefile
+index dfe2b12a..4399c2ae 100644
+--- a/Makefile
++++ b/Makefile
+@@ -1637,7 +1637,7 @@ quiet_cmd_depmod = DEPMOD  $(KERNELRELEASE)
+       cmd_depmod = \
+ 	if [ -r System.map -a -x $(DEPMOD) ]; then                              \
+ 		$(DEPMOD) -ae -F System.map                                     \
+-		$(if $(strip $(INSTALL_MOD_PATH)), -b $(INSTALL_MOD_PATH) -r)   \
++		$(if $(strip $(INSTALL_MOD_PATH)), -b $(INSTALL_MOD_PATH) )     \
+ 		$(KERNELRELEASE);                                               \
+ 	fi
+ 

@@ -1,7 +1,7 @@
-diff --git a/linux-2.6.27.62/Documentation/fb/00-INDEX b/linux-2.6.27.62/Documentation/fb/00-INDEX
-index caabbd395e..52d6e602e5 100644
---- a/linux-2.6.27.62/Documentation/fb/00-INDEX
-+++ b/linux-2.6.27.62/Documentation/fb/00-INDEX
+diff --git a/Documentation/fb/00-INDEX b/Documentation/fb/00-INDEX
+index caabbd39..52d6e602 100644
+--- a/Documentation/fb/00-INDEX
++++ b/Documentation/fb/00-INDEX
 @@ -17,6 +17,8 @@ deferred_io.txt
  	- an introduction to deferred IO.
  fbcon.txt
@@ -11,11 +11,11 @@ index caabbd395e..52d6e602e5 100644
  framebuffer.txt
  	- introduction to frame buffer devices.
  imacfb.txt
-diff --git a/linux-2.6.27.62/Documentation/fb/fbcondecor.txt b/linux-2.6.27.62/Documentation/fb/fbcondecor.txt
+diff --git a/Documentation/fb/fbcondecor.txt b/Documentation/fb/fbcondecor.txt
 new file mode 100644
-index 0000000000..15889f3d11
+index 00000000..15889f3d
 --- /dev/null
-+++ b/linux-2.6.27.62/Documentation/fb/fbcondecor.txt
++++ b/Documentation/fb/fbcondecor.txt
 @@ -0,0 +1,207 @@
 +What is it?
 +-----------
@@ -224,10 +224,10 @@ index 0000000000..15889f3d11
 +Fbcondecor, fbcondecor protocol design, current implementation & docs by:
 +  Michal Januszewski <spock@gentoo.org>
 +
-diff --git a/linux-2.6.27.62/Documentation/hwmon/it87 b/linux-2.6.27.62/Documentation/hwmon/it87
-index 3496b7020e..659315d98e 100644
---- a/linux-2.6.27.62/Documentation/hwmon/it87
-+++ b/linux-2.6.27.62/Documentation/hwmon/it87
+diff --git a/Documentation/hwmon/it87 b/Documentation/hwmon/it87
+index 3496b702..659315d9 100644
+--- a/Documentation/hwmon/it87
++++ b/Documentation/hwmon/it87
 @@ -26,6 +26,10 @@ Supported chips:
      Datasheet: Publicly available at the ITE website
                 http://www.ite.com.tw/product_info/file/pc/IT8718F_V0.2.zip
@@ -296,10 +296,10 @@ index 3496b7020e..659315d98e 100644
  3 = thermal diode)
  
  
-diff --git a/linux-2.6.27.62/Makefile b/linux-2.6.27.62/Makefile
-index d6b48ff9bd..dfe2b12ab9 100644
---- a/linux-2.6.27.62/Makefile
-+++ b/linux-2.6.27.62/Makefile
+diff --git a/Makefile b/Makefile
+index d6b48ff9..dfe2b12a 100644
+--- a/Makefile
++++ b/Makefile
 @@ -1,7 +1,7 @@
  VERSION = 2
  PATCHLEVEL = 6
@@ -309,10 +309,10 @@ index d6b48ff9bd..dfe2b12ab9 100644
  NAME = Trembling Tortoise
  
  # *DOCUMENTATION*
-diff --git a/linux-2.6.27.62/arch/alpha/Kconfig b/linux-2.6.27.62/arch/alpha/Kconfig
-index 1bec55d63e..c904d26c5d 100644
---- a/linux-2.6.27.62/arch/alpha/Kconfig
-+++ b/linux-2.6.27.62/arch/alpha/Kconfig
+diff --git a/arch/alpha/Kconfig b/arch/alpha/Kconfig
+index 1bec55d6..c904d26c 100644
+--- a/arch/alpha/Kconfig
++++ b/arch/alpha/Kconfig
 @@ -620,6 +620,32 @@ config HZ
  	default 1200 if ALPHA_RAWHIDE
  	default 1024
@@ -346,10 +346,10 @@ index 1bec55d63e..c904d26c5d 100644
  source "drivers/pci/Kconfig"
  source "drivers/eisa/Kconfig"
  
-diff --git a/linux-2.6.27.62/arch/alpha/kernel/traps.c b/linux-2.6.27.62/arch/alpha/kernel/traps.c
-index c778779007..13076a0930 100644
---- a/linux-2.6.27.62/arch/alpha/kernel/traps.c
-+++ b/linux-2.6.27.62/arch/alpha/kernel/traps.c
+diff --git a/arch/alpha/kernel/traps.c b/arch/alpha/kernel/traps.c
+index c7787790..13076a09 100644
+--- a/arch/alpha/kernel/traps.c
++++ b/arch/alpha/kernel/traps.c
 @@ -103,6 +103,52 @@ static char * ireg_name[] = {"v0", "t0", "t1", "t2", "t3", "t4", "t5", "t6",
  			   "t10", "t11", "ra", "pv", "at", "gp", "sp", "zero"};
  #endif
@@ -442,10 +442,10 @@ index c778779007..13076a0930 100644
 +#ifdef CONFIG_ALPHA_UAC_SYSCTL
 +	__initcall(init_uac_sysctl);
 +#endif
-diff --git a/linux-2.6.27.62/arch/s390/Kconfig b/linux-2.6.27.62/arch/s390/Kconfig
-index f9b3dcdf5d..b9978d3039 100644
---- a/linux-2.6.27.62/arch/s390/Kconfig
-+++ b/linux-2.6.27.62/arch/s390/Kconfig
+diff --git a/arch/s390/Kconfig b/arch/s390/Kconfig
+index f9b3dcdf..b9978d30 100644
+--- a/arch/s390/Kconfig
++++ b/arch/s390/Kconfig
 @@ -223,6 +223,14 @@ config MARCH_Z9_109
  	  Class (z9 BC). The kernel will be slightly faster but will not
  	  work on older machines such as the z990, z890, z900, and z800.
@@ -461,10 +461,10 @@ index f9b3dcdf5d..b9978d3039 100644
  endchoice
  
  config PACK_STACK
-diff --git a/linux-2.6.27.62/arch/s390/Makefile b/linux-2.6.27.62/arch/s390/Makefile
-index 792a4e7743..578c61f15a 100644
---- a/linux-2.6.27.62/arch/s390/Makefile
-+++ b/linux-2.6.27.62/arch/s390/Makefile
+diff --git a/arch/s390/Makefile b/arch/s390/Makefile
+index 792a4e77..578c61f1 100644
+--- a/arch/s390/Makefile
++++ b/arch/s390/Makefile
 @@ -34,6 +34,7 @@ cflags-$(CONFIG_MARCH_G5)   += $(call cc-option,-march=g5)
  cflags-$(CONFIG_MARCH_Z900) += $(call cc-option,-march=z900)
  cflags-$(CONFIG_MARCH_Z990) += $(call cc-option,-march=z990)
@@ -473,10 +473,10 @@ index 792a4e7743..578c61f15a 100644
  
  #KBUILD_IMAGE is necessary for make rpm
  KBUILD_IMAGE	:=arch/s390/boot/image
-diff --git a/linux-2.6.27.62/arch/s390/appldata/appldata.h b/linux-2.6.27.62/arch/s390/appldata/appldata.h
-index 17a2636fec..f0b23fc759 100644
---- a/linux-2.6.27.62/arch/s390/appldata/appldata.h
-+++ b/linux-2.6.27.62/arch/s390/appldata/appldata.h
+diff --git a/arch/s390/appldata/appldata.h b/arch/s390/appldata/appldata.h
+index 17a2636f..f0b23fc7 100644
+--- a/arch/s390/appldata/appldata.h
++++ b/arch/s390/appldata/appldata.h
 @@ -26,10 +26,6 @@
  #define CTL_APPLDATA_NET_SUM	2125
  #define CTL_APPLDATA_PROC	2126
@@ -488,10 +488,10 @@ index 17a2636fec..f0b23fc759 100644
  struct appldata_ops {
  	struct list_head list;
  	struct ctl_table_header *sysctl_header;
-diff --git a/linux-2.6.27.62/arch/s390/appldata/appldata_base.c b/linux-2.6.27.62/arch/s390/appldata/appldata_base.c
-index a7f8979fb9..645f2606d0 100644
---- a/linux-2.6.27.62/arch/s390/appldata/appldata_base.c
-+++ b/linux-2.6.27.62/arch/s390/appldata/appldata_base.c
+diff --git a/arch/s390/appldata/appldata_base.c b/arch/s390/appldata/appldata_base.c
+index a7f8979f..645f2606 100644
+--- a/arch/s390/appldata/appldata_base.c
++++ b/arch/s390/appldata/appldata_base.c
 @@ -10,6 +10,9 @@
   * Author: Gerald Schaefer <gerald.schaefer@de.ibm.com>
   */
@@ -532,10 +532,10 @@ index a7f8979fb9..645f2606d0 100644
  		module_put(ops->owner);
  	}
  	spin_unlock(&appldata_ops_lock);
-diff --git a/linux-2.6.27.62/arch/s390/appldata/appldata_os.c b/linux-2.6.27.62/arch/s390/appldata/appldata_os.c
-index eb44f9f8ab..55c80ffd42 100644
---- a/linux-2.6.27.62/arch/s390/appldata/appldata_os.c
-+++ b/linux-2.6.27.62/arch/s390/appldata/appldata_os.c
+diff --git a/arch/s390/appldata/appldata_os.c b/arch/s390/appldata/appldata_os.c
+index eb44f9f8..55c80ffd 100644
+--- a/arch/s390/appldata/appldata_os.c
++++ b/arch/s390/appldata/appldata_os.c
 @@ -9,6 +9,9 @@
   * Author: Gerald Schaefer <gerald.schaefer@de.ibm.com>
   */
@@ -591,10 +591,10 @@ index eb44f9f8ab..55c80ffd42 100644
  		rc = -ENOMEM;
  		goto out;
  	}
-diff --git a/linux-2.6.27.62/arch/s390/crypto/aes_s390.c b/linux-2.6.27.62/arch/s390/crypto/aes_s390.c
-index e33f32b54c..c42cd898f6 100644
---- a/linux-2.6.27.62/arch/s390/crypto/aes_s390.c
-+++ b/linux-2.6.27.62/arch/s390/crypto/aes_s390.c
+diff --git a/arch/s390/crypto/aes_s390.c b/arch/s390/crypto/aes_s390.c
+index e33f32b5..c42cd898 100644
+--- a/arch/s390/crypto/aes_s390.c
++++ b/arch/s390/crypto/aes_s390.c
 @@ -17,6 +17,9 @@
   *
   */
@@ -637,10 +637,10 @@ index e33f32b54c..c42cd898f6 100644
  
  	ret = crypto_register_alg(&aes_alg);
  	if (ret)
-diff --git a/linux-2.6.27.62/arch/s390/hypfs/hypfs_diag.c b/linux-2.6.27.62/arch/s390/hypfs/hypfs_diag.c
-index b9a1ce1f28..b1e892a438 100644
---- a/linux-2.6.27.62/arch/s390/hypfs/hypfs_diag.c
-+++ b/linux-2.6.27.62/arch/s390/hypfs/hypfs_diag.c
+diff --git a/arch/s390/hypfs/hypfs_diag.c b/arch/s390/hypfs/hypfs_diag.c
+index b9a1ce1f..b1e892a4 100644
+--- a/arch/s390/hypfs/hypfs_diag.c
++++ b/arch/s390/hypfs/hypfs_diag.c
 @@ -3,10 +3,13 @@
   *    Hypervisor filesystem for Linux on s390. Diag 204 and 224
   *    implementation.
@@ -673,10 +673,10 @@ index b9a1ce1f28..b1e892a438 100644
  	}
  	return rc;
  }
-diff --git a/linux-2.6.27.62/arch/s390/hypfs/inode.c b/linux-2.6.27.62/arch/s390/hypfs/inode.c
-index 7383781f3e..348a3177ad 100644
---- a/linux-2.6.27.62/arch/s390/hypfs/inode.c
-+++ b/linux-2.6.27.62/arch/s390/hypfs/inode.c
+diff --git a/arch/s390/hypfs/inode.c b/arch/s390/hypfs/inode.c
+index 7383781f..348a3177 100644
+--- a/arch/s390/hypfs/inode.c
++++ b/arch/s390/hypfs/inode.c
 @@ -2,10 +2,13 @@
   *  arch/s390/hypfs/inode.c
   *    Hypervisor filesystem for Linux on s390.
@@ -729,10 +729,10 @@ index 7383781f3e..348a3177ad 100644
  	return rc;
  }
  
-diff --git a/linux-2.6.27.62/arch/s390/include/asm/isc.h b/linux-2.6.27.62/arch/s390/include/asm/isc.h
-index 34bb8916db..1420a11159 100644
---- a/linux-2.6.27.62/arch/s390/include/asm/isc.h
-+++ b/linux-2.6.27.62/arch/s390/include/asm/isc.h
+diff --git a/arch/s390/include/asm/isc.h b/arch/s390/include/asm/isc.h
+index 34bb8916..1420a111 100644
+--- a/arch/s390/include/asm/isc.h
++++ b/arch/s390/include/asm/isc.h
 @@ -17,6 +17,7 @@
  #define CHSC_SCH_ISC 7			/* CHSC subchannels */
  /* Adapter interrupts. */
@@ -741,10 +741,10 @@ index 34bb8916db..1420a11159 100644
  
  /* Functions for registration of I/O interruption subclasses */
  void isc_register(unsigned int isc);
-diff --git a/linux-2.6.27.62/arch/s390/include/asm/qdio.h b/linux-2.6.27.62/arch/s390/include/asm/qdio.h
-index 6813772171..27fc1746de 100644
---- a/linux-2.6.27.62/arch/s390/include/asm/qdio.h
-+++ b/linux-2.6.27.62/arch/s390/include/asm/qdio.h
+diff --git a/arch/s390/include/asm/qdio.h b/arch/s390/include/asm/qdio.h
+index 68137721..27fc1746 100644
+--- a/arch/s390/include/asm/qdio.h
++++ b/arch/s390/include/asm/qdio.h
 @@ -299,7 +299,13 @@ struct qdio_ssqd_desc {
  	u8 mbccnt;
  	u16 qdioac2;
@@ -785,10 +785,10 @@ index 6813772171..27fc1746de 100644
 +extern int qdio_get_ssqd_desc(struct ccw_device *dev, struct qdio_ssqd_desc*);
  
  #endif /* __QDIO_H__ */
-diff --git a/linux-2.6.27.62/arch/s390/include/asm/sysinfo.h b/linux-2.6.27.62/arch/s390/include/asm/sysinfo.h
-index 79d01343f8..ad93212d9e 100644
---- a/linux-2.6.27.62/arch/s390/include/asm/sysinfo.h
-+++ b/linux-2.6.27.62/arch/s390/include/asm/sysinfo.h
+diff --git a/arch/s390/include/asm/sysinfo.h b/arch/s390/include/asm/sysinfo.h
+index 79d01343..ad93212d 100644
+--- a/arch/s390/include/asm/sysinfo.h
++++ b/arch/s390/include/asm/sysinfo.h
 @@ -118,4 +118,15 @@ static inline int stsi(void *sysinfo, int fc, int sel1, int sel2)
  	return r0;
  }
@@ -805,10 +805,10 @@ index 79d01343f8..ad93212d9e 100644
 +int unregister_service_level(struct service_level *);
 +
  #endif /* __ASM_S390_SYSINFO_H */
-diff --git a/linux-2.6.27.62/arch/s390/include/asm/system.h b/linux-2.6.27.62/arch/s390/include/asm/system.h
-index 819e7d99ca..c17a3cfbe2 100644
---- a/linux-2.6.27.62/arch/s390/include/asm/system.h
-+++ b/linux-2.6.27.62/arch/s390/include/asm/system.h
+diff --git a/arch/s390/include/asm/system.h b/arch/s390/include/asm/system.h
+index 819e7d99..c17a3cfb 100644
+--- a/arch/s390/include/asm/system.h
++++ b/arch/s390/include/asm/system.h
 @@ -12,6 +12,7 @@
  #define __ASM_SYSTEM_H
  
@@ -850,10 +850,10 @@ index 819e7d99ca..c17a3cfbe2 100644
  static inline unsigned short stap(void)
  {
  	unsigned short cpu_address;
-diff --git a/linux-2.6.27.62/arch/s390/kernel/Makefile b/linux-2.6.27.62/arch/s390/kernel/Makefile
-index 50f657e773..8c272ae6b3 100644
---- a/linux-2.6.27.62/arch/s390/kernel/Makefile
-+++ b/linux-2.6.27.62/arch/s390/kernel/Makefile
+diff --git a/arch/s390/kernel/Makefile b/arch/s390/kernel/Makefile
+index 50f657e7..8c272ae6 100644
+--- a/arch/s390/kernel/Makefile
++++ b/arch/s390/kernel/Makefile
 @@ -12,8 +12,8 @@ CFLAGS_smp.o	:= -Wno-nonnull
  #
  CFLAGS_ptrace.o		+= -DUTS_MACHINE='"$(UTS_MACHINE)"'
@@ -865,10 +865,10 @@ index 50f657e773..8c272ae6b3 100644
  	    s390_ext.o debug.o irq.o ipl.o dis.o diag.o mem_detect.o
  
  obj-y	+= $(if $(CONFIG_64BIT),entry64.o,entry.o)
-diff --git a/linux-2.6.27.62/arch/s390/kernel/cpcmd.c b/linux-2.6.27.62/arch/s390/kernel/cpcmd.c
-index d8c1131e08..3e8b8816f3 100644
---- a/linux-2.6.27.62/arch/s390/kernel/cpcmd.c
-+++ b/linux-2.6.27.62/arch/s390/kernel/cpcmd.c
+diff --git a/arch/s390/kernel/cpcmd.c b/arch/s390/kernel/cpcmd.c
+index d8c1131e..3e8b8816 100644
+--- a/arch/s390/kernel/cpcmd.c
++++ b/arch/s390/kernel/cpcmd.c
 @@ -7,6 +7,9 @@
   *               Christian Borntraeger (cborntra@de.ibm.com),
   */
@@ -890,10 +890,10 @@ index d8c1131e08..3e8b8816f3 100644
  			return -ENOMEM;
  		}
  		spin_lock_irqsave(&cpcmd_lock, flags);
-diff --git a/linux-2.6.27.62/arch/s390/kernel/debug.c b/linux-2.6.27.62/arch/s390/kernel/debug.c
-index d80fcd4a7f..3665b18ded 100644
---- a/linux-2.6.27.62/arch/s390/kernel/debug.c
-+++ b/linux-2.6.27.62/arch/s390/kernel/debug.c
+diff --git a/arch/s390/kernel/debug.c b/arch/s390/kernel/debug.c
+index d80fcd4a..3665b18d 100644
+--- a/arch/s390/kernel/debug.c
++++ b/arch/s390/kernel/debug.c
 @@ -10,6 +10,9 @@
   *    Bugreports to: <Linux390@de.ibm.com>
   */
@@ -1002,10 +1002,10 @@ index d80fcd4a7f..3665b18ded 100644
  
  out:
          *offset += user_len;
-diff --git a/linux-2.6.27.62/arch/s390/kernel/entry.S b/linux-2.6.27.62/arch/s390/kernel/entry.S
-index 708cf9cf9a..576f307ca6 100644
---- a/linux-2.6.27.62/arch/s390/kernel/entry.S
-+++ b/linux-2.6.27.62/arch/s390/kernel/entry.S
+diff --git a/arch/s390/kernel/entry.S b/arch/s390/kernel/entry.S
+index 708cf9cf..576f307c 100644
+--- a/arch/s390/kernel/entry.S
++++ b/arch/s390/kernel/entry.S
 @@ -61,22 +61,25 @@ STACK_SIZE  = 1 << STACK_SHIFT
  
  #ifdef CONFIG_TRACE_IRQFLAGS
@@ -1052,10 +1052,10 @@ index 708cf9cf9a..576f307ca6 100644
  .Llockdep_sys_exit:
  		.long	lockdep_sys_exit
  #endif
-diff --git a/linux-2.6.27.62/arch/s390/kernel/entry64.S b/linux-2.6.27.62/arch/s390/kernel/entry64.S
-index fee10177db..9ec4a70268 100644
---- a/linux-2.6.27.62/arch/s390/kernel/entry64.S
-+++ b/linux-2.6.27.62/arch/s390/kernel/entry64.S
+diff --git a/arch/s390/kernel/entry64.S b/arch/s390/kernel/entry64.S
+index fee10177..9ec4a702 100644
+--- a/arch/s390/kernel/entry64.S
++++ b/arch/s390/kernel/entry64.S
 @@ -61,19 +61,22 @@ _TIF_WORK_INT = (_TIF_SIGPENDING | _TIF_NEED_RESCHED | \
  
  #ifdef CONFIG_TRACE_IRQFLAGS
@@ -1083,10 +1083,10 @@ index fee10177db..9ec4a70268 100644
  1:
  	.endm
  #else
-diff --git a/linux-2.6.27.62/arch/s390/kernel/head.S b/linux-2.6.27.62/arch/s390/kernel/head.S
-index 83477c7dc7..ec7e35f605 100644
---- a/linux-2.6.27.62/arch/s390/kernel/head.S
-+++ b/linux-2.6.27.62/arch/s390/kernel/head.S
+diff --git a/arch/s390/kernel/head.S b/arch/s390/kernel/head.S
+index 83477c7d..ec7e35f6 100644
+--- a/arch/s390/kernel/head.S
++++ b/arch/s390/kernel/head.S
 @@ -461,6 +461,55 @@ start:
  	.byte 0xf0,0xf1,0xf2,0xf3,0xf4,0xf5,0xf6,0xf7
  	.byte 0xf8,0xf9,0xfa,0xfb,0xfc,0xfd,0xfe,0xff
@@ -1143,10 +1143,10 @@ index 83477c7dc7..ec7e35f605 100644
  #ifdef CONFIG_64BIT
  #include "head64.S"
  #else
-diff --git a/linux-2.6.27.62/arch/s390/kernel/head31.S b/linux-2.6.27.62/arch/s390/kernel/head31.S
-index a816e2de32..7add845477 100644
---- a/linux-2.6.27.62/arch/s390/kernel/head31.S
-+++ b/linux-2.6.27.62/arch/s390/kernel/head31.S
+diff --git a/arch/s390/kernel/head31.S b/arch/s390/kernel/head31.S
+index a816e2de..7add8454 100644
+--- a/arch/s390/kernel/head31.S
++++ b/arch/s390/kernel/head31.S
 @@ -10,34 +10,13 @@
   *
   */
@@ -1185,10 +1185,10 @@ index a816e2de32..7add845477 100644
  	lctl	%c0,%c15,.Lctl-.LPG1(%r13) # load control registers
  	l	%r12,.Lparmaddr-.LPG1(%r13) # pointer to parameter area
  					# move IPL device to lowcore
-diff --git a/linux-2.6.27.62/arch/s390/kernel/head64.S b/linux-2.6.27.62/arch/s390/kernel/head64.S
-index 1d06961e87..b1a8ceb522 100644
---- a/linux-2.6.27.62/arch/s390/kernel/head64.S
-+++ b/linux-2.6.27.62/arch/s390/kernel/head64.S
+diff --git a/arch/s390/kernel/head64.S b/arch/s390/kernel/head64.S
+index 1d06961e..b1a8ceb5 100644
+--- a/arch/s390/kernel/head64.S
++++ b/arch/s390/kernel/head64.S
 @@ -10,29 +10,6 @@
   *
   */
@@ -1219,10 +1219,10 @@ index 1d06961e87..b1a8ceb522 100644
  	.org	0x11000
  
  startup_continue:
-diff --git a/linux-2.6.27.62/arch/s390/kernel/process.c b/linux-2.6.27.62/arch/s390/kernel/process.c
-index c8cb494784..7ccd9749d5 100644
---- a/linux-2.6.27.62/arch/s390/kernel/process.c
-+++ b/linux-2.6.27.62/arch/s390/kernel/process.c
+diff --git a/arch/s390/kernel/process.c b/arch/s390/kernel/process.c
+index c8cb4947..7ccd9749 100644
+--- a/arch/s390/kernel/process.c
++++ b/arch/s390/kernel/process.c
 @@ -137,9 +137,12 @@ static void default_idle(void)
  		return;
  	}
@@ -1236,11 +1236,11 @@ index c8cb494784..7ccd9749d5 100644
  }
  
  void cpu_idle(void)
-diff --git a/linux-2.6.27.62/arch/s390/kernel/processor.c b/linux-2.6.27.62/arch/s390/kernel/processor.c
+diff --git a/arch/s390/kernel/processor.c b/arch/s390/kernel/processor.c
 new file mode 100644
-index 0000000000..82c1872cfe
+index 00000000..82c1872c
 --- /dev/null
-+++ b/linux-2.6.27.62/arch/s390/kernel/processor.c
++++ b/arch/s390/kernel/processor.c
 @@ -0,0 +1,98 @@
 +/*
 + *  arch/s390/kernel/processor.c
@@ -1340,10 +1340,10 @@ index 0000000000..82c1872cfe
 +	.show	= show_cpuinfo,
 +};
 +
-diff --git a/linux-2.6.27.62/arch/s390/kernel/setup.c b/linux-2.6.27.62/arch/s390/kernel/setup.c
-index 62122bad1e..d3dc4c59ee 100644
---- a/linux-2.6.27.62/arch/s390/kernel/setup.c
-+++ b/linux-2.6.27.62/arch/s390/kernel/setup.c
+diff --git a/arch/s390/kernel/setup.c b/arch/s390/kernel/setup.c
+index 62122bad..d3dc4c59 100644
+--- a/arch/s390/kernel/setup.c
++++ b/arch/s390/kernel/setup.c
 @@ -14,6 +14,9 @@
   * This file handles the architecture-dependent parts of initialization
   */
@@ -1626,10 +1626,10 @@ index 62122bad1e..d3dc4c59ee 100644
 -	.show	= show_cpuinfo,
 -};
 -
-diff --git a/linux-2.6.27.62/arch/s390/kernel/smp.c b/linux-2.6.27.62/arch/s390/kernel/smp.c
-index fdfca4f8db..c2b32a0777 100644
---- a/linux-2.6.27.62/arch/s390/kernel/smp.c
-+++ b/linux-2.6.27.62/arch/s390/kernel/smp.c
+diff --git a/arch/s390/kernel/smp.c b/arch/s390/kernel/smp.c
+index fdfca4f8..c2b32a07 100644
+--- a/arch/s390/kernel/smp.c
++++ b/arch/s390/kernel/smp.c
 @@ -20,6 +20,9 @@
   * cpu_number_map in other architectures.
   */
@@ -1683,10 +1683,10 @@ index fdfca4f8db..c2b32a0777 100644
  }
  
  void cpu_die(void)
-diff --git a/linux-2.6.27.62/arch/s390/kernel/sys_s390.c b/linux-2.6.27.62/arch/s390/kernel/sys_s390.c
-index e001ac1aee..286d7174b5 100644
---- a/linux-2.6.27.62/arch/s390/kernel/sys_s390.c
-+++ b/linux-2.6.27.62/arch/s390/kernel/sys_s390.c
+diff --git a/arch/s390/kernel/sys_s390.c b/arch/s390/kernel/sys_s390.c
+index e001ac1a..286d7174 100644
+--- a/arch/s390/kernel/sys_s390.c
++++ b/arch/s390/kernel/sys_s390.c
 @@ -199,7 +199,7 @@ SYSCALL_DEFINE1(s390_newuname, struct new_utsname __user *, name)
  {
  	int ret = sys_newuname(name);
@@ -1696,10 +1696,10 @@ index e001ac1aee..286d7174b5 100644
  		ret = copy_to_user(name->machine, "s390\0\0\0\0", 8);
  		if (ret) ret = -EFAULT;
  	}
-diff --git a/linux-2.6.27.62/arch/s390/kernel/time.c b/linux-2.6.27.62/arch/s390/kernel/time.c
-index 06acb1a18b..19e8a0b3c3 100644
---- a/linux-2.6.27.62/arch/s390/kernel/time.c
-+++ b/linux-2.6.27.62/arch/s390/kernel/time.c
+diff --git a/arch/s390/kernel/time.c b/arch/s390/kernel/time.c
+index 06acb1a1..19e8a0b3 100644
+--- a/arch/s390/kernel/time.c
++++ b/arch/s390/kernel/time.c
 @@ -12,6 +12,9 @@
   *    Copyright (C) 1991, 1992, 1995  Linus Torvalds
   */
@@ -1746,10 +1746,10 @@ index 06acb1a18b..19e8a0b3c3 100644
  		free_bootmem((unsigned long) stp_page, PAGE_SIZE);
  		stp_page = NULL;
  		stp_online = 0;
-diff --git a/linux-2.6.27.62/arch/s390/kernel/topology.c b/linux-2.6.27.62/arch/s390/kernel/topology.c
-index a947899dcb..9369b566b6 100644
---- a/linux-2.6.27.62/arch/s390/kernel/topology.c
-+++ b/linux-2.6.27.62/arch/s390/kernel/topology.c
+diff --git a/arch/s390/kernel/topology.c b/arch/s390/kernel/topology.c
+index a947899d..9369b566 100644
+--- a/arch/s390/kernel/topology.c
++++ b/arch/s390/kernel/topology.c
 @@ -3,6 +3,9 @@
   *    Author(s): Heiko Carstens <heiko.carstens@de.ibm.com>
   */
@@ -1769,10 +1769,10 @@ index a947899dcb..9369b566b6 100644
  	for (i = 0; i < NR_MAG; i++)
  		printk(" %d", info->mag[i]);
  	printk(" / %d\n", info->mnest);
-diff --git a/linux-2.6.27.62/arch/s390/mm/extmem.c b/linux-2.6.27.62/arch/s390/mm/extmem.c
-index f231f5ec74..5c84571296 100644
---- a/linux-2.6.27.62/arch/s390/mm/extmem.c
-+++ b/linux-2.6.27.62/arch/s390/mm/extmem.c
+diff --git a/arch/s390/mm/extmem.c b/arch/s390/mm/extmem.c
+index f231f5ec..5c845712 100644
+--- a/arch/s390/mm/extmem.c
++++ b/arch/s390/mm/extmem.c
 @@ -7,6 +7,9 @@
   * (C) IBM Corporation 2002-2004
   */
@@ -2339,10 +2339,10 @@ index f231f5ec74..5c84571296 100644
  		break;
  	}
  }
-diff --git a/linux-2.6.27.62/arch/sparc/include/asm/reboot.h b/linux-2.6.27.62/arch/sparc/include/asm/reboot.h
+diff --git a/arch/sparc/include/asm/reboot.h b/arch/sparc/include/asm/reboot.h
 deleted file mode 100644
-index 3f3f43f5be..0000000000
---- a/linux-2.6.27.62/arch/sparc/include/asm/reboot.h
+index 3f3f43f5..00000000
+--- a/arch/sparc/include/asm/reboot.h
 +++ /dev/null
 @@ -1,6 +0,0 @@
 -#ifndef _SPARC64_REBOOT_H
@@ -2351,10 +2351,10 @@ index 3f3f43f5be..0000000000
 -extern void machine_alt_power_off(void);
 -
 -#endif /* _SPARC64_REBOOT_H */
-diff --git a/linux-2.6.27.62/arch/sparc64/kernel/Makefile b/linux-2.6.27.62/arch/sparc64/kernel/Makefile
-index 418b578209..d1ec53fd85 100644
---- a/linux-2.6.27.62/arch/sparc64/kernel/Makefile
-+++ b/linux-2.6.27.62/arch/sparc64/kernel/Makefile
+diff --git a/arch/sparc64/kernel/Makefile b/arch/sparc64/kernel/Makefile
+index 418b5782..d1ec53fd 100644
+--- a/arch/sparc64/kernel/Makefile
++++ b/arch/sparc64/kernel/Makefile
 @@ -7,7 +7,7 @@ EXTRA_CFLAGS := -Werror
  
  extra-y		:= head.o init_task.o vmlinux.lds
@@ -2364,10 +2364,10 @@ index 418b578209..d1ec53fd85 100644
  		   traps.o auxio.o una_asm.o sysfs.o iommu.o \
  		   irq.o ptrace.o time.o sys_sparc.o signal.o \
  		   unaligned.o central.o pci.o starfire.o \
-diff --git a/linux-2.6.27.62/arch/sparc64/kernel/power.c b/linux-2.6.27.62/arch/sparc64/kernel/power.c
-index 3bb987a6d0..e86f07cc03 100644
---- a/linux-2.6.27.62/arch/sparc64/kernel/power.c
-+++ b/linux-2.6.27.62/arch/sparc64/kernel/power.c
+diff --git a/arch/sparc64/kernel/power.c b/arch/sparc64/kernel/power.c
+index 3bb987a6..e86f07cc 100644
+--- a/arch/sparc64/kernel/power.c
++++ b/arch/sparc64/kernel/power.c
 @@ -10,26 +10,16 @@
  #include <linux/signal.h>
  #include <linux/delay.h>
@@ -2436,10 +2436,10 @@ index 3bb987a6d0..e86f07cc03 100644
  	if (has_button_interrupt(irq, op->node)) {
  		if (request_irq(irq,
  				power_handler, 0, "power", NULL) < 0)
-diff --git a/linux-2.6.27.62/arch/sparc64/kernel/process.c b/linux-2.6.27.62/arch/sparc64/kernel/process.c
-index 15f4178592..11bb6c4612 100644
---- a/linux-2.6.27.62/arch/sparc64/kernel/process.c
-+++ b/linux-2.6.27.62/arch/sparc64/kernel/process.c
+diff --git a/arch/sparc64/kernel/process.c b/arch/sparc64/kernel/process.c
+index 15f41785..11bb6c46 100644
+--- a/arch/sparc64/kernel/process.c
++++ b/arch/sparc64/kernel/process.c
 @@ -22,7 +22,6 @@
  #include <linux/ptrace.h>
  #include <linux/slab.h>
@@ -2501,11 +2501,11 @@ index 15f4178592..11bb6c4612 100644
  #ifdef CONFIG_COMPAT
  static void show_regwindow32(struct pt_regs *regs)
  {
-diff --git a/linux-2.6.27.62/arch/sparc64/kernel/reboot.c b/linux-2.6.27.62/arch/sparc64/kernel/reboot.c
+diff --git a/arch/sparc64/kernel/reboot.c b/arch/sparc64/kernel/reboot.c
 new file mode 100644
-index 0000000000..04dd34cbb8
+index 00000000..04dd34cb
 --- /dev/null
-+++ b/linux-2.6.27.62/arch/sparc64/kernel/reboot.c
++++ b/arch/sparc64/kernel/reboot.c
 @@ -0,0 +1,56 @@
 +/* reboot.c: reboot/shutdown/halt/poweroff handling
 + *
@@ -2563,10 +2563,10 @@ index 0000000000..04dd34cbb8
 +	panic("Reboot failed!");
 +}
 +
-diff --git a/linux-2.6.27.62/drivers/Makefile b/linux-2.6.27.62/drivers/Makefile
-index 2735bde734..0cd98d7340 100644
---- a/linux-2.6.27.62/drivers/Makefile
-+++ b/linux-2.6.27.62/drivers/Makefile
+diff --git a/drivers/Makefile b/drivers/Makefile
+index 2735bde7..0cd98d73 100644
+--- a/drivers/Makefile
++++ b/drivers/Makefile
 @@ -9,6 +9,9 @@ obj-y				+= gpio/
  obj-$(CONFIG_PCI)		+= pci/
  obj-$(CONFIG_PARISC)		+= parisc/
@@ -2587,10 +2587,10 @@ index 2735bde734..0cd98d7340 100644
  
  # gpu/ comes after char for AGP vs DRM startup
  obj-y				+= gpu/
-diff --git a/linux-2.6.27.62/drivers/hwmon/Kconfig b/linux-2.6.27.62/drivers/hwmon/Kconfig
-index d402e8d813..0f739d72ce 100644
---- a/linux-2.6.27.62/drivers/hwmon/Kconfig
-+++ b/linux-2.6.27.62/drivers/hwmon/Kconfig
+diff --git a/drivers/hwmon/Kconfig b/drivers/hwmon/Kconfig
+index d402e8d8..0f739d72 100644
+--- a/drivers/hwmon/Kconfig
++++ b/drivers/hwmon/Kconfig
 @@ -389,7 +389,8 @@ config SENSORS_IT87
  	select HWMON_VID
  	help
@@ -2601,10 +2601,10 @@ index d402e8d813..0f739d72ce 100644
  
  	  This driver can also be built as a module.  If so, the module
  	  will be called it87.
-diff --git a/linux-2.6.27.62/drivers/hwmon/it87.c b/linux-2.6.27.62/drivers/hwmon/it87.c
-index f29ed0548e..63354a44b6 100644
---- a/linux-2.6.27.62/drivers/hwmon/it87.c
-+++ b/linux-2.6.27.62/drivers/hwmon/it87.c
+diff --git a/drivers/hwmon/it87.c b/drivers/hwmon/it87.c
+index f29ed054..63354a44 100644
+--- a/drivers/hwmon/it87.c
++++ b/drivers/hwmon/it87.c
 @@ -14,6 +14,7 @@
                IT8712F  Super I/O chip w/LPC interface
                IT8716F  Super I/O chip w/LPC interface
@@ -2746,10 +2746,10 @@ index f29ed0548e..63354a44b6 100644
  module_param(update_vbat, bool, 0);
  MODULE_PARM_DESC(update_vbat, "Update vbat if set else return powerup value");
  module_param(fix_pwm_polarity, bool, 0);
-diff --git a/linux-2.6.27.62/drivers/md/Kconfig b/linux-2.6.27.62/drivers/md/Kconfig
-index 07d92c11b5..27eebe3f92 100644
---- a/linux-2.6.27.62/drivers/md/Kconfig
-+++ b/linux-2.6.27.62/drivers/md/Kconfig
+diff --git a/drivers/md/Kconfig b/drivers/md/Kconfig
+index 07d92c11..27eebe3f 100644
+--- a/drivers/md/Kconfig
++++ b/drivers/md/Kconfig
 @@ -275,4 +275,15 @@ config DM_UEVENT
  	---help---
  	Generate udev events for DM events.
@@ -2766,10 +2766,10 @@ index 07d92c11b5..27eebe3f92 100644
 +	  If unsure, say N.
 +
  endif # MD
-diff --git a/linux-2.6.27.62/drivers/md/Makefile b/linux-2.6.27.62/drivers/md/Makefile
-index f1ef33dfd8..14e945fd50 100644
---- a/linux-2.6.27.62/drivers/md/Makefile
-+++ b/linux-2.6.27.62/drivers/md/Makefile
+diff --git a/drivers/md/Makefile b/drivers/md/Makefile
+index f1ef33df..14e945fd 100644
+--- a/drivers/md/Makefile
++++ b/drivers/md/Makefile
 @@ -36,6 +36,7 @@ obj-$(CONFIG_DM_MULTIPATH)	+= dm-multipath.o dm-round-robin.o
  obj-$(CONFIG_DM_SNAPSHOT)	+= dm-snapshot.o
  obj-$(CONFIG_DM_MIRROR)		+= dm-mirror.o dm-log.o
@@ -2778,11 +2778,11 @@ index f1ef33dfd8..14e945fd50 100644
  
  quiet_cmd_unroll = UNROLL  $@
        cmd_unroll = $(PERL) $(srctree)/$(src)/unroll.pl $(UNROLL) \
-diff --git a/linux-2.6.27.62/drivers/md/dm-bbr.c b/linux-2.6.27.62/drivers/md/dm-bbr.c
+diff --git a/drivers/md/dm-bbr.c b/drivers/md/dm-bbr.c
 new file mode 100644
-index 0000000000..1718b8e2fc
+index 00000000..1718b8e2
 --- /dev/null
-+++ b/linux-2.6.27.62/drivers/md/dm-bbr.c
++++ b/drivers/md/dm-bbr.c
 @@ -0,0 +1,1012 @@
 +/*
 + *   (C) Copyright IBM Corp. 2002, 2004
@@ -3796,11 +3796,11 @@ index 0000000000..1718b8e2fc
 +module_init(dm_bbr_init);
 +module_exit(dm_bbr_exit);
 +MODULE_LICENSE("GPL");
-diff --git a/linux-2.6.27.62/drivers/md/dm-bbr.h b/linux-2.6.27.62/drivers/md/dm-bbr.h
+diff --git a/drivers/md/dm-bbr.h b/drivers/md/dm-bbr.h
 new file mode 100644
-index 0000000000..e8b50c6f59
+index 00000000..e8b50c6f
 --- /dev/null
-+++ b/linux-2.6.27.62/drivers/md/dm-bbr.h
++++ b/drivers/md/dm-bbr.h
 @@ -0,0 +1,130 @@
 +/*
 + *   (C) Copyright IBM Corp. 2002, 2004
@@ -3932,10 +3932,10 @@ index 0000000000..e8b50c6f59
 +	atomic_t			in_use_replacement_blks;
 +};
 +
-diff --git a/linux-2.6.27.62/drivers/media/dvb/b2c2/Kconfig b/linux-2.6.27.62/drivers/media/dvb/b2c2/Kconfig
-index 73dc2ee9b0..b34301d56c 100644
---- a/linux-2.6.27.62/drivers/media/dvb/b2c2/Kconfig
-+++ b/linux-2.6.27.62/drivers/media/dvb/b2c2/Kconfig
+diff --git a/drivers/media/dvb/b2c2/Kconfig b/drivers/media/dvb/b2c2/Kconfig
+index 73dc2ee9..b34301d5 100644
+--- a/drivers/media/dvb/b2c2/Kconfig
++++ b/drivers/media/dvb/b2c2/Kconfig
 @@ -9,11 +9,11 @@ config DVB_B2C2_FLEXCOP
  	select DVB_STV0297 if !DVB_FE_CUSTOMISE
  	select DVB_BCM3510 if !DVB_FE_CUSTOMISE
@@ -3949,10 +3949,10 @@ index 73dc2ee9b0..b34301d56c 100644
  	help
  	  Support for the digital TV receiver chip made by B2C2 Inc. included in
  	  Technisats PCI cards and USB boxes.
-diff --git a/linux-2.6.27.62/drivers/media/dvb/bt8xx/Kconfig b/linux-2.6.27.62/drivers/media/dvb/bt8xx/Kconfig
-index 7e9c090fc0..27edb0ece5 100644
---- a/linux-2.6.27.62/drivers/media/dvb/bt8xx/Kconfig
-+++ b/linux-2.6.27.62/drivers/media/dvb/bt8xx/Kconfig
+diff --git a/drivers/media/dvb/bt8xx/Kconfig b/drivers/media/dvb/bt8xx/Kconfig
+index 7e9c090f..27edb0ec 100644
+--- a/drivers/media/dvb/bt8xx/Kconfig
++++ b/drivers/media/dvb/bt8xx/Kconfig
 @@ -8,7 +8,7 @@ config DVB_BT8XX
  	select DVB_OR51211 if !DVB_FE_CUSTOMISE
  	select DVB_LGDT330X if !DVB_FE_CUSTOMISE
@@ -3962,10 +3962,10 @@ index 7e9c090fc0..27edb0ece5 100644
  	help
  	  Support for PCI cards based on the Bt8xx PCI bridge. Examples are
  	  the Nebula cards, the Pinnacle PCTV cards, the Twinhan DST cards,
-diff --git a/linux-2.6.27.62/drivers/media/dvb/dvb-usb/Kconfig b/linux-2.6.27.62/drivers/media/dvb/dvb-usb/Kconfig
-index e84152b757..330ace8a1e 100644
---- a/linux-2.6.27.62/drivers/media/dvb/dvb-usb/Kconfig
-+++ b/linux-2.6.27.62/drivers/media/dvb/dvb-usb/Kconfig
+diff --git a/drivers/media/dvb/dvb-usb/Kconfig b/drivers/media/dvb/dvb-usb/Kconfig
+index e84152b7..330ace8a 100644
+--- a/drivers/media/dvb/dvb-usb/Kconfig
++++ b/drivers/media/dvb/dvb-usb/Kconfig
 @@ -24,8 +24,8 @@ config DVB_USB_A800
  	tristate "AVerMedia AverTV DVB-T USB 2.0 (A800)"
  	depends on DVB_USB
@@ -4081,10 +4081,10 @@ index e84152b757..330ace8a1e 100644
  	help
  	  Say Y here to support the Afatech AF9005 based DVB-T USB1.1 receiver
  	  and the TerraTec Cinergy T USB XE (Rev.1)
-diff --git a/linux-2.6.27.62/drivers/media/dvb/ttpci/Kconfig b/linux-2.6.27.62/drivers/media/dvb/ttpci/Kconfig
-index 41b5a988b6..187bb27ed6 100644
---- a/linux-2.6.27.62/drivers/media/dvb/ttpci/Kconfig
-+++ b/linux-2.6.27.62/drivers/media/dvb/ttpci/Kconfig
+diff --git a/drivers/media/dvb/ttpci/Kconfig b/drivers/media/dvb/ttpci/Kconfig
+index 41b5a988..187bb27e 100644
+--- a/drivers/media/dvb/ttpci/Kconfig
++++ b/drivers/media/dvb/ttpci/Kconfig
 @@ -105,7 +105,7 @@ config DVB_BUDGET_CI
  	select DVB_TDA1004X if !DVB_FE_CUSTOMISE
  	select DVB_LNBP21 if !DVB_FE_CUSTOMISE
@@ -4094,10 +4094,10 @@ index 41b5a988b6..187bb27ed6 100644
  	select VIDEO_IR
  	help
  	  Support for simple SAA7146 based DVB cards
-diff --git a/linux-2.6.27.62/drivers/media/video/cx18/Kconfig b/linux-2.6.27.62/drivers/media/video/cx18/Kconfig
-index ef48565de7..8940b5387d 100644
---- a/linux-2.6.27.62/drivers/media/video/cx18/Kconfig
-+++ b/linux-2.6.27.62/drivers/media/video/cx18/Kconfig
+diff --git a/drivers/media/video/cx18/Kconfig b/drivers/media/video/cx18/Kconfig
+index ef48565d..8940b538 100644
+--- a/drivers/media/video/cx18/Kconfig
++++ b/drivers/media/video/cx18/Kconfig
 @@ -9,7 +9,7 @@ config VIDEO_CX18
  	select VIDEO_CX2341X
  	select VIDEO_CS5345
@@ -4107,10 +4107,10 @@ index ef48565de7..8940b5387d 100644
  	---help---
  	  This is a video4linux driver for Conexant cx23418 based
  	  PCI combo video recorder devices.
-diff --git a/linux-2.6.27.62/drivers/media/video/cx23885/Kconfig b/linux-2.6.27.62/drivers/media/video/cx23885/Kconfig
-index e60bd31b51..d538318a68 100644
---- a/linux-2.6.27.62/drivers/media/video/cx23885/Kconfig
-+++ b/linux-2.6.27.62/drivers/media/video/cx23885/Kconfig
+diff --git a/drivers/media/video/cx23885/Kconfig b/drivers/media/video/cx23885/Kconfig
+index e60bd31b..d538318a 100644
+--- a/drivers/media/video/cx23885/Kconfig
++++ b/drivers/media/video/cx23885/Kconfig
 @@ -11,15 +11,15 @@ config VIDEO_CX23885
  	select VIDEO_CX25840
  	select VIDEO_CX2341X
@@ -4129,10 +4129,10 @@ index e60bd31b51..d538318a68 100644
  	---help---
  	  This is a video4linux driver for Conexant 23885 based
  	  TV cards.
-diff --git a/linux-2.6.27.62/drivers/media/video/cx88/Kconfig b/linux-2.6.27.62/drivers/media/video/cx88/Kconfig
-index 9dd7bdf659..362cfcf3de 100644
---- a/linux-2.6.27.62/drivers/media/video/cx88/Kconfig
-+++ b/linux-2.6.27.62/drivers/media/video/cx88/Kconfig
+diff --git a/drivers/media/video/cx88/Kconfig b/drivers/media/video/cx88/Kconfig
+index 9dd7bdf6..362cfcf3 100644
+--- a/drivers/media/video/cx88/Kconfig
++++ b/drivers/media/video/cx88/Kconfig
 @@ -56,8 +56,8 @@ config VIDEO_CX88_DVB
  	select DVB_NXT200X if !DVB_FE_CUSTOMISE
  	select DVB_CX24123 if !DVB_FE_CUSTOMISE
@@ -4143,10 +4143,10 @@ index 9dd7bdf659..362cfcf3de 100644
  	---help---
  	  This adds support for DVB/ATSC cards based on the
  	  Conexant 2388x chip.
-diff --git a/linux-2.6.27.62/drivers/media/video/pvrusb2/Kconfig b/linux-2.6.27.62/drivers/media/video/pvrusb2/Kconfig
-index 19eb274c9c..854c2a8853 100644
---- a/linux-2.6.27.62/drivers/media/video/pvrusb2/Kconfig
-+++ b/linux-2.6.27.62/drivers/media/video/pvrusb2/Kconfig
+diff --git a/drivers/media/video/pvrusb2/Kconfig b/drivers/media/video/pvrusb2/Kconfig
+index 19eb274c..854c2a88 100644
+--- a/drivers/media/video/pvrusb2/Kconfig
++++ b/drivers/media/video/pvrusb2/Kconfig
 @@ -42,7 +42,7 @@ config VIDEO_PVRUSB2_DVB
  	select DVB_S5H1411 if !DVB_FE_CUSTOMISE
  	select DVB_TDA10048 if !DVB_FE_CUSTOMIZE
@@ -4156,10 +4156,10 @@ index 19eb274c9c..854c2a8853 100644
  	select MEDIA_TUNER_TDA8290 if !DVB_FE_CUSTOMIZE
  	---help---
  
-diff --git a/linux-2.6.27.62/drivers/media/video/saa7134/Kconfig b/linux-2.6.27.62/drivers/media/video/saa7134/Kconfig
-index 7021bbf589..fc2164e28e 100644
---- a/linux-2.6.27.62/drivers/media/video/saa7134/Kconfig
-+++ b/linux-2.6.27.62/drivers/media/video/saa7134/Kconfig
+diff --git a/drivers/media/video/saa7134/Kconfig b/drivers/media/video/saa7134/Kconfig
+index 7021bbf5..fc2164e2 100644
+--- a/drivers/media/video/saa7134/Kconfig
++++ b/drivers/media/video/saa7134/Kconfig
 @@ -34,9 +34,9 @@ config VIDEO_SAA7134_DVB
  	select DVB_NXT200X if !DVB_FE_CUSTOMISE
  	select DVB_TDA10086 if !DVB_FE_CUSTOMISE
@@ -4172,10 +4172,10 @@ index 7021bbf589..fc2164e28e 100644
  	---help---
  	  This adds support for DVB cards based on the
  	  Philips saa7134 chip.
-diff --git a/linux-2.6.27.62/drivers/net/wireless/iwlwifi/iwl3945-base.c b/linux-2.6.27.62/drivers/net/wireless/iwlwifi/iwl3945-base.c
-index 752e7f89d2..df3f0d16bf 100644
---- a/linux-2.6.27.62/drivers/net/wireless/iwlwifi/iwl3945-base.c
-+++ b/linux-2.6.27.62/drivers/net/wireless/iwlwifi/iwl3945-base.c
+diff --git a/drivers/net/wireless/iwlwifi/iwl3945-base.c b/drivers/net/wireless/iwlwifi/iwl3945-base.c
+index 752e7f89..df3f0d16 100644
+--- a/drivers/net/wireless/iwlwifi/iwl3945-base.c
++++ b/drivers/net/wireless/iwlwifi/iwl3945-base.c
 @@ -7169,14 +7169,6 @@ static int iwl3945_mac_get_stats(struct ieee80211_hw *hw,
  	return 0;
  }
@@ -4199,10 +4199,10 @@ index 752e7f89d2..df3f0d16bf 100644
  	.reset_tsf = iwl3945_mac_reset_tsf,
  	.hw_scan = iwl3945_mac_hw_scan
  };
-diff --git a/linux-2.6.27.62/drivers/s390/block/dasd.c b/linux-2.6.27.62/drivers/s390/block/dasd.c
-index acb78017e7..36d7d3d4a8 100644
---- a/linux-2.6.27.62/drivers/s390/block/dasd.c
-+++ b/linux-2.6.27.62/drivers/s390/block/dasd.c
+diff --git a/drivers/s390/block/dasd.c b/drivers/s390/block/dasd.c
+index acb78017..36d7d3d4 100644
+--- a/drivers/s390/block/dasd.c
++++ b/drivers/s390/block/dasd.c
 @@ -1746,6 +1746,11 @@ restart:
  			goto restart;
  		}
@@ -4215,10 +4215,10 @@ index acb78017e7..36d7d3d4a8 100644
  		/* First of all call extended error reporting. */
  		if (dasd_eer_enabled(base) &&
  		    cqr->status == DASD_CQR_FAILED) {
-diff --git a/linux-2.6.27.62/drivers/s390/block/dasd_eckd.c b/linux-2.6.27.62/drivers/s390/block/dasd_eckd.c
-index 773b3fe275..6223f9cd3d 100644
---- a/linux-2.6.27.62/drivers/s390/block/dasd_eckd.c
-+++ b/linux-2.6.27.62/drivers/s390/block/dasd_eckd.c
+diff --git a/drivers/s390/block/dasd_eckd.c b/drivers/s390/block/dasd_eckd.c
+index 773b3fe2..6223f9cd 100644
+--- a/drivers/s390/block/dasd_eckd.c
++++ b/drivers/s390/block/dasd_eckd.c
 @@ -1501,12 +1501,27 @@ static void dasd_eckd_handle_unsolicited_interrupt(struct dasd_device *device,
  		return;
  	}
@@ -4252,10 +4252,10 @@ index 773b3fe275..6223f9cd3d 100644
  	return;
  };
  
-diff --git a/linux-2.6.27.62/drivers/s390/block/dcssblk.c b/linux-2.6.27.62/drivers/s390/block/dcssblk.c
-index 711b3004b3..ef3cc5a228 100644
---- a/linux-2.6.27.62/drivers/s390/block/dcssblk.c
-+++ b/linux-2.6.27.62/drivers/s390/block/dcssblk.c
+diff --git a/drivers/s390/block/dcssblk.c b/drivers/s390/block/dcssblk.c
+index 711b3004..ef3cc5a2 100644
+--- a/drivers/s390/block/dcssblk.c
++++ b/drivers/s390/block/dcssblk.c
 @@ -4,6 +4,9 @@
   * Authors: Carsten Otte, Stefan Weinhuber, Gerald Schaefer
   */
@@ -5087,10 +5087,10 @@ index 711b3004b3..ef3cc5a228 100644
 +		 "e.g. segments=\"mydcss1,mydcss2:mydcss3,mydcss4(local)\"");
  
  MODULE_LICENSE("GPL");
-diff --git a/linux-2.6.27.62/drivers/s390/block/xpram.c b/linux-2.6.27.62/drivers/s390/block/xpram.c
-index dd9b986389..76814f3e89 100644
---- a/linux-2.6.27.62/drivers/s390/block/xpram.c
-+++ b/linux-2.6.27.62/drivers/s390/block/xpram.c
+diff --git a/drivers/s390/block/xpram.c b/drivers/s390/block/xpram.c
+index dd9b9863..76814f3e 100644
+--- a/drivers/s390/block/xpram.c
++++ b/drivers/s390/block/xpram.c
 @@ -25,6 +25,9 @@
   *   generic hard disk support to replace ad-hoc partitioning
   */
@@ -5273,10 +5273,10 @@ index dd9b986389..76814f3e89 100644
  	rc = xpram_setup_sizes(xpram_pages);
  	if (rc)
  		return rc;
-diff --git a/linux-2.6.27.62/drivers/s390/char/con3215.c b/linux-2.6.27.62/drivers/s390/char/con3215.c
-index d3ec9b55ab..9ab06e0dad 100644
---- a/linux-2.6.27.62/drivers/s390/char/con3215.c
-+++ b/linux-2.6.27.62/drivers/s390/char/con3215.c
+diff --git a/drivers/s390/char/con3215.c b/drivers/s390/char/con3215.c
+index d3ec9b55..9ab06e0d 100644
+--- a/drivers/s390/char/con3215.c
++++ b/drivers/s390/char/con3215.c
 @@ -21,6 +21,7 @@
  #include <linux/console.h>
  #include <linux/interrupt.h>
@@ -5429,10 +5429,10 @@ index d3ec9b55ab..9ab06e0dad 100644
  	register_console(&con3215);
  	return 0;
  }
-diff --git a/linux-2.6.27.62/drivers/s390/char/con3270.c b/linux-2.6.27.62/drivers/s390/char/con3270.c
-index 3c07974886..d028d2ee83 100644
---- a/linux-2.6.27.62/drivers/s390/char/con3270.c
-+++ b/linux-2.6.27.62/drivers/s390/char/con3270.c
+diff --git a/drivers/s390/char/con3270.c b/drivers/s390/char/con3270.c
+index 3c079748..d028d2ee 100644
+--- a/drivers/s390/char/con3270.c
++++ b/drivers/s390/char/con3270.c
 @@ -15,6 +15,7 @@
  #include <linux/list.h>
  #include <linux/types.h>
@@ -5497,10 +5497,10 @@ index 3c07974886..d028d2ee83 100644
  	register_console(&con3270);
  	return 0;
  }
-diff --git a/linux-2.6.27.62/drivers/s390/char/monreader.c b/linux-2.6.27.62/drivers/s390/char/monreader.c
-index 35fd8dfcaa..97e63cf469 100644
---- a/linux-2.6.27.62/drivers/s390/char/monreader.c
-+++ b/linux-2.6.27.62/drivers/s390/char/monreader.c
+diff --git a/drivers/s390/char/monreader.c b/drivers/s390/char/monreader.c
+index 35fd8dfc..97e63cf4 100644
+--- a/drivers/s390/char/monreader.c
++++ b/drivers/s390/char/monreader.c
 @@ -7,6 +7,9 @@
   *   Author: Gerald Schaefer <gerald.schaefer@de.ibm.com>
   */
@@ -5612,10 +5612,10 @@ index 35fd8dfcaa..97e63cf469 100644
  		rc = -EINVAL;
  		goto out_iucv;
  	}
-diff --git a/linux-2.6.27.62/drivers/s390/char/monwriter.c b/linux-2.6.27.62/drivers/s390/char/monwriter.c
-index 4d71aa8c1a..c7d7483bab 100644
---- a/linux-2.6.27.62/drivers/s390/char/monwriter.c
-+++ b/linux-2.6.27.62/drivers/s390/char/monwriter.c
+diff --git a/drivers/s390/char/monwriter.c b/drivers/s390/char/monwriter.c
+index 4d71aa8c..c7d7483b 100644
+--- a/drivers/s390/char/monwriter.c
++++ b/drivers/s390/char/monwriter.c
 @@ -8,6 +8,9 @@
   * Author(s): Melissa Howland <Melissa.Howland@us.ibm.com>
   */
@@ -5637,10 +5637,10 @@ index 4d71aa8c1a..c7d7483bab 100644
  	return -EINVAL;
  }
  
-diff --git a/linux-2.6.27.62/drivers/s390/char/sclp_cmd.c b/linux-2.6.27.62/drivers/s390/char/sclp_cmd.c
-index eb5f1b8bc5..5063904964 100644
---- a/linux-2.6.27.62/drivers/s390/char/sclp_cmd.c
-+++ b/linux-2.6.27.62/drivers/s390/char/sclp_cmd.c
+diff --git a/drivers/s390/char/sclp_cmd.c b/drivers/s390/char/sclp_cmd.c
+index eb5f1b8b..50639049 100644
+--- a/drivers/s390/char/sclp_cmd.c
++++ b/drivers/s390/char/sclp_cmd.c
 @@ -6,6 +6,9 @@
   *		 Peter Oberparleiter <peter.oberparleiter@de.ibm.com>
   */
@@ -5730,10 +5730,10 @@ index eb5f1b8bc5..5063904964 100644
  		rc = -EIO;
  		goto out;
  	}
-diff --git a/linux-2.6.27.62/drivers/s390/char/sclp_con.c b/linux-2.6.27.62/drivers/s390/char/sclp_con.c
-index 7e619c534b..9a25c4bd14 100644
---- a/linux-2.6.27.62/drivers/s390/char/sclp_con.c
-+++ b/linux-2.6.27.62/drivers/s390/char/sclp_con.c
+diff --git a/drivers/s390/char/sclp_con.c b/drivers/s390/char/sclp_con.c
+index 7e619c53..9a25c4bd 100644
+--- a/drivers/s390/char/sclp_con.c
++++ b/drivers/s390/char/sclp_con.c
 @@ -16,6 +16,7 @@
  #include <linux/bootmem.h>
  #include <linux/termios.h>
@@ -5793,10 +5793,10 @@ index 7e619c534b..9a25c4bd14 100644
  	register_console(&sclp_console);
  	return 0;
  }
-diff --git a/linux-2.6.27.62/drivers/s390/char/sclp_config.c b/linux-2.6.27.62/drivers/s390/char/sclp_config.c
-index 4cebd6ee6d..b497afe061 100644
---- a/linux-2.6.27.62/drivers/s390/char/sclp_config.c
-+++ b/linux-2.6.27.62/drivers/s390/char/sclp_config.c
+diff --git a/drivers/s390/char/sclp_config.c b/drivers/s390/char/sclp_config.c
+index 4cebd6ee..b497afe0 100644
+--- a/drivers/s390/char/sclp_config.c
++++ b/drivers/s390/char/sclp_config.c
 @@ -5,15 +5,17 @@
   *    Author(s): Heiko Carstens <heiko.carstens@de.ibm.com>
   */
@@ -5835,10 +5835,10 @@ index 4cebd6ee6d..b497afe061 100644
  		sclp_unregister(&sclp_conf_register);
  		rc = -ENOSYS;
  	}
-diff --git a/linux-2.6.27.62/drivers/s390/char/sclp_cpi_sys.c b/linux-2.6.27.62/drivers/s390/char/sclp_cpi_sys.c
-index d887bd261d..62c2647f37 100644
---- a/linux-2.6.27.62/drivers/s390/char/sclp_cpi_sys.c
-+++ b/linux-2.6.27.62/drivers/s390/char/sclp_cpi_sys.c
+diff --git a/drivers/s390/char/sclp_cpi_sys.c b/drivers/s390/char/sclp_cpi_sys.c
+index d887bd26..62c2647f 100644
+--- a/drivers/s390/char/sclp_cpi_sys.c
++++ b/drivers/s390/char/sclp_cpi_sys.c
 @@ -7,6 +7,9 @@
   *		 Michael Ernst <mernst@de.ibm.com>
   */
@@ -5878,10 +5878,10 @@ index d887bd261d..62c2647f37 100644
  		rc = -EIO;
  	}
  
-diff --git a/linux-2.6.27.62/drivers/s390/char/sclp_sdias.c b/linux-2.6.27.62/drivers/s390/char/sclp_sdias.c
-index 8b854857ba..6a1c58dc61 100644
---- a/linux-2.6.27.62/drivers/s390/char/sclp_sdias.c
-+++ b/linux-2.6.27.62/drivers/s390/char/sclp_sdias.c
+diff --git a/drivers/s390/char/sclp_sdias.c b/drivers/s390/char/sclp_sdias.c
+index 8b854857..6a1c58dc 100644
+--- a/drivers/s390/char/sclp_sdias.c
++++ b/drivers/s390/char/sclp_sdias.c
 @@ -5,15 +5,18 @@
   * Author(s): Michael Holzheu
   */
@@ -5943,10 +5943,10 @@ index 8b854857ba..6a1c58dc61 100644
  			rc = -EIO;
  	}
  out:
-diff --git a/linux-2.6.27.62/drivers/s390/char/sclp_vt220.c b/linux-2.6.27.62/drivers/s390/char/sclp_vt220.c
-index ad51738c42..9854f19f5e 100644
---- a/linux-2.6.27.62/drivers/s390/char/sclp_vt220.c
-+++ b/linux-2.6.27.62/drivers/s390/char/sclp_vt220.c
+diff --git a/drivers/s390/char/sclp_vt220.c b/drivers/s390/char/sclp_vt220.c
+index ad51738c..9854f19f 100644
+--- a/drivers/s390/char/sclp_vt220.c
++++ b/drivers/s390/char/sclp_vt220.c
 @@ -24,6 +24,8 @@
  #include <linux/bootmem.h>
  #include <linux/interrupt.h>
@@ -6004,10 +6004,10 @@ index ad51738c42..9854f19f5e 100644
  	register_console(&sclp_vt220_console);
  	return 0;
  }
-diff --git a/linux-2.6.27.62/drivers/s390/char/tape_block.c b/linux-2.6.27.62/drivers/s390/char/tape_block.c
-index 95da72bc17..4230a43915 100644
---- a/linux-2.6.27.62/drivers/s390/char/tape_block.c
-+++ b/linux-2.6.27.62/drivers/s390/char/tape_block.c
+diff --git a/drivers/s390/char/tape_block.c b/drivers/s390/char/tape_block.c
+index 95da72bc..4230a439 100644
+--- a/drivers/s390/char/tape_block.c
++++ b/drivers/s390/char/tape_block.c
 @@ -76,7 +76,7 @@ tapeblock_trigger_requeue(struct tape_device *device)
  static void
  tapeblock_end_request(struct request *req, int error)
@@ -6036,10 +6036,10 @@ index 95da72bc17..4230a43915 100644
  			continue;
  		}
  		blkdev_dequeue_request(req);
-diff --git a/linux-2.6.27.62/drivers/s390/char/tape_core.c b/linux-2.6.27.62/drivers/s390/char/tape_core.c
-index 181a5441af..db986de7cd 100644
---- a/linux-2.6.27.62/drivers/s390/char/tape_core.c
-+++ b/linux-2.6.27.62/drivers/s390/char/tape_core.c
+diff --git a/drivers/s390/char/tape_core.c b/drivers/s390/char/tape_core.c
+index 181a5441..db986de7 100644
+--- a/drivers/s390/char/tape_core.c
++++ b/drivers/s390/char/tape_core.c
 @@ -1199,7 +1199,7 @@ tape_open(struct tape_device *device)
  {
  	int rc;
@@ -6072,10 +6072,10 @@ index 181a5441af..db986de7cd 100644
  	return 0;
  }
  
-diff --git a/linux-2.6.27.62/drivers/s390/char/vmcp.c b/linux-2.6.27.62/drivers/s390/char/vmcp.c
-index 09e7d9bf43..27eaf18c04 100644
---- a/linux-2.6.27.62/drivers/s390/char/vmcp.c
-+++ b/linux-2.6.27.62/drivers/s390/char/vmcp.c
+diff --git a/drivers/s390/char/vmcp.c b/drivers/s390/char/vmcp.c
+index 09e7d9bf..27eaf18c 100644
+--- a/drivers/s390/char/vmcp.c
++++ b/drivers/s390/char/vmcp.c
 @@ -11,6 +11,9 @@
   * The idea of this driver is based on cpint from Neale Ferguson and #CP in CMS
   */
@@ -6105,10 +6105,10 @@ index 09e7d9bf43..27eaf18c04 100644
  		return -ENODEV;
  	}
  
-diff --git a/linux-2.6.27.62/drivers/s390/char/vmlogrdr.c b/linux-2.6.27.62/drivers/s390/char/vmlogrdr.c
-index c31faefa2b..71f7527a74 100644
---- a/linux-2.6.27.62/drivers/s390/char/vmlogrdr.c
-+++ b/linux-2.6.27.62/drivers/s390/char/vmlogrdr.c
+diff --git a/drivers/s390/char/vmlogrdr.c b/drivers/s390/char/vmlogrdr.c
+index c31faefa..71f7527a 100644
+--- a/drivers/s390/char/vmlogrdr.c
++++ b/drivers/s390/char/vmlogrdr.c
 @@ -10,6 +10,10 @@
   *		   Stefan Weinhuber <wein@de.ibm.com>
   *
@@ -6184,10 +6184,10 @@ index c31faefa2b..71f7527a74 100644
  		return -ENODEV;
  	}
  
-diff --git a/linux-2.6.27.62/drivers/s390/char/vmur.c b/linux-2.6.27.62/drivers/s390/char/vmur.c
-index c1f352b848..cd08f00b71 100644
---- a/linux-2.6.27.62/drivers/s390/char/vmur.c
-+++ b/linux-2.6.27.62/drivers/s390/char/vmur.c
+diff --git a/drivers/s390/char/vmur.c b/drivers/s390/char/vmur.c
+index c1f352b8..cd08f00b 100644
+--- a/drivers/s390/char/vmur.c
++++ b/drivers/s390/char/vmur.c
 @@ -8,6 +8,9 @@
   *	    Frank Munzert <munzert@de.ibm.com>
   */
@@ -6245,10 +6245,10 @@ index c1f352b848..cd08f00b71 100644
  }
  
  module_init(ur_init);
-diff --git a/linux-2.6.27.62/drivers/s390/char/zcore.c b/linux-2.6.27.62/drivers/s390/char/zcore.c
-index 7fd84be119..eefc661141 100644
---- a/linux-2.6.27.62/drivers/s390/char/zcore.c
-+++ b/linux-2.6.27.62/drivers/s390/char/zcore.c
+diff --git a/drivers/s390/char/zcore.c b/drivers/s390/char/zcore.c
+index 7fd84be1..eefc6611 100644
+--- a/drivers/s390/char/zcore.c
++++ b/drivers/s390/char/zcore.c
 @@ -9,6 +9,9 @@
   * Author(s): Michael Holzheu
   */
@@ -6301,10 +6301,10 @@ index 7fd84be119..eefc661141 100644
  		rc = -EINVAL;
  		goto fail;
  	}
-diff --git a/linux-2.6.27.62/drivers/s390/cio/blacklist.c b/linux-2.6.27.62/drivers/s390/cio/blacklist.c
-index 0bfcbbe375..fe00be3675 100644
---- a/linux-2.6.27.62/drivers/s390/cio/blacklist.c
-+++ b/linux-2.6.27.62/drivers/s390/cio/blacklist.c
+diff --git a/drivers/s390/cio/blacklist.c b/drivers/s390/cio/blacklist.c
+index 0bfcbbe3..fe00be36 100644
+--- a/drivers/s390/cio/blacklist.c
++++ b/drivers/s390/cio/blacklist.c
 @@ -9,6 +9,9 @@
   *		 Arnd Bergmann (arndb@de.ibm.com)
   */
@@ -6381,10 +6381,10 @@ index 0bfcbbe375..fe00be3675 100644
  	else
  		rc = user_len;
  
-diff --git a/linux-2.6.27.62/drivers/s390/cio/chsc.c b/linux-2.6.27.62/drivers/s390/cio/chsc.c
-index 29826fdd47..ebab6ea465 100644
---- a/linux-2.6.27.62/drivers/s390/cio/chsc.c
-+++ b/linux-2.6.27.62/drivers/s390/cio/chsc.c
+diff --git a/drivers/s390/cio/chsc.c b/drivers/s390/cio/chsc.c
+index 29826fdd..ebab6ea4 100644
+--- a/drivers/s390/cio/chsc.c
++++ b/drivers/s390/cio/chsc.c
 @@ -8,6 +8,9 @@
   *		 Arnd Bergmann (arndb@de.ibm.com)
   */
@@ -6414,10 +6414,10 @@ index 29826fdd47..ebab6ea465 100644
  		switch (data->op) {
  		case 0:
  			chp_cfg_schedule(chpid, 1);
-diff --git a/linux-2.6.27.62/drivers/s390/cio/cio.c b/linux-2.6.27.62/drivers/s390/cio/cio.c
-index 326f4cc7f9..73cd74b5e6 100644
---- a/linux-2.6.27.62/drivers/s390/cio/cio.c
-+++ b/linux-2.6.27.62/drivers/s390/cio/cio.c
+diff --git a/drivers/s390/cio/cio.c b/drivers/s390/cio/cio.c
+index 326f4cc7..73cd74b5 100644
+--- a/drivers/s390/cio/cio.c
++++ b/drivers/s390/cio/cio.c
 @@ -9,6 +9,9 @@
   *		 Martin Schwidefsky (schwidefsky@de.ibm.com)
   */
@@ -6475,10 +6475,10 @@ index 326f4cc7f9..73cd74b5e6 100644
  {
  	int rc;
  
-diff --git a/linux-2.6.27.62/drivers/s390/cio/cmf.c b/linux-2.6.27.62/drivers/s390/cio/cmf.c
-index a90b28c0be..12643a8158 100644
---- a/linux-2.6.27.62/drivers/s390/cio/cmf.c
-+++ b/linux-2.6.27.62/drivers/s390/cio/cmf.c
+diff --git a/drivers/s390/cio/cmf.c b/drivers/s390/cio/cmf.c
+index a90b28c0..12643a81 100644
+--- a/drivers/s390/cio/cmf.c
++++ b/drivers/s390/cio/cmf.c
 @@ -25,6 +25,9 @@
   * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
   */
@@ -6501,10 +6501,10 @@ index a90b28c0be..12643a8158 100644
  	return 0;
  }
  
-diff --git a/linux-2.6.27.62/drivers/s390/cio/css.c b/linux-2.6.27.62/drivers/s390/cio/css.c
-index 1261e1a9e8..d8daedbd1a 100644
---- a/linux-2.6.27.62/drivers/s390/cio/css.c
-+++ b/linux-2.6.27.62/drivers/s390/cio/css.c
+diff --git a/drivers/s390/cio/css.c b/drivers/s390/cio/css.c
+index 1261e1a9..d8daedbd 100644
+--- a/drivers/s390/cio/css.c
++++ b/drivers/s390/cio/css.c
 @@ -6,6 +6,10 @@
   *    Author(s): Arnd Bergmann (arndb@de.ibm.com)
   *		 Cornelia Huck (cornelia.huck@de.ibm.com)
@@ -6527,10 +6527,10 @@ index 1261e1a9e8..d8daedbd1a 100644
  	return ret;
  }
  
-diff --git a/linux-2.6.27.62/drivers/s390/cio/device.c b/linux-2.6.27.62/drivers/s390/cio/device.c
-index 28221030b8..0bd8dc66d8 100644
---- a/linux-2.6.27.62/drivers/s390/cio/device.c
-+++ b/linux-2.6.27.62/drivers/s390/cio/device.c
+diff --git a/drivers/s390/cio/device.c b/drivers/s390/cio/device.c
+index 28221030..0bd8dc66 100644
+--- a/drivers/s390/cio/device.c
++++ b/drivers/s390/cio/device.c
 @@ -31,6 +31,7 @@
  #include "device.h"
  #include "ioasm.h"
@@ -6707,10 +6707,10 @@ index 28221030b8..0bd8dc66d8 100644
  static void device_set_disconnected(struct ccw_device *cdev)
  {
  	if (!cdev)
-diff --git a/linux-2.6.27.62/drivers/s390/cio/device.h b/linux-2.6.27.62/drivers/s390/cio/device.h
-index 6f5c3f2b35..104ed669db 100644
---- a/linux-2.6.27.62/drivers/s390/cio/device.h
-+++ b/linux-2.6.27.62/drivers/s390/cio/device.h
+diff --git a/drivers/s390/cio/device.h b/drivers/s390/cio/device.h
+index 6f5c3f2b..104ed669 100644
+--- a/drivers/s390/cio/device.h
++++ b/drivers/s390/cio/device.h
 @@ -86,6 +86,7 @@ int ccw_device_is_orphan(struct ccw_device *);
  int ccw_device_recognition(struct ccw_device *);
  int ccw_device_online(struct ccw_device *);
@@ -6719,10 +6719,10 @@ index 6f5c3f2b35..104ed669db 100644
  
  /* Function prototypes for device status and basic sense stuff. */
  void ccw_device_accumulate_irb(struct ccw_device *, struct irb *);
-diff --git a/linux-2.6.27.62/drivers/s390/cio/io_sch.h b/linux-2.6.27.62/drivers/s390/cio/io_sch.h
-index 3f8f1cf69c..c4f3e7c9a8 100644
---- a/linux-2.6.27.62/drivers/s390/cio/io_sch.h
-+++ b/linux-2.6.27.62/drivers/s390/cio/io_sch.h
+diff --git a/drivers/s390/cio/io_sch.h b/drivers/s390/cio/io_sch.h
+index 3f8f1cf6..c4f3e7c9 100644
+--- a/drivers/s390/cio/io_sch.h
++++ b/drivers/s390/cio/io_sch.h
 @@ -123,7 +123,7 @@ struct ccw_device_private {
  	void *cmb_wait;			/* deferred cmb enable/disable */
  };
@@ -6787,10 +6787,10 @@ index 3f8f1cf69c..c4f3e7c9a8 100644
  	return ccode;
  }
  
-diff --git a/linux-2.6.27.62/drivers/s390/cio/ioasm.h b/linux-2.6.27.62/drivers/s390/cio/ioasm.h
-index 9fa2ac13ac..7592627926 100644
---- a/linux-2.6.27.62/drivers/s390/cio/ioasm.h
-+++ b/linux-2.6.27.62/drivers/s390/cio/ioasm.h
+diff --git a/drivers/s390/cio/ioasm.h b/drivers/s390/cio/ioasm.h
+index 9fa2ac13..75926279 100644
+--- a/drivers/s390/cio/ioasm.h
++++ b/drivers/s390/cio/ioasm.h
 @@ -23,38 +23,39 @@ struct tpi_info {
   * Some S390 specific IO instructions as inline
   */
@@ -6905,10 +6905,10 @@ index 9fa2ac13ac..7592627926 100644
  	return ccode;
  }
  
-diff --git a/linux-2.6.27.62/drivers/s390/cio/qdio.h b/linux-2.6.27.62/drivers/s390/cio/qdio.h
-index c1a70985ab..e4e33839c7 100644
---- a/linux-2.6.27.62/drivers/s390/cio/qdio.h
-+++ b/linux-2.6.27.62/drivers/s390/cio/qdio.h
+diff --git a/drivers/s390/cio/qdio.h b/drivers/s390/cio/qdio.h
+index c1a70985..e4e33839 100644
+--- a/drivers/s390/cio/qdio.h
++++ b/drivers/s390/cio/qdio.h
 @@ -16,6 +16,14 @@
  #define QDIO_BUSY_BIT_GIVE_UP		2000000	/* 2 seconds = eternity */
  #define QDIO_INPUT_THRESHOLD		500	/* 500 microseconds */
@@ -6944,10 +6944,10 @@ index c1a70985ab..e4e33839c7 100644
  int qdio_setup_irq(struct qdio_initialize *init_data);
  void qdio_print_subchannel_info(struct qdio_irq *irq_ptr,
  				struct ccw_device *cdev);
-diff --git a/linux-2.6.27.62/drivers/s390/cio/qdio_debug.c b/linux-2.6.27.62/drivers/s390/cio/qdio_debug.c
-index 337aa3087a..06172a0b6d 100644
---- a/linux-2.6.27.62/drivers/s390/cio/qdio_debug.c
-+++ b/linux-2.6.27.62/drivers/s390/cio/qdio_debug.c
+diff --git a/drivers/s390/cio/qdio_debug.c b/drivers/s390/cio/qdio_debug.c
+index 337aa308..06172a0b 100644
+--- a/drivers/s390/cio/qdio_debug.c
++++ b/drivers/s390/cio/qdio_debug.c
 @@ -20,6 +20,7 @@ static struct dentry *debugfs_root;
  #define MAX_DEBUGFS_QUEUES	32
  static struct dentry *debugfs_queues[MAX_DEBUGFS_QUEUES] = { NULL };
@@ -6998,10 +6998,10 @@ index 337aa3087a..06172a0b6d 100644
  }
  
  void qdio_setup_debug_entries(struct qdio_irq *irq_ptr, struct ccw_device *cdev)
-diff --git a/linux-2.6.27.62/drivers/s390/cio/qdio_main.c b/linux-2.6.27.62/drivers/s390/cio/qdio_main.c
-index e6eabc8534..c8b930ffa5 100644
---- a/linux-2.6.27.62/drivers/s390/cio/qdio_main.c
-+++ b/linux-2.6.27.62/drivers/s390/cio/qdio_main.c
+diff --git a/drivers/s390/cio/qdio_main.c b/drivers/s390/cio/qdio_main.c
+index e6eabc85..c8b930ff 100644
+--- a/drivers/s390/cio/qdio_main.c
++++ b/drivers/s390/cio/qdio_main.c
 @@ -316,6 +316,9 @@ static inline int qdio_do_siga_output(struct qdio_q *q, unsigned int *busy_bit)
  	unsigned int fc = 0;
  	unsigned long schid;
@@ -7102,10 +7102,10 @@ index e6eabc8534..c8b930ffa5 100644
  		goto out;
  	}
  
-diff --git a/linux-2.6.27.62/drivers/s390/cio/qdio_setup.c b/linux-2.6.27.62/drivers/s390/cio/qdio_setup.c
-index a0b6b46e74..22ee0272a1 100644
---- a/linux-2.6.27.62/drivers/s390/cio/qdio_setup.c
-+++ b/linux-2.6.27.62/drivers/s390/cio/qdio_setup.c
+diff --git a/drivers/s390/cio/qdio_setup.c b/drivers/s390/cio/qdio_setup.c
+index a0b6b46e..22ee0272 100644
+--- a/drivers/s390/cio/qdio_setup.c
++++ b/drivers/s390/cio/qdio_setup.c
 @@ -243,22 +243,31 @@ no_qebsm:
  	QDIO_DBF_TEXT0(0, setup, "noV=V");
  }
@@ -7173,10 +7173,10 @@ index a0b6b46e74..22ee0272a1 100644
  	if (rc) {
  		QDIO_DBF_TEXT2(0, setup, "ssqdasig");
  		sprintf(dbf_text, "schn%4x", irq_ptr->schid.sch_no);
-diff --git a/linux-2.6.27.62/drivers/s390/crypto/ap_bus.c b/linux-2.6.27.62/drivers/s390/crypto/ap_bus.c
-index 62b6b55230..733c7b66c8 100644
---- a/linux-2.6.27.62/drivers/s390/crypto/ap_bus.c
-+++ b/linux-2.6.27.62/drivers/s390/crypto/ap_bus.c
+diff --git a/drivers/s390/crypto/ap_bus.c b/drivers/s390/crypto/ap_bus.c
+index 62b6b552..733c7b66 100644
+--- a/drivers/s390/crypto/ap_bus.c
++++ b/drivers/s390/crypto/ap_bus.c
 @@ -5,6 +5,7 @@
   * Author(s): Cornelia Huck <cornelia.huck@de.ibm.com>
   *	      Martin Schwidefsky <schwidefsky@de.ibm.com>
@@ -7518,10 +7518,10 @@ index 62b6b55230..733c7b66c8 100644
  }
  
  #ifndef CONFIG_ZCRYPT_MONOLITHIC
-diff --git a/linux-2.6.27.62/drivers/s390/crypto/ap_bus.h b/linux-2.6.27.62/drivers/s390/crypto/ap_bus.h
-index 446378b308..a353622418 100644
---- a/linux-2.6.27.62/drivers/s390/crypto/ap_bus.h
-+++ b/linux-2.6.27.62/drivers/s390/crypto/ap_bus.h
+diff --git a/drivers/s390/crypto/ap_bus.h b/drivers/s390/crypto/ap_bus.h
+index 446378b3..a3536224 100644
+--- a/drivers/s390/crypto/ap_bus.h
++++ b/drivers/s390/crypto/ap_bus.h
 @@ -5,6 +5,7 @@
   * Author(s): Cornelia Huck <cornelia.huck@de.ibm.com>
   *	      Martin Schwidefsky <schwidefsky@de.ibm.com>
@@ -7549,10 +7549,10 @@ index 446378b308..a353622418 100644
  #define AP_RESPONSE_Q_FULL		0x10
  #define AP_RESPONSE_NO_PENDING_REPLY	0x10
  #define AP_RESPONSE_INDEX_TOO_BIG	0x11
-diff --git a/linux-2.6.27.62/drivers/s390/net/claw.c b/linux-2.6.27.62/drivers/s390/net/claw.c
-index e10ac9ab2d..9847fabe2c 100644
---- a/linux-2.6.27.62/drivers/s390/net/claw.c
-+++ b/linux-2.6.27.62/drivers/s390/net/claw.c
+diff --git a/drivers/s390/net/claw.c b/drivers/s390/net/claw.c
+index e10ac9ab..9847fabe 100644
+--- a/drivers/s390/net/claw.c
++++ b/drivers/s390/net/claw.c
 @@ -60,6 +60,9 @@
   *    1.25  Added Packing support
   *    1.5
@@ -8216,10 +8216,10 @@ index e10ac9ab2d..9847fabe2c 100644
  	}
  	return ret;
  }
-diff --git a/linux-2.6.27.62/drivers/s390/net/ctcm_fsms.c b/linux-2.6.27.62/drivers/s390/net/ctcm_fsms.c
-index 42776550ac..f29c7086fc 100644
---- a/linux-2.6.27.62/drivers/s390/net/ctcm_fsms.c
-+++ b/linux-2.6.27.62/drivers/s390/net/ctcm_fsms.c
+diff --git a/drivers/s390/net/ctcm_fsms.c b/drivers/s390/net/ctcm_fsms.c
+index 42776550..f29c7086 100644
+--- a/drivers/s390/net/ctcm_fsms.c
++++ b/drivers/s390/net/ctcm_fsms.c
 @@ -13,6 +13,9 @@
  #undef DEBUGDATA
  #undef DEBUGCCW
@@ -8326,10 +8326,10 @@ index 42776550ac..f29c7086fc 100644
  			ctcm_clear_busy(dev);
  		}
  		break;
-diff --git a/linux-2.6.27.62/drivers/s390/net/ctcm_main.c b/linux-2.6.27.62/drivers/s390/net/ctcm_main.c
-index b11fec24c7..d5492484b6 100644
---- a/linux-2.6.27.62/drivers/s390/net/ctcm_main.c
-+++ b/linux-2.6.27.62/drivers/s390/net/ctcm_main.c
+diff --git a/drivers/s390/net/ctcm_main.c b/drivers/s390/net/ctcm_main.c
+index b11fec24..d5492484 100644
+--- a/drivers/s390/net/ctcm_main.c
++++ b/drivers/s390/net/ctcm_main.c
 @@ -21,6 +21,9 @@
  #undef DEBUGDATA
  #undef DEBUGCCW
@@ -8494,10 +8494,10 @@ index b11fec24c7..d5492484b6 100644
  		return ret;
  	}
  	print_banner();
-diff --git a/linux-2.6.27.62/drivers/s390/net/ctcm_main.h b/linux-2.6.27.62/drivers/s390/net/ctcm_main.h
-index 8e10ee86a5..932b0aa273 100644
---- a/linux-2.6.27.62/drivers/s390/net/ctcm_main.h
-+++ b/linux-2.6.27.62/drivers/s390/net/ctcm_main.h
+diff --git a/drivers/s390/net/ctcm_main.h b/drivers/s390/net/ctcm_main.h
+index 8e10ee86..932b0aa2 100644
+--- a/drivers/s390/net/ctcm_main.h
++++ b/drivers/s390/net/ctcm_main.h
 @@ -41,12 +41,6 @@
  #define LOG_FLAG_NOMEM		8
  
@@ -8511,10 +8511,10 @@ index 8e10ee86a5..932b0aa273 100644
  
  #define CTCM_PR_DEBUG(fmt, arg...) \
  	do { \
-diff --git a/linux-2.6.27.62/drivers/s390/net/ctcm_mpc.c b/linux-2.6.27.62/drivers/s390/net/ctcm_mpc.c
-index cbe470493b..f33c790fb5 100644
---- a/linux-2.6.27.62/drivers/s390/net/ctcm_mpc.c
-+++ b/linux-2.6.27.62/drivers/s390/net/ctcm_mpc.c
+diff --git a/drivers/s390/net/ctcm_mpc.c b/drivers/s390/net/ctcm_mpc.c
+index cbe47049..f33c790f 100644
+--- a/drivers/s390/net/ctcm_mpc.c
++++ b/drivers/s390/net/ctcm_mpc.c
 @@ -19,6 +19,9 @@
  #undef DEBUGDATA
  #undef DEBUGCCW
@@ -8557,10 +8557,10 @@ index cbe470493b..f33c790fb5 100644
  		priv->xid->xid2_flag2 = 0x40;
  		grp->saved_xid2->xid2_flag2 = 0x40;
  	}
-diff --git a/linux-2.6.27.62/drivers/s390/net/ctcm_sysfs.c b/linux-2.6.27.62/drivers/s390/net/ctcm_sysfs.c
-index bb2d13721d..8452bb052d 100644
---- a/linux-2.6.27.62/drivers/s390/net/ctcm_sysfs.c
-+++ b/linux-2.6.27.62/drivers/s390/net/ctcm_sysfs.c
+diff --git a/drivers/s390/net/ctcm_sysfs.c b/drivers/s390/net/ctcm_sysfs.c
+index bb2d1372..8452bb05 100644
+--- a/drivers/s390/net/ctcm_sysfs.c
++++ b/drivers/s390/net/ctcm_sysfs.c
 @@ -10,6 +10,9 @@
  #undef DEBUGDATA
  #undef DEBUGCCW
@@ -8571,10 +8571,10 @@ index bb2d13721d..8452bb052d 100644
  #include <linux/sysfs.h>
  #include "ctcm_main.h"
  
-diff --git a/linux-2.6.27.62/drivers/s390/net/lcs.c b/linux-2.6.27.62/drivers/s390/net/lcs.c
-index 9bcfa04d86..b9c17fb76b 100644
---- a/linux-2.6.27.62/drivers/s390/net/lcs.c
-+++ b/linux-2.6.27.62/drivers/s390/net/lcs.c
+diff --git a/drivers/s390/net/lcs.c b/drivers/s390/net/lcs.c
+index 9bcfa04d..b9c17fb7 100644
+--- a/drivers/s390/net/lcs.c
++++ b/drivers/s390/net/lcs.c
 @@ -26,6 +26,9 @@
   * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
   */
@@ -8828,10 +8828,10 @@ index 9bcfa04d86..b9c17fb76b 100644
  	LCS_DBF_TEXT(0, trace, "cleanup");
  	unregister_cu3088_discipline(&lcs_group_driver);
  	lcs_unregister_debug_facility();
-diff --git a/linux-2.6.27.62/drivers/s390/net/netiucv.c b/linux-2.6.27.62/drivers/s390/net/netiucv.c
-index 9242b5acc6..5430b33a0a 100644
---- a/linux-2.6.27.62/drivers/s390/net/netiucv.c
-+++ b/linux-2.6.27.62/drivers/s390/net/netiucv.c
+diff --git a/drivers/s390/net/netiucv.c b/drivers/s390/net/netiucv.c
+index 9242b5ac..5430b33a 100644
+--- a/drivers/s390/net/netiucv.c
++++ b/drivers/s390/net/netiucv.c
 @@ -31,6 +31,9 @@
   *
   */
@@ -8984,10 +8984,10 @@ index 9242b5acc6..5430b33a0a 100644
  	return;
  }
  
-diff --git a/linux-2.6.27.62/drivers/s390/net/qeth_core.h b/linux-2.6.27.62/drivers/s390/net/qeth_core.h
-index bf8a75c92f..b9a1a323fc 100644
---- a/linux-2.6.27.62/drivers/s390/net/qeth_core.h
-+++ b/linux-2.6.27.62/drivers/s390/net/qeth_core.h
+diff --git a/drivers/s390/net/qeth_core.h b/drivers/s390/net/qeth_core.h
+index bf8a75c9..b9a1a323 100644
+--- a/drivers/s390/net/qeth_core.h
++++ b/drivers/s390/net/qeth_core.h
 @@ -31,11 +31,10 @@
  #include <asm/qdio.h>
  #include <asm/ccwdev.h>
@@ -9021,10 +9021,10 @@ index bf8a75c92f..b9a1a323fc 100644
  };
  
  struct qeth_card_list_struct {
-diff --git a/linux-2.6.27.62/drivers/s390/net/qeth_core_main.c b/linux-2.6.27.62/drivers/s390/net/qeth_core_main.c
-index c7ab1b8645..cb415cab2a 100644
---- a/linux-2.6.27.62/drivers/s390/net/qeth_core_main.c
-+++ b/linux-2.6.27.62/drivers/s390/net/qeth_core_main.c
+diff --git a/drivers/s390/net/qeth_core_main.c b/drivers/s390/net/qeth_core_main.c
+index c7ab1b86..cb415cab 100644
+--- a/drivers/s390/net/qeth_core_main.c
++++ b/drivers/s390/net/qeth_core_main.c
 @@ -8,6 +8,9 @@
   *		 Frank Blaschka <frank.blaschka@de.ibm.com>
   */
@@ -9488,10 +9488,10 @@ index c7ab1b8645..cb415cab2a 100644
  }
  
  module_init(qeth_core_init);
-diff --git a/linux-2.6.27.62/drivers/s390/net/qeth_l2_main.c b/linux-2.6.27.62/drivers/s390/net/qeth_l2_main.c
-index 3ac3cc1e03..dd8795dfc2 100644
---- a/linux-2.6.27.62/drivers/s390/net/qeth_l2_main.c
-+++ b/linux-2.6.27.62/drivers/s390/net/qeth_l2_main.c
+diff --git a/drivers/s390/net/qeth_l2_main.c b/drivers/s390/net/qeth_l2_main.c
+index 3ac3cc1e..dd8795df 100644
+--- a/drivers/s390/net/qeth_l2_main.c
++++ b/drivers/s390/net/qeth_l2_main.c
 @@ -8,6 +8,9 @@
   *		 Frank Blaschka <frank.blaschka@de.ibm.com>
   */
@@ -9672,10 +9672,10 @@ index 3ac3cc1e03..dd8795dfc2 100644
  }
  
  static void qeth_l2_shutdown(struct ccwgroup_device *gdev)
-diff --git a/linux-2.6.27.62/drivers/s390/net/qeth_l3_main.c b/linux-2.6.27.62/drivers/s390/net/qeth_l3_main.c
-index dd72c3c201..dee786c5c5 100644
---- a/linux-2.6.27.62/drivers/s390/net/qeth_l3_main.c
-+++ b/linux-2.6.27.62/drivers/s390/net/qeth_l3_main.c
+diff --git a/drivers/s390/net/qeth_l3_main.c b/drivers/s390/net/qeth_l3_main.c
+index dd72c3c2..dee786c5 100644
+--- a/drivers/s390/net/qeth_l3_main.c
++++ b/drivers/s390/net/qeth_l3_main.c
 @@ -8,6 +8,9 @@
   *		 Frank Blaschka <frank.blaschka@de.ibm.com>
   */
@@ -10191,10 +10191,10 @@ index dd72c3c201..dee786c5c5 100644
  }
  
  module_init(qeth_l3_init);
-diff --git a/linux-2.6.27.62/drivers/s390/net/qeth_l3_sys.c b/linux-2.6.27.62/drivers/s390/net/qeth_l3_sys.c
-index 210ddb6397..c144b9924d 100644
---- a/linux-2.6.27.62/drivers/s390/net/qeth_l3_sys.c
-+++ b/linux-2.6.27.62/drivers/s390/net/qeth_l3_sys.c
+diff --git a/drivers/s390/net/qeth_l3_sys.c b/drivers/s390/net/qeth_l3_sys.c
+index 210ddb63..c144b992 100644
+--- a/drivers/s390/net/qeth_l3_sys.c
++++ b/drivers/s390/net/qeth_l3_sys.c
 @@ -121,9 +121,6 @@ static ssize_t qeth_l3_dev_route6_show(struct device *dev,
  	if (!card)
  		return -EINVAL;
@@ -10216,10 +10216,10 @@ index 210ddb6397..c144b9924d 100644
  	return qeth_l3_dev_route_store(card, &card->options.route6,
  				QETH_PROT_IPV6, buf, count);
  }
-diff --git a/linux-2.6.27.62/drivers/s390/scsi/zfcp_aux.c b/linux-2.6.27.62/drivers/s390/scsi/zfcp_aux.c
-index 90abfd06ed..08b4157994 100644
---- a/linux-2.6.27.62/drivers/s390/scsi/zfcp_aux.c
-+++ b/linux-2.6.27.62/drivers/s390/scsi/zfcp_aux.c
+diff --git a/drivers/s390/scsi/zfcp_aux.c b/drivers/s390/scsi/zfcp_aux.c
+index 90abfd06..08b41579 100644
+--- a/drivers/s390/scsi/zfcp_aux.c
++++ b/drivers/s390/scsi/zfcp_aux.c
 @@ -25,7 +25,11 @@
   *            Sven Schuetz
   */
@@ -10577,10 +10577,10 @@ index 90abfd06ed..08b4157994 100644
  	device_unregister(&port->sysfs_device);
  }
  
-diff --git a/linux-2.6.27.62/drivers/s390/scsi/zfcp_ccw.c b/linux-2.6.27.62/drivers/s390/scsi/zfcp_ccw.c
-index 51b6a05f4d..728147131e 100644
---- a/linux-2.6.27.62/drivers/s390/scsi/zfcp_ccw.c
-+++ b/linux-2.6.27.62/drivers/s390/scsi/zfcp_ccw.c
+diff --git a/drivers/s390/scsi/zfcp_ccw.c b/drivers/s390/scsi/zfcp_ccw.c
+index 51b6a05f..72814713 100644
+--- a/drivers/s390/scsi/zfcp_ccw.c
++++ b/drivers/s390/scsi/zfcp_ccw.c
 @@ -6,6 +6,9 @@
   * Copyright IBM Corporation 2002, 2008
   */
@@ -10698,10 +10698,10 @@ index 51b6a05f4d..728147131e 100644
 +	}
 +	return adapter;
 +}
-diff --git a/linux-2.6.27.62/drivers/s390/scsi/zfcp_cfdc.c b/linux-2.6.27.62/drivers/s390/scsi/zfcp_cfdc.c
-index ec2abceca6..f1a7518e67 100644
---- a/linux-2.6.27.62/drivers/s390/scsi/zfcp_cfdc.c
-+++ b/linux-2.6.27.62/drivers/s390/scsi/zfcp_cfdc.c
+diff --git a/drivers/s390/scsi/zfcp_cfdc.c b/drivers/s390/scsi/zfcp_cfdc.c
+index ec2abcec..f1a7518e 100644
+--- a/drivers/s390/scsi/zfcp_cfdc.c
++++ b/drivers/s390/scsi/zfcp_cfdc.c
 @@ -7,6 +7,9 @@
   * Copyright IBM Corporation 2008
   */
@@ -10712,10 +10712,10 @@ index ec2abceca6..f1a7518e67 100644
  #include <linux/types.h>
  #include <linux/miscdevice.h>
  #include <asm/ccwdev.h>
-diff --git a/linux-2.6.27.62/drivers/s390/scsi/zfcp_dbf.c b/linux-2.6.27.62/drivers/s390/scsi/zfcp_dbf.c
-index fca48b88fc..735d675623 100644
---- a/linux-2.6.27.62/drivers/s390/scsi/zfcp_dbf.c
-+++ b/linux-2.6.27.62/drivers/s390/scsi/zfcp_dbf.c
+diff --git a/drivers/s390/scsi/zfcp_dbf.c b/drivers/s390/scsi/zfcp_dbf.c
+index fca48b88..735d6756 100644
+--- a/drivers/s390/scsi/zfcp_dbf.c
++++ b/drivers/s390/scsi/zfcp_dbf.c
 @@ -6,6 +6,9 @@
   * Copyright IBM Corporation 2002, 2008
   */
@@ -11000,10 +11000,10 @@ index fca48b88fc..735d675623 100644
  	return p - out_buf;
  }
  
-diff --git a/linux-2.6.27.62/drivers/s390/scsi/zfcp_dbf.h b/linux-2.6.27.62/drivers/s390/scsi/zfcp_dbf.h
-index 0ddb18449d..5d6b2dff85 100644
---- a/linux-2.6.27.62/drivers/s390/scsi/zfcp_dbf.h
-+++ b/linux-2.6.27.62/drivers/s390/scsi/zfcp_dbf.h
+diff --git a/drivers/s390/scsi/zfcp_dbf.h b/drivers/s390/scsi/zfcp_dbf.h
+index 0ddb1844..5d6b2dff 100644
+--- a/drivers/s390/scsi/zfcp_dbf.h
++++ b/drivers/s390/scsi/zfcp_dbf.h
 @@ -151,6 +151,7 @@ struct zfcp_hba_dbf_record {
  		struct zfcp_hba_dbf_record_response response;
  		struct zfcp_hba_dbf_record_status status;
@@ -11046,10 +11046,10 @@ index 0ddb18449d..5d6b2dff85 100644
  } __attribute__ ((packed));
  
  struct zfcp_scsi_dbf_record {
-diff --git a/linux-2.6.27.62/drivers/s390/scsi/zfcp_def.h b/linux-2.6.27.62/drivers/s390/scsi/zfcp_def.h
-index 67f45fc62f..283e60f069 100644
---- a/linux-2.6.27.62/drivers/s390/scsi/zfcp_def.h
-+++ b/linux-2.6.27.62/drivers/s390/scsi/zfcp_def.h
+diff --git a/drivers/s390/scsi/zfcp_def.h b/drivers/s390/scsi/zfcp_def.h
+index 67f45fc6..283e60f0 100644
+--- a/drivers/s390/scsi/zfcp_def.h
++++ b/drivers/s390/scsi/zfcp_def.h
 @@ -33,35 +33,13 @@
  #include <asm/qdio.h>
  #include <asm/debug.h>
@@ -11492,10 +11492,10 @@ index 67f45fc62f..283e60f069 100644
 -}
 -
  #endif /* ZFCP_DEF_H */
-diff --git a/linux-2.6.27.62/drivers/s390/scsi/zfcp_erp.c b/linux-2.6.27.62/drivers/s390/scsi/zfcp_erp.c
-index 643ac4bba5..f8f5905bc2 100644
---- a/linux-2.6.27.62/drivers/s390/scsi/zfcp_erp.c
-+++ b/linux-2.6.27.62/drivers/s390/scsi/zfcp_erp.c
+diff --git a/drivers/s390/scsi/zfcp_erp.c b/drivers/s390/scsi/zfcp_erp.c
+index 643ac4bb..f8f5905b 100644
+--- a/drivers/s390/scsi/zfcp_erp.c
++++ b/drivers/s390/scsi/zfcp_erp.c
 @@ -6,6 +6,9 @@
   * Copyright IBM Corporation 2002, 2008
   */
@@ -11987,10 +11987,10 @@ index 643ac4bba5..f8f5905bc2 100644
 +		zfcp_erp_port_access_changed(port, id, ref);
  	read_unlock_irqrestore(&zfcp_data.config_lock, flags);
  }
-diff --git a/linux-2.6.27.62/drivers/s390/scsi/zfcp_ext.h b/linux-2.6.27.62/drivers/s390/scsi/zfcp_ext.h
-index edfdb21591..b5adeda93e 100644
---- a/linux-2.6.27.62/drivers/s390/scsi/zfcp_ext.h
-+++ b/linux-2.6.27.62/drivers/s390/scsi/zfcp_ext.h
+diff --git a/drivers/s390/scsi/zfcp_ext.h b/drivers/s390/scsi/zfcp_ext.h
+index edfdb215..b5adeda9 100644
+--- a/drivers/s390/scsi/zfcp_ext.h
++++ b/drivers/s390/scsi/zfcp_ext.h
 @@ -12,16 +12,14 @@
  #include "zfcp_def.h"
  
@@ -12080,10 +12080,10 @@ index edfdb21591..b5adeda93e 100644
  extern struct attribute_group zfcp_sysfs_port_attrs;
  extern struct device_attribute *zfcp_sysfs_sdev_attrs[];
  extern struct device_attribute *zfcp_sysfs_shost_attrs[];
-diff --git a/linux-2.6.27.62/drivers/s390/scsi/zfcp_fc.c b/linux-2.6.27.62/drivers/s390/scsi/zfcp_fc.c
-index 56196c98c0..fcdee43183 100644
---- a/linux-2.6.27.62/drivers/s390/scsi/zfcp_fc.c
-+++ b/linux-2.6.27.62/drivers/s390/scsi/zfcp_fc.c
+diff --git a/drivers/s390/scsi/zfcp_fc.c b/drivers/s390/scsi/zfcp_fc.c
+index 56196c98..fcdee431 100644
+--- a/drivers/s390/scsi/zfcp_fc.c
++++ b/drivers/s390/scsi/zfcp_fc.c
 @@ -6,6 +6,9 @@
   * Copyright IBM Corporation 2008
   */
@@ -12470,10 +12470,10 @@ index 56196c98c0..fcdee43183 100644
  	return ret;
  }
  
-diff --git a/linux-2.6.27.62/drivers/s390/scsi/zfcp_fsf.c b/linux-2.6.27.62/drivers/s390/scsi/zfcp_fsf.c
-index 49dbeb754e..225decc0d5 100644
---- a/linux-2.6.27.62/drivers/s390/scsi/zfcp_fsf.c
-+++ b/linux-2.6.27.62/drivers/s390/scsi/zfcp_fsf.c
+diff --git a/drivers/s390/scsi/zfcp_fsf.c b/drivers/s390/scsi/zfcp_fsf.c
+index 49dbeb75..225decc0 100644
+--- a/drivers/s390/scsi/zfcp_fsf.c
++++ b/drivers/s390/scsi/zfcp_fsf.c
 @@ -6,6 +6,10 @@
   * Copyright IBM Corporation 2002, 2008
   */
@@ -13918,10 +13918,10 @@ index 49dbeb754e..225decc0d5 100644
  
  	if (!retval) {
  		wait_event(req->completion_wq,
-diff --git a/linux-2.6.27.62/drivers/s390/scsi/zfcp_fsf.h b/linux-2.6.27.62/drivers/s390/scsi/zfcp_fsf.h
-index bf94b4da07..fa2a317806 100644
---- a/linux-2.6.27.62/drivers/s390/scsi/zfcp_fsf.h
-+++ b/linux-2.6.27.62/drivers/s390/scsi/zfcp_fsf.h
+diff --git a/drivers/s390/scsi/zfcp_fsf.h b/drivers/s390/scsi/zfcp_fsf.h
+index bf94b4da..fa2a3178 100644
+--- a/drivers/s390/scsi/zfcp_fsf.h
++++ b/drivers/s390/scsi/zfcp_fsf.h
 @@ -71,13 +71,6 @@
  #define FSF_MAXIMUM_NUMBER_OF_LUNS_EXCEEDED	0x00000041
  #define FSF_ELS_COMMAND_REJECTED		0x00000050
@@ -14094,10 +14094,10 @@ index bf94b4da07..fa2a317806 100644
 +} __attribute__ ((packed));
 +
  #endif				/* FSF_H */
-diff --git a/linux-2.6.27.62/drivers/s390/scsi/zfcp_qdio.c b/linux-2.6.27.62/drivers/s390/scsi/zfcp_qdio.c
-index 69d632d851..d3b55fb66f 100644
---- a/linux-2.6.27.62/drivers/s390/scsi/zfcp_qdio.c
-+++ b/linux-2.6.27.62/drivers/s390/scsi/zfcp_qdio.c
+diff --git a/drivers/s390/scsi/zfcp_qdio.c b/drivers/s390/scsi/zfcp_qdio.c
+index 69d632d8..d3b55fb6 100644
+--- a/drivers/s390/scsi/zfcp_qdio.c
++++ b/drivers/s390/scsi/zfcp_qdio.c
 @@ -6,6 +6,9 @@
   * Copyright IBM Corporation 2002, 2008
   */
@@ -14326,10 +14326,10 @@ index 69d632d851..d3b55fb66f 100644
 +		"Setting up the QDIO connection to the FCP adapter failed\n");
  	return -EIO;
  }
-diff --git a/linux-2.6.27.62/drivers/s390/scsi/zfcp_scsi.c b/linux-2.6.27.62/drivers/s390/scsi/zfcp_scsi.c
-index aeae56b00b..64636deea5 100644
---- a/linux-2.6.27.62/drivers/s390/scsi/zfcp_scsi.c
-+++ b/linux-2.6.27.62/drivers/s390/scsi/zfcp_scsi.c
+diff --git a/drivers/s390/scsi/zfcp_scsi.c b/drivers/s390/scsi/zfcp_scsi.c
+index aeae56b0..64636dee 100644
+--- a/drivers/s390/scsi/zfcp_scsi.c
++++ b/drivers/s390/scsi/zfcp_scsi.c
 @@ -6,6 +6,9 @@
   * Copyright IBM Corporation 2002, 2008
   */
@@ -14430,10 +14430,10 @@ index aeae56b00b..64636deea5 100644
  
  	return;
  }
-diff --git a/linux-2.6.27.62/drivers/s390/scsi/zfcp_sysfs.c b/linux-2.6.27.62/drivers/s390/scsi/zfcp_sysfs.c
-index 2e85c6c49e..69068613bc 100644
---- a/linux-2.6.27.62/drivers/s390/scsi/zfcp_sysfs.c
-+++ b/linux-2.6.27.62/drivers/s390/scsi/zfcp_sysfs.c
+diff --git a/drivers/s390/scsi/zfcp_sysfs.c b/drivers/s390/scsi/zfcp_sysfs.c
+index 2e85c6c4..69068613 100644
+--- a/drivers/s390/scsi/zfcp_sysfs.c
++++ b/drivers/s390/scsi/zfcp_sysfs.c
 @@ -6,6 +6,9 @@
   * Copyright IBM Corporation 2008
   */
@@ -14602,10 +14602,10 @@ index 2e85c6c49e..69068613bc 100644
 +	&dev_attr_queue_full,
  	NULL
  };
-diff --git a/linux-2.6.27.62/drivers/s390/sysinfo.c b/linux-2.6.27.62/drivers/s390/sysinfo.c
-index c3e4ab07b9..0eea907813 100644
---- a/linux-2.6.27.62/drivers/s390/sysinfo.c
-+++ b/linux-2.6.27.62/drivers/s390/sysinfo.c
+diff --git a/drivers/s390/sysinfo.c b/drivers/s390/sysinfo.c
+index c3e4ab07..0eea9078 100644
+--- a/drivers/s390/sysinfo.c
++++ b/drivers/s390/sysinfo.c
 @@ -1,17 +1,21 @@
  /*
   *  drivers/s390/sysinfo.c
@@ -14756,10 +14756,10 @@ index c3e4ab07b9..0eea907813 100644
  int get_cpu_capability(unsigned int *capability)
  {
  	struct sysinfo_1_2_2 *info;
-diff --git a/linux-2.6.27.62/drivers/usb/storage/unusual_devs.h b/linux-2.6.27.62/drivers/usb/storage/unusual_devs.h
-index 5c86413646..306b497991 100644
---- a/linux-2.6.27.62/drivers/usb/storage/unusual_devs.h
-+++ b/linux-2.6.27.62/drivers/usb/storage/unusual_devs.h
+diff --git a/drivers/usb/storage/unusual_devs.h b/drivers/usb/storage/unusual_devs.h
+index 5c864136..306b4979 100644
+--- a/drivers/usb/storage/unusual_devs.h
++++ b/drivers/usb/storage/unusual_devs.h
 @@ -1509,6 +1509,13 @@ UNUSUAL_DEV(  0x0d96, 0x5200, 0x0001, 0x0200,
  		"JD 5200 z3",
  		US_SC_DEVICE, US_PR_DEVICE, NULL, US_FL_FIX_INQUIRY),
@@ -14774,10 +14774,10 @@ index 5c86413646..306b497991 100644
  /* Reported by Lubomir Blaha <tritol@trilogic.cz>
   * I _REALLY_ don't know what 3rd, 4th number and all defines mean, but this
   * works for me. Can anybody correct these values? (I able to test corrected
-diff --git a/linux-2.6.27.62/drivers/video/Kconfig b/linux-2.6.27.62/drivers/video/Kconfig
-index 70d135e0cc..8c25d9c444 100644
---- a/linux-2.6.27.62/drivers/video/Kconfig
-+++ b/linux-2.6.27.62/drivers/video/Kconfig
+diff --git a/drivers/video/Kconfig b/drivers/video/Kconfig
+index 70d135e0..8c25d9c4 100644
+--- a/drivers/video/Kconfig
++++ b/drivers/video/Kconfig
 @@ -1163,7 +1163,6 @@ config FB_MATROX
  	select FB_CFB_FILLRECT
  	select FB_CFB_COPYAREA
@@ -14786,10 +14786,10 @@ index 70d135e0cc..8c25d9c444 100644
  	select FB_MACMODES if PPC_PMAC
  	---help---
  	  Say Y here if you have a Matrox Millennium, Matrox Millennium II,
-diff --git a/linux-2.6.27.62/drivers/video/console/Kconfig b/linux-2.6.27.62/drivers/video/console/Kconfig
-index 06f87b04f2..87ade98bc9 100644
---- a/linux-2.6.27.62/drivers/video/console/Kconfig
-+++ b/linux-2.6.27.62/drivers/video/console/Kconfig
+diff --git a/drivers/video/console/Kconfig b/drivers/video/console/Kconfig
+index 06f87b04..87ade98b 100644
+--- a/drivers/video/console/Kconfig
++++ b/drivers/video/console/Kconfig
 @@ -144,6 +144,19 @@ config FRAMEBUFFER_CONSOLE_ROTATION
           such that other users of the framebuffer will remain normally
           oriented.
@@ -14810,10 +14810,10 @@ index 06f87b04f2..87ade98bc9 100644
  config STI_CONSOLE
          bool "STI text console"
          depends on PARISC
-diff --git a/linux-2.6.27.62/drivers/video/console/Makefile b/linux-2.6.27.62/drivers/video/console/Makefile
-index ac46cc3f6a..e300ea0283 100644
---- a/linux-2.6.27.62/drivers/video/console/Makefile
-+++ b/linux-2.6.27.62/drivers/video/console/Makefile
+diff --git a/drivers/video/console/Makefile b/drivers/video/console/Makefile
+index ac46cc3f..e300ea02 100644
+--- a/drivers/video/console/Makefile
++++ b/drivers/video/console/Makefile
 @@ -35,6 +35,7 @@ obj-$(CONFIG_FRAMEBUFFER_CONSOLE)     += fbcon_rotate.o fbcon_cw.o fbcon_ud.o \
                                           fbcon_ccw.o
  endif
@@ -14822,10 +14822,10 @@ index ac46cc3f6a..e300ea0283 100644
  obj-$(CONFIG_FB_STI)              += sticore.o font.o
  
  ifeq ($(CONFIG_USB_SISUSBVGA_CON),y)
-diff --git a/linux-2.6.27.62/drivers/video/console/bitblit.c b/linux-2.6.27.62/drivers/video/console/bitblit.c
-index 69864b1b3f..77c1febb67 100644
---- a/linux-2.6.27.62/drivers/video/console/bitblit.c
-+++ b/linux-2.6.27.62/drivers/video/console/bitblit.c
+diff --git a/drivers/video/console/bitblit.c b/drivers/video/console/bitblit.c
+index 69864b1b..77c1febb 100644
+--- a/drivers/video/console/bitblit.c
++++ b/drivers/video/console/bitblit.c
 @@ -17,6 +17,7 @@
  #include <linux/console.h>
  #include <asm/types.h>
@@ -14868,11 +14868,11 @@ index 69864b1b3f..77c1febb67 100644
  
  	ops->cursor_reset = 0;
  }
-diff --git a/linux-2.6.27.62/drivers/video/console/cfbcondecor.c b/linux-2.6.27.62/drivers/video/console/cfbcondecor.c
+diff --git a/drivers/video/console/cfbcondecor.c b/drivers/video/console/cfbcondecor.c
 new file mode 100644
-index 0000000000..7654ec6779
+index 00000000..7654ec67
 --- /dev/null
-+++ b/linux-2.6.27.62/drivers/video/console/cfbcondecor.c
++++ b/drivers/video/console/cfbcondecor.c
 @@ -0,0 +1,471 @@
 +/*
 + *  linux/drivers/video/cfbcon_decor.c -- Framebuffer decor render functions
@@ -15345,10 +15345,10 @@ index 0000000000..7654ec6779
 +	}
 +}
 +
-diff --git a/linux-2.6.27.62/drivers/video/console/fbcon.c b/linux-2.6.27.62/drivers/video/console/fbcon.c
-index 93a080e827..43a0c622e5 100644
---- a/linux-2.6.27.62/drivers/video/console/fbcon.c
-+++ b/linux-2.6.27.62/drivers/video/console/fbcon.c
+diff --git a/drivers/video/console/fbcon.c b/drivers/video/console/fbcon.c
+index 93a080e8..43a0c622 100644
+--- a/drivers/video/console/fbcon.c
++++ b/drivers/video/console/fbcon.c
 @@ -90,6 +90,7 @@
  #endif
  
@@ -15661,11 +15661,11 @@ index 93a080e827..43a0c622e5 100644
  	fbcon_has_exited = 1;
  }
  
-diff --git a/linux-2.6.27.62/drivers/video/console/fbcondecor.c b/linux-2.6.27.62/drivers/video/console/fbcondecor.c
+diff --git a/drivers/video/console/fbcondecor.c b/drivers/video/console/fbcondecor.c
 new file mode 100644
-index 0000000000..d39c5b7bbb
+index 00000000..d39c5b7b
 --- /dev/null
-+++ b/linux-2.6.27.62/drivers/video/console/fbcondecor.c
++++ b/drivers/video/console/fbcondecor.c
 @@ -0,0 +1,420 @@
 +/* 
 + *  linux/drivers/video/console/fbcondecor.c -- Framebuffer console decorations
@@ -16087,11 +16087,11 @@ index 0000000000..d39c5b7bbb
 +}
 +
 +EXPORT_SYMBOL(fbcon_decor_path);
-diff --git a/linux-2.6.27.62/drivers/video/console/fbcondecor.h b/linux-2.6.27.62/drivers/video/console/fbcondecor.h
+diff --git a/drivers/video/console/fbcondecor.h b/drivers/video/console/fbcondecor.h
 new file mode 100644
-index 0000000000..1d852dd95e
+index 00000000..1d852dd9
 --- /dev/null
-+++ b/linux-2.6.27.62/drivers/video/console/fbcondecor.h
++++ b/drivers/video/console/fbcondecor.h
 @@ -0,0 +1,78 @@
 +/* 
 + *  linux/drivers/video/console/fbcondecor.h -- Framebuffer Console Decoration headers
@@ -16171,10 +16171,10 @@ index 0000000000..1d852dd95e
 +#endif /* CONFIG_FB_CON_DECOR */
 +
 +#endif /* __FBCON_DECOR_H */
-diff --git a/linux-2.6.27.62/drivers/video/fbcmap.c b/linux-2.6.27.62/drivers/video/fbcmap.c
-index 91b78e6915..8427fe1bd3 100644
---- a/linux-2.6.27.62/drivers/video/fbcmap.c
-+++ b/linux-2.6.27.62/drivers/video/fbcmap.c
+diff --git a/drivers/video/fbcmap.c b/drivers/video/fbcmap.c
+index 91b78e69..8427fe1b 100644
+--- a/drivers/video/fbcmap.c
++++ b/drivers/video/fbcmap.c
 @@ -17,6 +17,8 @@
  #include <linux/slab.h>
  #include <linux/uaccess.h>
@@ -16214,10 +16214,10 @@ index 91b78e6915..8427fe1bd3 100644
  	if (cmap->start < 0 || (!info->fbops->fb_setcolreg &&
  			        !info->fbops->fb_setcmap))
  		return -EINVAL;
-diff --git a/linux-2.6.27.62/fs/Kconfig b/linux-2.6.27.62/fs/Kconfig
-index abccb5dab9..48312db5bd 100644
---- a/linux-2.6.27.62/fs/Kconfig
-+++ b/linux-2.6.27.62/fs/Kconfig
+diff --git a/fs/Kconfig b/fs/Kconfig
+index abccb5da..48312db5 100644
+--- a/fs/Kconfig
++++ b/fs/Kconfig
 @@ -1348,6 +1348,56 @@ config CRAMFS
  
  	  If unsure, say N.
@@ -16275,10 +16275,10 @@ index abccb5dab9..48312db5bd 100644
  config VXFS_FS
  	tristate "FreeVxFS file system support (VERITAS VxFS(TM) compatible)"
  	depends on BLOCK
-diff --git a/linux-2.6.27.62/fs/Makefile b/linux-2.6.27.62/fs/Makefile
-index a1482a5eff..0871ab540a 100644
---- a/linux-2.6.27.62/fs/Makefile
-+++ b/linux-2.6.27.62/fs/Makefile
+diff --git a/fs/Makefile b/fs/Makefile
+index a1482a5e..0871ab54 100644
+--- a/fs/Makefile
++++ b/fs/Makefile
 @@ -74,6 +74,7 @@ obj-$(CONFIG_JBD)		+= jbd/
  obj-$(CONFIG_JBD2)		+= jbd2/
  obj-$(CONFIG_EXT2_FS)		+= ext2/
@@ -16287,11 +16287,11 @@ index a1482a5eff..0871ab540a 100644
  obj-y				+= ramfs/
  obj-$(CONFIG_HUGETLBFS)		+= hugetlbfs/
  obj-$(CONFIG_CODA_FS)		+= coda/
-diff --git a/linux-2.6.27.62/fs/squashfs/Makefile b/linux-2.6.27.62/fs/squashfs/Makefile
+diff --git a/fs/squashfs/Makefile b/fs/squashfs/Makefile
 new file mode 100644
-index 0000000000..1bc7b0609e
+index 00000000..1bc7b060
 --- /dev/null
-+++ b/linux-2.6.27.62/fs/squashfs/Makefile
++++ b/fs/squashfs/Makefile
 @@ -0,0 +1,7 @@
 +#
 +# Makefile for the linux squashfs routines.
@@ -16300,11 +16300,11 @@ index 0000000000..1bc7b0609e
 +obj-$(CONFIG_SQUASHFS) += squashfs.o
 +squashfs-y += inode.o
 +squashfs-y += squashfs2_0.o
-diff --git a/linux-2.6.27.62/fs/squashfs/inode.c b/linux-2.6.27.62/fs/squashfs/inode.c
+diff --git a/fs/squashfs/inode.c b/fs/squashfs/inode.c
 new file mode 100644
-index 0000000000..df304a19f4
+index 00000000..df304a19
 --- /dev/null
-+++ b/linux-2.6.27.62/fs/squashfs/inode.c
++++ b/fs/squashfs/inode.c
 @@ -0,0 +1,2174 @@
 +/*
 + * Squashfs - a compressed read only filesystem for Linux
@@ -18480,11 +18480,11 @@ index 0000000000..df304a19f4
 +MODULE_DESCRIPTION("squashfs 3.4, a compressed read-only filesystem");
 +MODULE_AUTHOR("Phillip Lougher <phillip@lougher.demon.co.uk>");
 +MODULE_LICENSE("GPL");
-diff --git a/linux-2.6.27.62/fs/squashfs/squashfs.h b/linux-2.6.27.62/fs/squashfs/squashfs.h
+diff --git a/fs/squashfs/squashfs.h b/fs/squashfs/squashfs.h
 new file mode 100644
-index 0000000000..4e117425bc
+index 00000000..4e117425
 --- /dev/null
-+++ b/linux-2.6.27.62/fs/squashfs/squashfs.h
++++ b/fs/squashfs/squashfs.h
 @@ -0,0 +1,86 @@
 +/*
 + * Squashfs - a compressed read only filesystem for Linux
@@ -18572,11 +18572,11 @@ index 0000000000..4e117425bc
 +	return 0;
 +}
 +#endif
-diff --git a/linux-2.6.27.62/fs/squashfs/squashfs2_0.c b/linux-2.6.27.62/fs/squashfs/squashfs2_0.c
+diff --git a/fs/squashfs/squashfs2_0.c b/fs/squashfs/squashfs2_0.c
 new file mode 100644
-index 0000000000..30ebdb9418
+index 00000000..30ebdb94
 --- /dev/null
-+++ b/linux-2.6.27.62/fs/squashfs/squashfs2_0.c
++++ b/fs/squashfs/squashfs2_0.c
 @@ -0,0 +1,740 @@
 +/*
 + * Squashfs - a compressed read only filesystem for Linux
@@ -19318,10 +19318,10 @@ index 0000000000..30ebdb9418
 +
 +	return 1;
 +}
-diff --git a/linux-2.6.27.62/include/linux/blktrace_api.h b/linux-2.6.27.62/include/linux/blktrace_api.h
-index d084b8d227..913ecbef72 100644
---- a/linux-2.6.27.62/include/linux/blktrace_api.h
-+++ b/linux-2.6.27.62/include/linux/blktrace_api.h
+diff --git a/include/linux/blktrace_api.h b/include/linux/blktrace_api.h
+index d084b8d2..913ecbef 100644
+--- a/include/linux/blktrace_api.h
++++ b/include/linux/blktrace_api.h
 @@ -21,6 +21,7 @@ enum blktrace_cat {
  	BLK_TC_NOTIFY	= 1 << 10,	/* special message */
  	BLK_TC_AHEAD	= 1 << 11,	/* readahead */
@@ -19389,11 +19389,11 @@ index d084b8d227..913ecbef72 100644
  #define do_blk_trace_setup(q, name, dev, buts)	(-ENOTTY)
  #define blk_trace_setup(q, name, dev, arg)	(-ENOTTY)
  #define blk_trace_startstop(q, start)		(-ENOTTY)
-diff --git a/linux-2.6.27.62/include/linux/console_decor.h b/linux-2.6.27.62/include/linux/console_decor.h
+diff --git a/include/linux/console_decor.h b/include/linux/console_decor.h
 new file mode 100644
-index 0000000000..8130932546
+index 00000000..81309325
 --- /dev/null
-+++ b/linux-2.6.27.62/include/linux/console_decor.h
++++ b/include/linux/console_decor.h
 @@ -0,0 +1,13 @@
 +#ifndef _LINUX_CONSOLE_DECOR_H_
 +#define _LINUX_CONSOLE_DECOR_H_ 1
@@ -19408,10 +19408,10 @@ index 0000000000..8130932546
 +};
 +
 +#endif
-diff --git a/linux-2.6.27.62/include/linux/console_struct.h b/linux-2.6.27.62/include/linux/console_struct.h
-index d71f7c0f93..14504474dd 100644
---- a/linux-2.6.27.62/include/linux/console_struct.h
-+++ b/linux-2.6.27.62/include/linux/console_struct.h
+diff --git a/include/linux/console_struct.h b/include/linux/console_struct.h
+index d71f7c0f..14504474 100644
+--- a/include/linux/console_struct.h
++++ b/include/linux/console_struct.h
 @@ -19,6 +19,7 @@
  struct vt_struct;
  
@@ -19429,10 +19429,10 @@ index d71f7c0f93..14504474dd 100644
  	/* additional information is in vt_kern.h */
  };
  
-diff --git a/linux-2.6.27.62/include/linux/fb.h b/linux-2.6.27.62/include/linux/fb.h
-index 531ccd5f59..c9020fcfa9 100644
---- a/linux-2.6.27.62/include/linux/fb.h
-+++ b/linux-2.6.27.62/include/linux/fb.h
+diff --git a/include/linux/fb.h b/include/linux/fb.h
+index 531ccd5f..c9020fcf 100644
+--- a/include/linux/fb.h
++++ b/include/linux/fb.h
 @@ -10,6 +10,13 @@ struct dentry;
  
  #define FB_MAX			32	/* sufficient for now */
@@ -19473,10 +19473,10 @@ index 531ccd5f59..c9020fcfa9 100644
  	/* From here on everything is device dependent */
  	void *par;	
  };
-diff --git a/linux-2.6.27.62/include/linux/kernel.h b/linux-2.6.27.62/include/linux/kernel.h
-index cd85f00a72..63a74433af 100644
---- a/linux-2.6.27.62/include/linux/kernel.h
-+++ b/linux-2.6.27.62/include/linux/kernel.h
+diff --git a/include/linux/kernel.h b/include/linux/kernel.h
+index cd85f00a..63a74433 100644
+--- a/include/linux/kernel.h
++++ b/include/linux/kernel.h
 @@ -292,28 +292,32 @@ static inline char *pack_hex_byte(char *buf, u8 byte)
  	return buf;
  }
@@ -19528,11 +19528,11 @@ index cd85f00a72..63a74433af 100644
  #endif
  
  /*
-diff --git a/linux-2.6.27.62/include/linux/squashfs_fs.h b/linux-2.6.27.62/include/linux/squashfs_fs.h
+diff --git a/include/linux/squashfs_fs.h b/include/linux/squashfs_fs.h
 new file mode 100644
-index 0000000000..4cdd11f12b
+index 00000000..4cdd11f1
 --- /dev/null
-+++ b/linux-2.6.27.62/include/linux/squashfs_fs.h
++++ b/include/linux/squashfs_fs.h
 @@ -0,0 +1,935 @@
 +#ifndef SQUASHFS_FS
 +#define SQUASHFS_FS
@@ -20469,11 +20469,11 @@ index 0000000000..4cdd11f12b
 +
 +#endif
 +#endif
-diff --git a/linux-2.6.27.62/include/linux/squashfs_fs_i.h b/linux-2.6.27.62/include/linux/squashfs_fs_i.h
+diff --git a/include/linux/squashfs_fs_i.h b/include/linux/squashfs_fs_i.h
 new file mode 100644
-index 0000000000..b41c13ccb1
+index 00000000..b41c13cc
 --- /dev/null
-+++ b/linux-2.6.27.62/include/linux/squashfs_fs_i.h
++++ b/include/linux/squashfs_fs_i.h
 @@ -0,0 +1,45 @@
 +#ifndef SQUASHFS_FS_I
 +#define SQUASHFS_FS_I
@@ -20520,11 +20520,11 @@ index 0000000000..b41c13ccb1
 +	struct inode	vfs_inode;
 +};
 +#endif
-diff --git a/linux-2.6.27.62/include/linux/squashfs_fs_sb.h b/linux-2.6.27.62/include/linux/squashfs_fs_sb.h
+diff --git a/include/linux/squashfs_fs_sb.h b/include/linux/squashfs_fs_sb.h
 new file mode 100644
-index 0000000000..75c3716957
+index 00000000..75c37169
 --- /dev/null
-+++ b/linux-2.6.27.62/include/linux/squashfs_fs_sb.h
++++ b/include/linux/squashfs_fs_sb.h
 @@ -0,0 +1,79 @@
 +#ifndef SQUASHFS_FS_SB
 +#define SQUASHFS_FS_SB
@@ -20605,10 +20605,10 @@ index 0000000000..75c3716957
 +	int			(*read_fragment_index_table)(struct super_block *s);
 +};
 +#endif
-diff --git a/linux-2.6.27.62/init/do_mounts_rd.c b/linux-2.6.27.62/init/do_mounts_rd.c
-index fedef93b58..108c6bf87c 100644
---- a/linux-2.6.27.62/init/do_mounts_rd.c
-+++ b/linux-2.6.27.62/init/do_mounts_rd.c
+diff --git a/init/do_mounts_rd.c b/init/do_mounts_rd.c
+index fedef93b..108c6bf8 100644
+--- a/init/do_mounts_rd.c
++++ b/init/do_mounts_rd.c
 @@ -5,6 +5,7 @@
  #include <linux/ext2_fs.h>
  #include <linux/romfs_fs.h>
@@ -20660,10 +20660,10 @@ index fedef93b58..108c6bf87c 100644
  	/*
  	 * Read block 1 to test for minix and ext2 superblock
  	 */
-diff --git a/linux-2.6.27.62/kernel/sysctl.c b/linux-2.6.27.62/kernel/sysctl.c
-index 1228d65903..c5c2516a39 100644
---- a/linux-2.6.27.62/kernel/sysctl.c
-+++ b/linux-2.6.27.62/kernel/sysctl.c
+diff --git a/kernel/sysctl.c b/kernel/sysctl.c
+index 1228d659..c5c2516a 100644
+--- a/kernel/sysctl.c
++++ b/kernel/sysctl.c
 @@ -114,6 +114,9 @@ static int ngroups_max = NGROUPS_MAX;
  #ifdef CONFIG_MODULES
  extern char modprobe_path[];
@@ -20718,10 +20718,10 @@ index 1228d65903..c5c2516a39 100644
  	{ .ctl_name = 0 }
  };
  
-diff --git a/linux-2.6.27.62/net/iucv/af_iucv.c b/linux-2.6.27.62/net/iucv/af_iucv.c
-index 29f7baa251..af3192d2a5 100644
---- a/linux-2.6.27.62/net/iucv/af_iucv.c
-+++ b/linux-2.6.27.62/net/iucv/af_iucv.c
+diff --git a/net/iucv/af_iucv.c b/net/iucv/af_iucv.c
+index 29f7baa2..af3192d2 100644
+--- a/net/iucv/af_iucv.c
++++ b/net/iucv/af_iucv.c
 @@ -8,6 +8,9 @@
   *  Author(s):	Jennifer Hunt <jenhunt@us.ibm.com>
   */
@@ -20769,10 +20769,10 @@ index 29f7baa251..af3192d2a5 100644
  		err = -EPROTONOSUPPORT;
  		goto out;
  	}
-diff --git a/linux-2.6.27.62/net/iucv/iucv.c b/linux-2.6.27.62/net/iucv/iucv.c
-index d7b54b5bfa..75790ccdfe 100644
---- a/linux-2.6.27.62/net/iucv/iucv.c
-+++ b/linux-2.6.27.62/net/iucv/iucv.c
+diff --git a/net/iucv/iucv.c b/net/iucv/iucv.c
+index d7b54b5b..75790ccd 100644
+--- a/net/iucv/iucv.c
++++ b/net/iucv/iucv.c
 @@ -30,6 +30,9 @@
   * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
   */
