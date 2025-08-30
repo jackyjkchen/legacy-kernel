@@ -1,6 +1,6 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/loongarch 6.12.42-gentoo Kernel Configuration
+# Linux/loongarch 6.12.44-gentoo Kernel Configuration
 #
 CONFIG_CC_VERSION_TEXT="gcc (Gentoo 14.3.1_p20250801 p4) 14.3.1 20250801"
 CONFIG_CC_IS_GCC=y
@@ -3383,6 +3383,7 @@ CONFIG_VIDEO=y
 CONFIG_DRM=m
 # CONFIG_DRM_DEBUG_MM is not set
 CONFIG_DRM_KMS_HELPER=m
+CONFIG_DRM_DRAW=y
 CONFIG_DRM_PANIC=y
 CONFIG_DRM_PANIC_FOREGROUND_COLOR=0xffffff
 CONFIG_DRM_PANIC_BACKGROUND_COLOR=0x0000aa
@@ -3443,7 +3444,6 @@ CONFIG_DRM_AMD_DC_FP=y
 # end of Display Engine Configuration
 
 # CONFIG_DRM_NOUVEAU is not set
-# CONFIG_DRM_XE is not set
 # CONFIG_DRM_VGEM is not set
 # CONFIG_DRM_VKMS is not set
 # CONFIG_DRM_UDL is not set
