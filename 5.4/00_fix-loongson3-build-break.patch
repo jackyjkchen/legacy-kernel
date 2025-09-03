@@ -1,0 +1,13 @@
+diff --git a/arch/mips/loongson64/env.c b/arch/mips/loongson64/env.c
+index c9db6c4..0f273f2 100644
+--- a/arch/mips/loongson64/env.c
++++ b/arch/mips/loongson64/env.c
+@@ -219,8 +219,6 @@ void __init prom_init_env(void)
+ 		default:
+ 			break;
+ 		}
+-	} else if ((read_c0_prid() & PRID_IMP_MASK) == PRID_IMP_LOONGSON_64R) {
+-		loongson_fdt_blob = __dtb_loongson64_2core_2k1000_begin;
+ 	} else if ((read_c0_prid() & PRID_IMP_MASK) == PRID_IMP_LOONGSON_64G) {
+ 		if (loongson_sysconf.bridgetype == LS7A)
+ 			loongson_fdt_blob = __dtb_loongson64g_4core_ls7a_begin;
