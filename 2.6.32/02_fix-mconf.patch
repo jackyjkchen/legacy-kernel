@@ -1,13 +1,31 @@
-diff --git a/scripts/kconfig/Makefile b/scripts/kconfig/Makefile
-index 80599e3a..2ad708fd 100644
---- a/scripts/kconfig/Makefile
-+++ b/scripts/kconfig/Makefile
-@@ -128,7 +128,7 @@ check-lxdialog  := $(srctree)/$(src)/lxdialog/check-lxdialog.sh
- # Use recursively expanded variables so we do not call gcc unless
- # we really need to do so. (Do not call gcc as part of make mrproper)
- HOST_EXTRACFLAGS = $(shell $(CONFIG_SHELL) $(check-lxdialog) -ccflags)
--HOST_LOADLIBES   = $(shell $(CONFIG_SHELL) $(check-lxdialog) -ldflags $(HOSTCC))
-+HOST_LOADLIBES   = $(shell $(CONFIG_SHELL) $(check-lxdialog) -ldflags $(HOSTCC)) -ltinfow
- 
- HOST_EXTRACFLAGS += -DLOCALE
- 
+diff --git a/scripts/kconfig/lxdialog/check-lxdialog.sh b/scripts/kconfig/lxdialog/check-lxdialog.sh
+index 4bab9e2..9d2a4c5 100644
+--- a/scripts/kconfig/lxdialog/check-lxdialog.sh
++++ b/scripts/kconfig/lxdialog/check-lxdialog.sh
+@@ -4,7 +4,9 @@
+ # What library to link
+ ldflags()
+ {
+-	for ext in so a dylib ; do
++	pkg-config --libs ncursesw 2>/dev/null && exit
++	pkg-config --libs ncurses 2>/dev/null && exit
++	for ext in so a dll.a dylib ; do
+ 		for lib in ncursesw ncurses curses ; do
+ 			$cc -print-file-name=lib${lib}.${ext} | grep -q /
+ 			if [ $? -eq 0 ]; then
+@@ -19,10 +21,13 @@ ldflags()
+ # Where is ncurses.h?
+ ccflags()
+ {
+-	if [ -f /usr/include/ncurses/ncurses.h ]; then
++	if [ -f /usr/include/ncursesw/curses.h ]; then
++		echo '-I/usr/include/ncursesw -DCURSES_LOC="<curses.h>"'
++		echo ' -DNCURSES_WIDECHAR=1'
++	elif [ -f /usr/include/ncurses/ncurses.h ]; then
+ 		echo '-I/usr/include/ncurses -DCURSES_LOC="<ncurses.h>"'
+ 	elif [ -f /usr/include/ncurses/curses.h ]; then
+-		echo '-I/usr/include/ncurses -DCURSES_LOC="<ncurses/curses.h>"'
++		echo '-I/usr/include/ncurses -DCURSES_LOC="<curses.h>"'
+ 	elif [ -f /usr/include/ncurses.h ]; then
+ 		echo '-DCURSES_LOC="<ncurses.h>"'
+ 	else
