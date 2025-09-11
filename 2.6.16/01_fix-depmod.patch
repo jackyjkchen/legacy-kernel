@@ -1,0 +1,13 @@
+diff --git a/Makefile b/Makefile
+index d99f5bd4..f651dfab 100644
+--- a/Makefile
++++ b/Makefile
+@@ -972,7 +972,7 @@ _modinst_:
+ ifeq "$(strip $(INSTALL_MOD_PATH))" ""
+ depmod_opts	:=
+ else
+-depmod_opts	:= -b $(INSTALL_MOD_PATH) -r
++depmod_opts	:= -b $(INSTALL_MOD_PATH)
+ endif
+ .PHONY: _modinst_post
+ _modinst_post: _modinst_

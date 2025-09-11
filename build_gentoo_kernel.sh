@@ -2,6 +2,8 @@
 
 arch=$(uname -m)
 
+export LANG=C
+
 for ver in $@
 do
   gcc -v && ld -v
