@@ -826,46 +826,6 @@ index dea270f60..f861babc0 100644
  {
  	/* Enable Application Access by writing to DMA CSR0 */
  	writel(DMA_BUS_MODE_DEFAULT | (dma_cfg->pbl << DMA_BUS_MODE_PBL_SHIFT),
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c b/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
-index a9837985a..bdb4f5272 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
-@@ -69,7 +69,7 @@ static void dwmac4_core_init(struct mac_device_info *hw,
- 		init_waitqueue_head(&priv->tstamp_busy_wait);
- }
- 
--static void dwmac4_phylink_get_caps(struct stmmac_priv *priv)
-+static void dwmac4_update_caps(struct stmmac_priv *priv)
- {
- 	if (priv->plat->tx_queues_to_use > 1)
- 		priv->hw->link.caps &= ~(MAC_10HD | MAC_100HD | MAC_1000HD);
-@@ -1161,7 +1161,7 @@ static int dwmac4_config_l4_filter(struct mac_device_info *hw, u32 filter_no,
- 
- const struct stmmac_ops dwmac4_ops = {
- 	.core_init = dwmac4_core_init,
--	.phylink_get_caps = dwmac4_phylink_get_caps,
-+	.update_caps = dwmac4_update_caps,
- 	.set_mac = stmmac_set_mac,
- 	.rx_ipc = dwmac4_rx_ipc_enable,
- 	.rx_queue_enable = dwmac4_rx_queue_enable,
-@@ -1204,7 +1204,7 @@ const struct stmmac_ops dwmac4_ops = {
- 
- const struct stmmac_ops dwmac410_ops = {
- 	.core_init = dwmac4_core_init,
--	.phylink_get_caps = dwmac4_phylink_get_caps,
-+	.update_caps = dwmac4_update_caps,
- 	.set_mac = stmmac_dwmac4_set_mac,
- 	.rx_ipc = dwmac4_rx_ipc_enable,
- 	.rx_queue_enable = dwmac4_rx_queue_enable,
-@@ -1253,7 +1253,7 @@ const struct stmmac_ops dwmac410_ops = {
- 
- const struct stmmac_ops dwmac510_ops = {
- 	.core_init = dwmac4_core_init,
--	.phylink_get_caps = dwmac4_phylink_get_caps,
-+	.update_caps = dwmac4_update_caps,
- 	.set_mac = stmmac_dwmac4_set_mac,
- 	.rx_ipc = dwmac4_rx_ipc_enable,
- 	.rx_queue_enable = dwmac4_rx_queue_enable,
 diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.c b/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.c
 index 7805a66a0..22a044d93 100644
 --- a/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.c
@@ -1032,10 +992,10 @@ index 85e18f9a2..4846bf49c 100644
  #ifdef DWMAC_DMA_DEBUG
  	/* Enable it to monitor DMA rx/tx status in case of critical problems */
 diff --git a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_core.c b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_core.c
-index 052566f5b..d223e1e9e 100644
+index 0bcb378fa..a380dbf8c 100644
 --- a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_core.c
 +++ b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_core.c
-@@ -1529,6 +1529,11 @@ static int dwxgmac3_est_configure(void __iomem *ioaddr, struct stmmac_est *cfg,
+@@ -1537,6 +1537,11 @@ static int dwxgmac3_est_configure(void __iomem *ioaddr, struct stmmac_est *cfg,
  	int i, ret = 0x0;
  	u32 ctrl;
  
@@ -1048,7 +1008,7 @@ index 052566f5b..d223e1e9e 100644
  	ret |= dwxgmac3_est_write(ioaddr, XGMAC_BTR_HIGH, cfg->btr[1], false);
  	ret |= dwxgmac3_est_write(ioaddr, XGMAC_TER, cfg->ter, false);
 diff --git a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c
-index 05ea74e93..7840bc403 100644
+index b2c03cb65..57d1202d8 100644
 --- a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c
 +++ b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c
 @@ -20,7 +20,7 @@ static int dwxgmac2_dma_reset(void __iomem *ioaddr)
@@ -1060,7 +1020,7 @@ index 05ea74e93..7840bc403 100644
  {
  	u32 value = readl(ioaddr + XGMAC_DMA_SYSBUS_MODE);
  
-@@ -364,17 +364,19 @@ static int dwxgmac2_dma_interrupt(struct stmmac_priv *priv,
+@@ -360,17 +360,19 @@ static int dwxgmac2_dma_interrupt(struct stmmac_priv *priv,
  	}
  
  	/* TX/RX NORMAL interrupts */
@@ -1092,7 +1052,7 @@ index 05ea74e93..7840bc403 100644
  
  	/* Clear interrupts */
 diff --git a/drivers/net/ethernet/stmicro/stmmac/hwif.h b/drivers/net/ethernet/stmicro/stmmac/hwif.h
-index 47fb8e164..eb4003ca7 100644
+index ee9a7d986..eb4003ca7 100644
 --- a/drivers/net/ethernet/stmicro/stmmac/hwif.h
 +++ b/drivers/net/ethernet/stmicro/stmmac/hwif.h
 @@ -167,8 +167,7 @@ struct dma_features;
@@ -1114,28 +1074,6 @@ index 47fb8e164..eb4003ca7 100644
  	void (*enable_dma_irq)(struct stmmac_priv *priv, void __iomem *ioaddr,
  			       u32 chan, bool rx, bool tx);
  	void (*disable_dma_irq)(struct stmmac_priv *priv, void __iomem *ioaddr,
-@@ -300,8 +299,8 @@ struct stmmac_est;
- struct stmmac_ops {
- 	/* MAC core initialization */
- 	void (*core_init)(struct mac_device_info *hw, struct net_device *dev);
--	/* Get phylink capabilities */
--	void (*phylink_get_caps)(struct stmmac_priv *priv);
-+	/* Update MAC capabilities */
-+	void (*update_caps)(struct stmmac_priv *priv);
- 	/* Enable the MAC RX/TX */
- 	void (*set_mac)(void __iomem *ioaddr, bool enable);
- 	/* Enable and verify that the IPC module is supported */
-@@ -423,8 +422,8 @@ struct stmmac_ops {
- 
- #define stmmac_core_init(__priv, __args...) \
- 	stmmac_do_void_callback(__priv, mac, core_init, __args)
--#define stmmac_mac_phylink_get_caps(__priv) \
--	stmmac_do_void_callback(__priv, mac, phylink_get_caps, __priv)
-+#define stmmac_mac_update_caps(__priv) \
-+	stmmac_do_void_callback(__priv, mac, update_caps, __priv)
- #define stmmac_mac_set(__priv, __args...) \
- 	stmmac_do_void_callback(__priv, mac, set_mac, __args)
- #define stmmac_rx_ipc(__priv, __args...) \
 diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
 index 521b1b5ff..cf83cc951 100644
 --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
@@ -1154,7 +1092,7 @@ index 521b1b5ff..cf83cc951 100644
  }
  
 diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 615d25a0e..c9c857cfa 100644
+index ff5389a8e..c99e75578 100644
 --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
 +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
 @@ -842,11 +842,6 @@ int stmmac_init_tstamp_counter(struct stmmac_priv *priv, u32 systime_flags)
@@ -1212,8 +1150,8 @@ index 615d25a0e..c9c857cfa 100644
  		xpcs_get_interfaces(priv->hw->xpcs,
  				    priv->phylink_config.supported_interfaces);
  
--	/* Get the MAC specific capabilities */
--	stmmac_mac_phylink_get_caps(priv);
+-	/* Refresh the MAC-specific capabilities */
+-	stmmac_mac_update_caps(priv);
 -
 -	priv->phylink_config.mac_capabilities = priv->hw->link.caps;
 -
@@ -1258,8 +1196,8 @@ index 615d25a0e..c9c857cfa 100644
  }
  
  static void free_dma_tx_desc_resources(struct stmmac_priv *priv,
-@@ -2499,7 +2512,7 @@ static bool stmmac_xdp_xmit_zc(struct stmmac_priv *priv, u32 queue, u32 budget)
- 				       true, priv->mode, true, true,
+@@ -2500,7 +2513,7 @@ static bool stmmac_xdp_xmit_zc(struct stmmac_priv *priv, u32 queue, u32 budget)
+ 				       csum, priv->mode, true, true,
  				       xdp_desc.len);
  
 -		stmmac_enable_dma_transmission(priv, priv->ioaddr);
@@ -1267,7 +1205,7 @@ index 615d25a0e..c9c857cfa 100644
  
  		tx_q->cur_tx = STMMAC_GET_ENTRY(tx_q->cur_tx, priv->dma_conf.dma_tx_size);
  		entry = tx_q->cur_tx;
-@@ -2931,7 +2944,6 @@ static int stmmac_init_dma_engine(struct stmmac_priv *priv)
+@@ -2932,7 +2945,6 @@ static int stmmac_init_dma_engine(struct stmmac_priv *priv)
  	struct stmmac_rx_queue *rx_q;
  	struct stmmac_tx_queue *tx_q;
  	u32 chan = 0;
@@ -1275,7 +1213,7 @@ index 615d25a0e..c9c857cfa 100644
  	int ret = 0;
  
  	if (!priv->plat->dma_cfg || !priv->plat->dma_cfg->pbl) {
-@@ -2940,7 +2952,7 @@ static int stmmac_init_dma_engine(struct stmmac_priv *priv)
+@@ -2941,7 +2953,7 @@ static int stmmac_init_dma_engine(struct stmmac_priv *priv)
  	}
  
  	if (priv->extend_desc && (priv->mode == STMMAC_RING_MODE))
@@ -1284,7 +1222,7 @@ index 615d25a0e..c9c857cfa 100644
  
  	ret = stmmac_reset(priv, priv->ioaddr);
  	if (ret) {
-@@ -2949,7 +2961,7 @@ static int stmmac_init_dma_engine(struct stmmac_priv *priv)
+@@ -2950,7 +2962,7 @@ static int stmmac_init_dma_engine(struct stmmac_priv *priv)
  	}
  
  	/* DMA Configuration */
@@ -1293,7 +1231,7 @@ index 615d25a0e..c9c857cfa 100644
  
  	if (priv->plat->axi)
  		stmmac_axi(priv, priv->ioaddr, priv->plat->axi);
-@@ -3515,7 +3527,6 @@ static int stmmac_request_irq_multi_msi(struct net_device *dev)
+@@ -3516,7 +3528,6 @@ static int stmmac_request_irq_multi_msi(struct net_device *dev)
  {
  	struct stmmac_priv *priv = netdev_priv(dev);
  	enum request_irq_err irq_err;
@@ -1301,7 +1239,7 @@ index 615d25a0e..c9c857cfa 100644
  	int irq_idx = 0;
  	char *int_name;
  	int ret;
-@@ -3627,9 +3638,8 @@ static int stmmac_request_irq_multi_msi(struct net_device *dev)
+@@ -3628,9 +3639,8 @@ static int stmmac_request_irq_multi_msi(struct net_device *dev)
  			irq_idx = i;
  			goto irq_error;
  		}
@@ -1313,7 +1251,7 @@ index 615d25a0e..c9c857cfa 100644
  	}
  
  	/* Request Tx MSI irq */
-@@ -3652,9 +3662,8 @@ static int stmmac_request_irq_multi_msi(struct net_device *dev)
+@@ -3653,9 +3663,8 @@ static int stmmac_request_irq_multi_msi(struct net_device *dev)
  			irq_idx = i;
  			goto irq_error;
  		}
@@ -1325,7 +1263,7 @@ index 615d25a0e..c9c857cfa 100644
  	}
  
  	return 0;
-@@ -4632,7 +4641,7 @@ static netdev_tx_t stmmac_xmit(struct sk_buff *skb, struct net_device *dev)
+@@ -4633,7 +4642,7 @@ static netdev_tx_t stmmac_xmit(struct sk_buff *skb, struct net_device *dev)
  
  	netdev_tx_sent_queue(netdev_get_tx_queue(dev, queue), skb->len);
  
@@ -1334,7 +1272,7 @@ index 615d25a0e..c9c857cfa 100644
  
  	stmmac_flush_tx_descriptors(priv, queue);
  	stmmac_tx_timer_arm(priv, queue);
-@@ -4851,7 +4860,7 @@ static int stmmac_xdp_xmit_xdpf(struct stmmac_priv *priv, int queue,
+@@ -4853,7 +4862,7 @@ static int stmmac_xdp_xmit_xdpf(struct stmmac_priv *priv, int queue,
  		u64_stats_update_end(&txq_stats->q_syncp);
  	}
  
@@ -1343,7 +1281,7 @@ index 615d25a0e..c9c857cfa 100644
  
  	entry = STMMAC_GET_ENTRY(entry, priv->dma_conf.dma_tx_size);
  	tx_q->cur_tx = entry;
-@@ -7218,7 +7227,6 @@ int stmmac_reinit_queues(struct net_device *dev, u32 rx_cnt, u32 tx_cnt)
+@@ -7220,7 +7229,6 @@ int stmmac_reinit_queues(struct net_device *dev, u32 rx_cnt, u32 tx_cnt)
  {
  	struct stmmac_priv *priv = netdev_priv(dev);
  	int ret = 0, i;
@@ -1351,11 +1289,11 @@ index 615d25a0e..c9c857cfa 100644
  
  	if (netif_running(dev))
  		stmmac_release(dev);
-@@ -7232,14 +7240,6 @@ int stmmac_reinit_queues(struct net_device *dev, u32 rx_cnt, u32 tx_cnt)
+@@ -7234,14 +7242,6 @@ int stmmac_reinit_queues(struct net_device *dev, u32 rx_cnt, u32 tx_cnt)
  			priv->rss.table[i] = ethtool_rxfh_indir_default(i,
  									rx_cnt);
  
--	stmmac_mac_phylink_get_caps(priv);
+-	stmmac_mac_update_caps(priv);
 -
 -	priv->phylink_config.mac_capabilities = priv->hw->link.caps;
 -
