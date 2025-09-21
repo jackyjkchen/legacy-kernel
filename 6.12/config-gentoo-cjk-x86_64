@@ -5266,66 +5266,11 @@ CONFIG_HYPERV_BALLOON=m
 
 # CONFIG_GREYBUS is not set
 # CONFIG_COMEDI is not set
-CONFIG_STAGING=y
-# CONFIG_RTLLIB is not set
-CONFIG_RTL8723BS=m
-# CONFIG_R8712U is not set
-# CONFIG_RTS5208 is not set
-# CONFIG_VT6655 is not set
-# CONFIG_VT6656 is not set
-
-#
-# IIO staging drivers
-#
-
-#
-# Accelerometers
-#
-# CONFIG_ADIS16203 is not set
-# CONFIG_ADIS16240 is not set
-# end of Accelerometers
-
-#
-# Analog to digital converters
-#
-# CONFIG_AD7816 is not set
-# end of Analog to digital converters
-
-#
-# Analog digital bi-direction converters
-#
-# CONFIG_ADT7316 is not set
-# end of Analog digital bi-direction converters
-
-#
-# Direct Digital Synthesis
-#
-# CONFIG_AD9832 is not set
-# CONFIG_AD9834 is not set
-# end of Direct Digital Synthesis
-
-#
-# Network Analyzer, Impedance Converters
-#
-# CONFIG_AD5933 is not set
-# end of Network Analyzer, Impedance Converters
-# end of IIO staging drivers
-
-# CONFIG_FB_SM750 is not set
-# CONFIG_STAGING_MEDIA is not set
-# CONFIG_LTE_GDM724X is not set
-# CONFIG_FB_TFT is not set
-# CONFIG_FIELDBUS_DEV is not set
-# CONFIG_VME_BUS is not set
+# CONFIG_STAGING is not set
 # CONFIG_GOLDFISH is not set
 # CONFIG_CHROME_PLATFORMS is not set
 # CONFIG_MELLANOX_PLATFORM is not set
-CONFIG_SURFACE_PLATFORMS=y
-# CONFIG_SURFACE3_WMI is not set
-# CONFIG_SURFACE_3_POWER_OPREGION is not set
-# CONFIG_SURFACE_GPE is not set
-# CONFIG_SURFACE_HOTPLUG is not set
-# CONFIG_SURFACE_PRO3_BUTTON is not set
+# CONFIG_SURFACE_PLATFORMS is not set
 CONFIG_X86_PLATFORM_DEVICES=y
 CONFIG_ACPI_WMI=m
 CONFIG_WMI_BMOF=m
@@ -6221,7 +6166,7 @@ CONFIG_BLK_DEV_PMEM=m
 CONFIG_ND_CLAIM=y
 CONFIG_ND_BTT=m
 CONFIG_BTT=y
-CONFIG_DAX=y
+CONFIG_DAX=m
 # CONFIG_DEV_DAX_HMEM is not set
 CONFIG_NVMEM=y
 CONFIG_NVMEM_SYSFS=y
@@ -6958,9 +6903,21 @@ CONFIG_GENERIC_VDSO_TIME_NS=y
 CONFIG_GENERIC_VDSO_OVERFLOW_PROTECT=y
 CONFIG_VDSO_GETRANDOM=y
 CONFIG_FONT_SUPPORT=y
-# CONFIG_FONTS is not set
-CONFIG_FONT_8x8=y
+CONFIG_FONTS=y
+# CONFIG_FONT_8x8 is not set
 CONFIG_FONT_8x16=y
+# CONFIG_FONT_6x11 is not set
+# CONFIG_FONT_7x14 is not set
+# CONFIG_FONT_PEARL_8x8 is not set
+# CONFIG_FONT_ACORN_8x8 is not set
+# CONFIG_FONT_MINI_4x6 is not set
+# CONFIG_FONT_6x10 is not set
+# CONFIG_FONT_10x18 is not set
+# CONFIG_FONT_SUN8x16 is not set
+# CONFIG_FONT_SUN12x22 is not set
+# CONFIG_FONT_TER16x32 is not set
+# CONFIG_FONT_6x8 is not set
+CONFIG_FONT_AUTOSELECT=y
 CONFIG_SG_POOL=y
 CONFIG_ARCH_HAS_PMEM_API=y
 CONFIG_MEMREGION=y

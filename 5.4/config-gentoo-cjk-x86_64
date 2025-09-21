@@ -1463,10 +1463,8 @@ CONFIG_BT_HCIBTUSB_RTL=y
 # CONFIG_AF_KCM is not set
 CONFIG_FIB_RULES=y
 CONFIG_WIRELESS=y
-CONFIG_WIRELESS_EXT=y
 CONFIG_WEXT_CORE=y
 CONFIG_WEXT_PROC=y
-CONFIG_WEXT_PRIV=y
 CONFIG_CFG80211=m
 # CONFIG_NL80211_TESTMODE is not set
 # CONFIG_CFG80211_DEVELOPER_WARNINGS is not set
@@ -4535,118 +4533,7 @@ CONFIG_HYPERV_BALLOON=m
 # end of Microsoft Hyper-V guest support
 
 # CONFIG_GREYBUS is not set
-CONFIG_STAGING=y
-# CONFIG_PRISM2_USB is not set
-# CONFIG_COMEDI is not set
-# CONFIG_RTL8192U is not set
-# CONFIG_RTLLIB is not set
-CONFIG_RTL8723BS=m
-# CONFIG_R8712U is not set
-# CONFIG_R8188EU is not set
-# CONFIG_RTS5208 is not set
-# CONFIG_VT6655 is not set
-# CONFIG_VT6656 is not set
-
-#
-# IIO staging drivers
-#
-
-#
-# Accelerometers
-#
-# CONFIG_ADIS16203 is not set
-# CONFIG_ADIS16240 is not set
-# end of Accelerometers
-
-#
-# Analog to digital converters
-#
-# CONFIG_AD7816 is not set
-# CONFIG_AD7192 is not set
-# CONFIG_AD7280 is not set
-# end of Analog to digital converters
-
-#
-# Analog digital bi-direction converters
-#
-# CONFIG_ADT7316 is not set
-# end of Analog digital bi-direction converters
-
-#
-# Capacitance to digital converters
-#
-# CONFIG_AD7150 is not set
-# CONFIG_AD7746 is not set
-# end of Capacitance to digital converters
-
-#
-# Direct Digital Synthesis
-#
-# CONFIG_AD9832 is not set
-# CONFIG_AD9834 is not set
-# end of Direct Digital Synthesis
-
-#
-# Network Analyzer, Impedance Converters
-#
-# CONFIG_AD5933 is not set
-# end of Network Analyzer, Impedance Converters
-
-#
-# Active energy metering IC
-#
-# CONFIG_ADE7854 is not set
-# end of Active energy metering IC
-
-#
-# Resolver to digital converters
-#
-# CONFIG_AD2S1210 is not set
-# end of Resolver to digital converters
-# end of IIO staging drivers
-
-# CONFIG_FB_SM750 is not set
-
-#
-# Speakup console speech
-#
-# CONFIG_SPEAKUP is not set
-# end of Speakup console speech
-
-# CONFIG_STAGING_MEDIA is not set
-
-#
-# Android
-#
-# end of Android
-
-# CONFIG_LTE_GDM724X is not set
-# CONFIG_GS_FPGABOOT is not set
-# CONFIG_UNISYSSPAR is not set
-# CONFIG_WILC1000_SDIO is not set
-# CONFIG_WILC1000_SPI is not set
-# CONFIG_MOST is not set
-# CONFIG_KS7010 is not set
-# CONFIG_PI433 is not set
-
-#
-# Gasket devices
-#
-# CONFIG_STAGING_GASKET_FRAMEWORK is not set
-# end of Gasket devices
-
-# CONFIG_FIELDBUS_DEV is not set
-# CONFIG_USB_WUSB_CBAF is not set
-# CONFIG_UWB is not set
-CONFIG_EXFAT_FS=m
-CONFIG_EXFAT_DONT_MOUNT_VFAT=y
-CONFIG_EXFAT_DISCARD=y
-# CONFIG_EXFAT_DELAYED_SYNC is not set
-# CONFIG_EXFAT_KERNEL_DEBUG is not set
-# CONFIG_EXFAT_DEBUG_MSG is not set
-CONFIG_EXFAT_DEFAULT_CODEPAGE=437
-CONFIG_EXFAT_DEFAULT_IOCHARSET="utf8"
-# CONFIG_QLGE is not set
+# CONFIG_STAGING is not set
 CONFIG_X86_PLATFORM_DEVICES=y
 # CONFIG_ACER_WMI is not set
 # CONFIG_ACER_WIRELESS is not set
@@ -4725,7 +4612,7 @@ CONFIG_PMC_ATOM=y
 # CONFIG_MFD_CROS_EC is not set
 # CONFIG_CHROME_PLATFORMS is not set
 # CONFIG_MELLANOX_PLATFORM is not set
-CONFIG_SURFACE_PLATFORMS=y
+# CONFIG_SURFACE_PLATFORMS is not set
 CONFIG_CLKDEV_LOOKUP=y
 CONFIG_HAVE_CLK_PREPARE=y
 CONFIG_COMMON_CLK=y
@@ -5955,9 +5842,20 @@ CONFIG_UCS2_STRING=y
 CONFIG_HAVE_GENERIC_VDSO=y
 CONFIG_GENERIC_GETTIMEOFDAY=y
 CONFIG_FONT_SUPPORT=y
-# CONFIG_FONTS is not set
-CONFIG_FONT_8x8=y
+CONFIG_FONTS=y
+# CONFIG_FONT_8x8 is not set
 CONFIG_FONT_8x16=y
+# CONFIG_FONT_6x11 is not set
+# CONFIG_FONT_7x14 is not set
+# CONFIG_FONT_PEARL_8x8 is not set
+# CONFIG_FONT_ACORN_8x8 is not set
+# CONFIG_FONT_MINI_4x6 is not set
+# CONFIG_FONT_6x10 is not set
+# CONFIG_FONT_10x18 is not set
+# CONFIG_FONT_SUN8x16 is not set
+# CONFIG_FONT_SUN12x22 is not set
+# CONFIG_FONT_TER16x32 is not set
+CONFIG_FONT_AUTOSELECT=y
 CONFIG_SG_POOL=y
 CONFIG_ARCH_HAS_PMEM_API=y
 CONFIG_ARCH_HAS_UACCESS_FLUSHCACHE=y
