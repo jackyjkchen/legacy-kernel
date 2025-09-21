@@ -1,5 +1,5 @@
 diff --git a/Kconfig b/Kconfig
-index e10b3ee..3f5d235 100644
+index e10b3ee08..3f5d23538 100644
 --- a/Kconfig
 +++ b/Kconfig
 @@ -32,3 +32,5 @@ source "lib/Kconfig"
@@ -9,7 +9,7 @@ index e10b3ee..3f5d235 100644
 +
 +source "distro/Kconfig"
 diff --git a/MAINTAINERS b/MAINTAINERS
-index 474daf9..975e4a9 100644
+index 474daf91a..975e4a9a1 100644
 --- a/MAINTAINERS
 +++ b/MAINTAINERS
 @@ -17588,6 +17588,14 @@ L:	linux-gpio@vger.kernel.org
@@ -28,20 +28,20 @@ index 474daf9..975e4a9 100644
  M:	Miloslav Trmac <mitr@volny.cz>
  S:	Maintained
 diff --git a/Makefile b/Makefile
-index 3a63245..2a08045 100644
+index 819dd9649..6e2e68707 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -2,7 +2,7 @@
  VERSION = 5
  PATCHLEVEL = 4
- SUBLEVEL = 297
+ SUBLEVEL = 299
 -EXTRAVERSION =
 +EXTRAVERSION = -gentoo
  NAME = Kleptomaniac Octopus
  
  # *DOCUMENTATION*
 diff --git a/arch/arm/crypto/.gitignore b/arch/arm/crypto/.gitignore
-index 31e1f53..a3c7ad5 100644
+index 31e1f538d..a3c7ad52a 100644
 --- a/arch/arm/crypto/.gitignore
 +++ b/arch/arm/crypto/.gitignore
 @@ -1,3 +1,4 @@
@@ -50,7 +50,7 @@ index 31e1f53..a3c7ad5 100644
  sha512-core.S
 +poly1305-core.S
 diff --git a/arch/arm/crypto/Kconfig b/arch/arm/crypto/Kconfig
-index f747cae..62dcc49 100644
+index f747caea1..62dcc497d 100644
 --- a/arch/arm/crypto/Kconfig
 +++ b/arch/arm/crypto/Kconfig
 @@ -129,14 +129,24 @@ config CRYPTO_CRC32_ARM_CE
@@ -82,7 +82,7 @@ index f747cae..62dcc49 100644
 +
  endif
 diff --git a/arch/arm/crypto/Makefile b/arch/arm/crypto/Makefile
-index c0d3677..b745c17 100644
+index c0d36771a..b745c17d3 100644
 --- a/arch/arm/crypto/Makefile
 +++ b/arch/arm/crypto/Makefile
 @@ -10,7 +10,9 @@ obj-$(CONFIG_CRYPTO_SHA1_ARM_NEON) += sha1-arm-neon.o
@@ -129,7 +129,7 @@ index c0d3677..b745c17 100644
 +AFLAGS_poly1305-core.o += $(poly1305-aflags-y)
 diff --git a/arch/arm/crypto/chacha-glue.c b/arch/arm/crypto/chacha-glue.c
 new file mode 100644
-index 0000000..a408f4b
+index 000000000..a408f4bcf
 --- /dev/null
 +++ b/arch/arm/crypto/chacha-glue.c
 @@ -0,0 +1,358 @@
@@ -492,7 +492,7 @@ index 0000000..a408f4b
 +MODULE_ALIAS_CRYPTO("xchacha12-neon");
 +#endif
 diff --git a/arch/arm/crypto/chacha-neon-core.S b/arch/arm/crypto/chacha-neon-core.S
-index eb22926..13d12f6 100644
+index eb22926d4..13d12f672 100644
 --- a/arch/arm/crypto/chacha-neon-core.S
 +++ b/arch/arm/crypto/chacha-neon-core.S
 @@ -47,6 +47,7 @@
@@ -670,7 +670,7 @@ index eb22926..13d12f6 100644
 +	.byte		0x18, 0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f
 diff --git a/arch/arm/crypto/chacha-neon-glue.c b/arch/arm/crypto/chacha-neon-glue.c
 deleted file mode 100644
-index a8e9b53..0000000
+index a8e9b534c..000000000
 --- a/arch/arm/crypto/chacha-neon-glue.c
 +++ /dev/null
 @@ -1,202 +0,0 @@
@@ -878,7 +878,7 @@ index a8e9b53..0000000
 -MODULE_ALIAS_CRYPTO("xchacha12-neon");
 diff --git a/arch/arm/crypto/chacha-scalar-core.S b/arch/arm/crypto/chacha-scalar-core.S
 new file mode 100644
-index 0000000..2985b80
+index 000000000..2985b80a4
 --- /dev/null
 +++ b/arch/arm/crypto/chacha-scalar-core.S
 @@ -0,0 +1,460 @@
@@ -1344,7 +1344,7 @@ index 0000000..2985b80
 +ENDPROC(hchacha_block_arm)
 diff --git a/arch/arm/crypto/curve25519-core.S b/arch/arm/crypto/curve25519-core.S
 new file mode 100644
-index 0000000..be18af5
+index 000000000..be18af52e
 --- /dev/null
 +++ b/arch/arm/crypto/curve25519-core.S
 @@ -0,0 +1,2062 @@
@@ -3412,7 +3412,7 @@ index 0000000..be18af5
 +ENDPROC(curve25519_neon)
 diff --git a/arch/arm/crypto/curve25519-glue.c b/arch/arm/crypto/curve25519-glue.c
 new file mode 100644
-index 0000000..31eb75b
+index 000000000..31eb75b60
 --- /dev/null
 +++ b/arch/arm/crypto/curve25519-glue.c
 @@ -0,0 +1,136 @@
@@ -3554,7 +3554,7 @@ index 0000000..31eb75b
 +MODULE_LICENSE("GPL v2");
 diff --git a/arch/arm/crypto/poly1305-armv4.pl b/arch/arm/crypto/poly1305-armv4.pl
 new file mode 100644
-index 0000000..6d79498
+index 000000000..6d79498d3
 --- /dev/null
 +++ b/arch/arm/crypto/poly1305-armv4.pl
 @@ -0,0 +1,1236 @@
@@ -4796,7 +4796,7 @@ index 0000000..6d79498
 +close STDOUT; # enforce flush
 diff --git a/arch/arm/crypto/poly1305-core.S_shipped b/arch/arm/crypto/poly1305-core.S_shipped
 new file mode 100644
-index 0000000..37b71d9
+index 000000000..37b71d990
 --- /dev/null
 +++ b/arch/arm/crypto/poly1305-core.S_shipped
 @@ -0,0 +1,1158 @@
@@ -5960,7 +5960,7 @@ index 0000000..37b71d9
 +.align	2
 diff --git a/arch/arm/crypto/poly1305-glue.c b/arch/arm/crypto/poly1305-glue.c
 new file mode 100644
-index 0000000..c31bd8f
+index 000000000..c31bd8f7c
 --- /dev/null
 +++ b/arch/arm/crypto/poly1305-glue.c
 @@ -0,0 +1,273 @@
@@ -6238,7 +6238,7 @@ index 0000000..c31bd8f
 +MODULE_ALIAS_CRYPTO("poly1305-arm");
 +MODULE_ALIAS_CRYPTO("poly1305-neon");
 diff --git a/arch/arm64/crypto/.gitignore b/arch/arm64/crypto/.gitignore
-index 879df87..e403b13 100644
+index 879df8781..e403b1343 100644
 --- a/arch/arm64/crypto/.gitignore
 +++ b/arch/arm64/crypto/.gitignore
 @@ -1,2 +1,3 @@
@@ -6246,7 +6246,7 @@ index 879df87..e403b13 100644
  sha512-core.S
 +poly1305-core.S
 diff --git a/arch/arm64/crypto/Kconfig b/arch/arm64/crypto/Kconfig
-index 99cddf1..ea34fae 100644
+index 99cddf114..ea34fae2c 100644
 --- a/arch/arm64/crypto/Kconfig
 +++ b/arch/arm64/crypto/Kconfig
 @@ -104,7 +104,14 @@ config CRYPTO_CHACHA20_NEON
@@ -6266,7 +6266,7 @@ index 99cddf1..ea34fae 100644
  config CRYPTO_NHPOLY1305_NEON
  	tristate "NHPoly1305 hash function using NEON instructions (for Adiantum)"
 diff --git a/arch/arm64/crypto/Makefile b/arch/arm64/crypto/Makefile
-index 0435f2a..d0901e6 100644
+index 0435f2a06..d0901e610 100644
 --- a/arch/arm64/crypto/Makefile
 +++ b/arch/arm64/crypto/Makefile
 @@ -50,6 +50,10 @@ sha512-arm64-y := sha512-glue.o sha512-core.o
@@ -6298,7 +6298,7 @@ index 0435f2a..d0901e6 100644
 -clean-files += sha256-core.S sha512-core.S
 +clean-files += poly1305-core.S sha256-core.S sha512-core.S
 diff --git a/arch/arm64/crypto/chacha-neon-core.S b/arch/arm64/crypto/chacha-neon-core.S
-index 706c4e1..50d9dd1 100644
+index 706c4e10e..50d9dd173 100644
 --- a/arch/arm64/crypto/chacha-neon-core.S
 +++ b/arch/arm64/crypto/chacha-neon-core.S
 @@ -195,7 +195,6 @@ ENTRY(chacha_4block_xor_neon)
@@ -6592,7 +6592,7 @@ index 706c4e1..50d9dd1 100644
  	.set		.Li, .Li + 1
  	.endr
 diff --git a/arch/arm64/crypto/chacha-neon-glue.c b/arch/arm64/crypto/chacha-neon-glue.c
-index 1495d2b..1d9824c 100644
+index 1495d2b18..1d9824c4a 100644
 --- a/arch/arm64/crypto/chacha-neon-glue.c
 +++ b/arch/arm64/crypto/chacha-neon-glue.c
 @@ -1,5 +1,5 @@
@@ -6788,7 +6788,7 @@ index 1495d2b..1d9824c 100644
  module_init(chacha_simd_mod_init);
 diff --git a/arch/arm64/crypto/poly1305-armv8.pl b/arch/arm64/crypto/poly1305-armv8.pl
 new file mode 100644
-index 0000000..6e5576d
+index 000000000..6e5576d19
 --- /dev/null
 +++ b/arch/arm64/crypto/poly1305-armv8.pl
 @@ -0,0 +1,913 @@
@@ -7707,7 +7707,7 @@ index 0000000..6e5576d
 +close STDOUT;
 diff --git a/arch/arm64/crypto/poly1305-core.S_shipped b/arch/arm64/crypto/poly1305-core.S_shipped
 new file mode 100644
-index 0000000..8d1c4e4
+index 000000000..8d1c4e420
 --- /dev/null
 +++ b/arch/arm64/crypto/poly1305-core.S_shipped
 @@ -0,0 +1,835 @@
@@ -8548,7 +8548,7 @@ index 0000000..8d1c4e4
 +#endif
 diff --git a/arch/arm64/crypto/poly1305-glue.c b/arch/arm64/crypto/poly1305-glue.c
 new file mode 100644
-index 0000000..01e22fe
+index 000000000..01e22fe40
 --- /dev/null
 +++ b/arch/arm64/crypto/poly1305-glue.c
 @@ -0,0 +1,231 @@
@@ -8784,7 +8784,7 @@ index 0000000..01e22fe
 +MODULE_ALIAS_CRYPTO("poly1305");
 +MODULE_ALIAS_CRYPTO("poly1305-neon");
 diff --git a/arch/mips/Makefile b/arch/mips/Makefile
-index cc6f826..bb5af59 100644
+index cc6f8265f..bb5af59c6 100644
 --- a/arch/mips/Makefile
 +++ b/arch/mips/Makefile
 @@ -334,7 +334,7 @@ libs-$(CONFIG_MIPS_FP_SUPPORT) += arch/mips/math-emu/
@@ -8798,14 +8798,14 @@ index cc6f826..bb5af59 100644
  # suspend and hibernation support
 diff --git a/arch/mips/crypto/.gitignore b/arch/mips/crypto/.gitignore
 new file mode 100644
-index 0000000..0d47d4f
+index 000000000..0d47d4f21
 --- /dev/null
 +++ b/arch/mips/crypto/.gitignore
 @@ -0,0 +1,2 @@
 +# SPDX-License-Identifier: GPL-2.0-only
 +poly1305-core.S
 diff --git a/arch/mips/crypto/Makefile b/arch/mips/crypto/Makefile
-index e07aca5..5e4105c 100644
+index e07aca572..5e4105ccc 100644
 --- a/arch/mips/crypto/Makefile
 +++ b/arch/mips/crypto/Makefile
 @@ -4,3 +4,21 @@
@@ -8832,7 +8832,7 @@ index e07aca5..5e4105c 100644
 +targets += poly1305-core.S
 diff --git a/arch/mips/crypto/chacha-core.S b/arch/mips/crypto/chacha-core.S
 new file mode 100644
-index 0000000..b91657c
+index 000000000..b91657c71
 --- /dev/null
 +++ b/arch/mips/crypto/chacha-core.S
 @@ -0,0 +1,497 @@
@@ -9335,7 +9335,7 @@ index 0000000..b91657c
 +.set at
 diff --git a/arch/mips/crypto/chacha-glue.c b/arch/mips/crypto/chacha-glue.c
 new file mode 100644
-index 0000000..9089602
+index 000000000..90896029d
 --- /dev/null
 +++ b/arch/mips/crypto/chacha-glue.c
 @@ -0,0 +1,152 @@
@@ -9493,7 +9493,7 @@ index 0000000..9089602
 +MODULE_ALIAS_CRYPTO("xchacha12-mips");
 diff --git a/arch/mips/crypto/poly1305-glue.c b/arch/mips/crypto/poly1305-glue.c
 new file mode 100644
-index 0000000..bc6110f
+index 000000000..bc6110fb9
 --- /dev/null
 +++ b/arch/mips/crypto/poly1305-glue.c
 @@ -0,0 +1,191 @@
@@ -9690,7 +9690,7 @@ index 0000000..bc6110f
 +MODULE_ALIAS_CRYPTO("poly1305-mips");
 diff --git a/arch/mips/crypto/poly1305-mips.pl b/arch/mips/crypto/poly1305-mips.pl
 new file mode 100644
-index 0000000..b05bab8
+index 000000000..b05bab884
 --- /dev/null
 +++ b/arch/mips/crypto/poly1305-mips.pl
 @@ -0,0 +1,1273 @@
@@ -10968,7 +10968,7 @@ index 0000000..b05bab8
 +print $code;
 +close STDOUT;
 diff --git a/arch/x86/Makefile b/arch/x86/Makefile
-index 69f0cb0..d2c4047 100644
+index 69f0cb01c..d2c4047b9 100644
 --- a/arch/x86/Makefile
 +++ b/arch/x86/Makefile
 @@ -198,9 +198,10 @@ avx2_instr :=$(call as-instr,vpbroadcastb %xmm0$(comma)%ymm1,-DCONFIG_AS_AVX2=1)
@@ -10986,13 +10986,13 @@ index 69f0cb0..d2c4047 100644
  
 diff --git a/arch/x86/crypto/.gitignore b/arch/x86/crypto/.gitignore
 new file mode 100644
-index 0000000..30be040
+index 000000000..30be0400a
 --- /dev/null
 +++ b/arch/x86/crypto/.gitignore
 @@ -0,0 +1 @@
 +poly1305-x86_64-cryptogams.S
 diff --git a/arch/x86/crypto/Makefile b/arch/x86/crypto/Makefile
-index 759b1a9..9843fa8 100644
+index 759b1a927..9843fa8cb 100644
 --- a/arch/x86/crypto/Makefile
 +++ b/arch/x86/crypto/Makefile
 @@ -11,6 +11,7 @@ avx2_supported := $(call as-instr,vpgatherdd %ymm0$(comma)(%eax$(comma)%ymm1\
@@ -11047,7 +11047,7 @@ index 759b1a9..9843fa8 100644
 +$(obj)/%.S: $(src)/%.pl FORCE
 +	$(call if_changed,perlasm)
 diff --git a/arch/x86/crypto/chacha-ssse3-x86_64.S b/arch/x86/crypto/chacha-ssse3-x86_64.S
-index 2d86c7d..a556a57 100644
+index 2d86c7d6d..a556a57f1 100644
 --- a/arch/x86/crypto/chacha-ssse3-x86_64.S
 +++ b/arch/x86/crypto/chacha-ssse3-x86_64.S
 @@ -120,10 +120,10 @@ ENTRY(chacha_block_xor_ssse3)
@@ -11081,7 +11081,7 @@ index 2d86c7d..a556a57 100644
  	mov		%edx,%r8d
  	call		chacha_permute
 diff --git a/arch/x86/crypto/chacha_glue.c b/arch/x86/crypto/chacha_glue.c
-index 388f95a..4c4dc64 100644
+index 388f95a4e..4c4dc6439 100644
 --- a/arch/x86/crypto/chacha_glue.c
 +++ b/arch/x86/crypto/chacha_glue.c
 @@ -7,38 +7,36 @@
@@ -11401,7 +11401,7 @@ index 388f95a..4c4dc64 100644
  module_init(chacha_simd_mod_init);
 diff --git a/arch/x86/crypto/curve25519-x86_64.c b/arch/x86/crypto/curve25519-x86_64.c
 new file mode 100644
-index 0000000..d55fa9e
+index 000000000..d55fa9e9b
 --- /dev/null
 +++ b/arch/x86/crypto/curve25519-x86_64.c
 @@ -0,0 +1,1724 @@
@@ -13131,7 +13131,7 @@ index 0000000..d55fa9e
 +MODULE_AUTHOR("Jason A. Donenfeld <Jason@zx2c4.com>");
 diff --git a/arch/x86/crypto/poly1305-avx2-x86_64.S b/arch/x86/crypto/poly1305-avx2-x86_64.S
 deleted file mode 100644
-index 8b341bc..0000000
+index 8b341bc29..000000000
 --- a/arch/x86/crypto/poly1305-avx2-x86_64.S
 +++ /dev/null
 @@ -1,390 +0,0 @@
@@ -13527,7 +13527,7 @@ index 8b341bc..0000000
 -ENDPROC(poly1305_4block_avx2)
 diff --git a/arch/x86/crypto/poly1305-sse2-x86_64.S b/arch/x86/crypto/poly1305-sse2-x86_64.S
 deleted file mode 100644
-index 5578f84..0000000
+index 5578f846e..000000000
 --- a/arch/x86/crypto/poly1305-sse2-x86_64.S
 +++ /dev/null
 @@ -1,590 +0,0 @@
@@ -14123,7 +14123,7 @@ index 5578f84..0000000
 -ENDPROC(poly1305_2block_sse2)
 diff --git a/arch/x86/crypto/poly1305-x86_64-cryptogams.pl b/arch/x86/crypto/poly1305-x86_64-cryptogams.pl
 new file mode 100644
-index 0000000..1e3ffa5
+index 000000000..1e3ffa57c
 --- /dev/null
 +++ b/arch/x86/crypto/poly1305-x86_64-cryptogams.pl
 @@ -0,0 +1,4265 @@
@@ -18393,7 +18393,7 @@ index 0000000..1e3ffa5
 +}
 +close STDOUT;
 diff --git a/arch/x86/crypto/poly1305_glue.c b/arch/x86/crypto/poly1305_glue.c
-index 4a1c05d..e6ecff3 100644
+index 4a1c05dce..e6ecff3f5 100644
 --- a/arch/x86/crypto/poly1305_glue.c
 +++ b/arch/x86/crypto/poly1305_glue.c
 @@ -1,131 +1,173 @@
@@ -18802,7 +18802,7 @@ index 4a1c05d..e6ecff3 100644
  MODULE_ALIAS_CRYPTO("poly1305");
  MODULE_ALIAS_CRYPTO("poly1305-simd");
 diff --git a/crypto/Kconfig b/crypto/Kconfig
-index ce60ec3..98e67c3 100644
+index ce60ec30e..98e67c3f8 100644
 --- a/crypto/Kconfig
 +++ b/crypto/Kconfig
 @@ -136,8 +136,6 @@ config CRYPTO_USER
@@ -18975,7 +18975,7 @@ index ce60ec3..98e67c3 100644
  source "crypto/asymmetric_keys/Kconfig"
  source "certs/Kconfig"
 diff --git a/crypto/Makefile b/crypto/Makefile
-index aa740c8..efa3d04 100644
+index aa740c849..efa3d0453 100644
 --- a/crypto/Makefile
 +++ b/crypto/Makefile
 @@ -166,6 +166,7 @@ obj-$(CONFIG_CRYPTO_ZSTD) += zstd.o
@@ -18987,7 +18987,7 @@ index aa740c8..efa3d04 100644
  ecdh_generic-y += ecdh.o
  ecdh_generic-y += ecdh_helper.o
 diff --git a/crypto/adiantum.c b/crypto/adiantum.c
-index 395a3dd..c846a88 100644
+index 395a3ddd3..c846a887a 100644
 --- a/crypto/adiantum.c
 +++ b/crypto/adiantum.c
 @@ -33,6 +33,7 @@
@@ -19025,7 +19025,7 @@ index 395a3dd..c846a88 100644
  
  /* Hash the left-hand part (the "bulk") of the message using NHPoly1305 */
 diff --git a/crypto/chacha_generic.c b/crypto/chacha_generic.c
-index 085d8d2..8beea79 100644
+index 085d8d219..8beea79ab 100644
 --- a/crypto/chacha_generic.c
 +++ b/crypto/chacha_generic.c
 @@ -8,29 +8,10 @@
@@ -19196,7 +19196,7 @@ index 085d8d2..8beea79 100644
  	}
 diff --git a/crypto/curve25519-generic.c b/crypto/curve25519-generic.c
 new file mode 100644
-index 0000000..bd88fd5
+index 000000000..bd88fd571
 --- /dev/null
 +++ b/crypto/curve25519-generic.c
 @@ -0,0 +1,90 @@
@@ -19291,7 +19291,7 @@ index 0000000..bd88fd5
 +MODULE_ALIAS_CRYPTO("curve25519-generic");
 +MODULE_LICENSE("GPL");
 diff --git a/crypto/nhpoly1305.c b/crypto/nhpoly1305.c
-index 9ab4e07..8a3006c 100644
+index 9ab4e07cd..8a3006c3b 100644
 --- a/crypto/nhpoly1305.c
 +++ b/crypto/nhpoly1305.c
 @@ -33,6 +33,7 @@
@@ -19321,7 +19321,7 @@ index 9ab4e07..8a3006c 100644
  }
  EXPORT_SYMBOL(crypto_nhpoly1305_final_helper);
 diff --git a/crypto/poly1305_generic.c b/crypto/poly1305_generic.c
-index adc4029..94af47e 100644
+index adc40298c..94af47eb6 100644
 --- a/crypto/poly1305_generic.c
 +++ b/crypto/poly1305_generic.c
 @@ -13,65 +13,33 @@
@@ -19610,7 +19610,7 @@ index adc4029..94af47e 100644
  static struct shash_alg poly1305_alg = {
  	.digestsize	= POLY1305_DIGEST_SIZE,
 diff --git a/crypto/testmgr.c b/crypto/testmgr.c
-index 7473c5b..48705f2 100644
+index 7473c5bc0..48705f2b2 100644
 --- a/crypto/testmgr.c
 +++ b/crypto/testmgr.c
 @@ -4271,6 +4271,12 @@ static const struct alg_test_desc alg_test_descs[] = {
@@ -19627,7 +19627,7 @@ index 7473c5b..48705f2 100644
  		.alg = "deflate",
  		.test = alg_test_comp,
 diff --git a/crypto/testmgr.h b/crypto/testmgr.h
-index 601cbee..f0ab402 100644
+index 601cbee29..f0ab40257 100644
 --- a/crypto/testmgr.h
 +++ b/crypto/testmgr.h
 @@ -1133,6 +1133,1231 @@ static const struct kpp_testvec dh_tv_template[] = {
@@ -20864,7 +20864,7 @@ index 601cbee..f0ab402 100644
  #ifndef CONFIG_CRYPTO_FIPS
 diff --git a/distro/Kconfig b/distro/Kconfig
 new file mode 100644
-index 0000000..75bf3fd
+index 000000000..75bf3fd8b
 --- /dev/null
 +++ b/distro/Kconfig
 @@ -0,0 +1,160 @@
@@ -21029,7 +21029,7 @@ index 0000000..75bf3fd
 +
 +endmenu
 diff --git a/drivers/hid/hid-apple.c b/drivers/hid/hid-apple.c
-index 05d79b0..c6c0b86 100644
+index 05d79b01d..c6c0b86af 100644
 --- a/drivers/hid/hid-apple.c
 +++ b/drivers/hid/hid-apple.c
 @@ -57,6 +57,16 @@ MODULE_PARM_DESC(swap_fn_leftctrl, "Swap the Fn and left Control keys. "
@@ -21107,7 +21107,7 @@ index 05d79b0..c6c0b86 100644
  
  static int apple_input_mapping(struct hid_device *hdev, struct hid_input *hi,
 diff --git a/drivers/net/Kconfig b/drivers/net/Kconfig
-index e148bbd..5f8b93c 100644
+index e148bbd9e..5f8b93cbf 100644
 --- a/drivers/net/Kconfig
 +++ b/drivers/net/Kconfig
 @@ -71,6 +71,47 @@ config DUMMY
@@ -21159,7 +21159,7 @@ index e148bbd..5f8b93c 100644
  	tristate "EQL (serial line load balancing) support"
  	---help---
 diff --git a/drivers/net/Makefile b/drivers/net/Makefile
-index 0d3ba05..953b7c1 100644
+index 0d3ba056c..953b7c12f 100644
 --- a/drivers/net/Makefile
 +++ b/drivers/net/Makefile
 @@ -10,6 +10,7 @@ obj-$(CONFIG_BONDING) += bonding/
@@ -21172,7 +21172,7 @@ index 0d3ba05..953b7c1 100644
  obj-$(CONFIG_MACSEC) += macsec.o
 diff --git a/drivers/net/wireguard/Makefile b/drivers/net/wireguard/Makefile
 new file mode 100644
-index 0000000..dbe1f85
+index 000000000..dbe1f8514
 --- /dev/null
 +++ b/drivers/net/wireguard/Makefile
 @@ -0,0 +1,17 @@
@@ -21195,7 +21195,7 @@ index 0000000..dbe1f85
 +obj-$(CONFIG_WIREGUARD) := wireguard.o
 diff --git a/drivers/net/wireguard/allowedips.c b/drivers/net/wireguard/allowedips.c
 new file mode 100644
-index 0000000..9a4c8ff
+index 000000000..9a4c8ff32
 --- /dev/null
 +++ b/drivers/net/wireguard/allowedips.c
 @@ -0,0 +1,386 @@
@@ -21587,7 +21587,7 @@ index 0000000..9a4c8ff
 +#include "selftest/allowedips.c"
 diff --git a/drivers/net/wireguard/allowedips.h b/drivers/net/wireguard/allowedips.h
 new file mode 100644
-index 0000000..2346c79
+index 000000000..2346c797e
 --- /dev/null
 +++ b/drivers/net/wireguard/allowedips.h
 @@ -0,0 +1,59 @@
@@ -21652,7 +21652,7 @@ index 0000000..2346c79
 +#endif /* _WG_ALLOWEDIPS_H */
 diff --git a/drivers/net/wireguard/cookie.c b/drivers/net/wireguard/cookie.c
 new file mode 100644
-index 0000000..4956f04
+index 000000000..4956f0499
 --- /dev/null
 +++ b/drivers/net/wireguard/cookie.c
 @@ -0,0 +1,236 @@
@@ -21894,7 +21894,7 @@ index 0000000..4956f04
 +}
 diff --git a/drivers/net/wireguard/cookie.h b/drivers/net/wireguard/cookie.h
 new file mode 100644
-index 0000000..c4bd61c
+index 000000000..c4bd61ca0
 --- /dev/null
 +++ b/drivers/net/wireguard/cookie.h
 @@ -0,0 +1,59 @@
@@ -21959,7 +21959,7 @@ index 0000000..c4bd61c
 +#endif /* _WG_COOKIE_H */
 diff --git a/drivers/net/wireguard/device.c b/drivers/net/wireguard/device.c
 new file mode 100644
-index 0000000..6f1edb2
+index 000000000..6f1edb22d
 --- /dev/null
 +++ b/drivers/net/wireguard/device.c
 @@ -0,0 +1,461 @@
@@ -22426,7 +22426,7 @@ index 0000000..6f1edb2
 +}
 diff --git a/drivers/net/wireguard/device.h b/drivers/net/wireguard/device.h
 new file mode 100644
-index 0000000..43c7ceb
+index 000000000..43c7cebbf
 --- /dev/null
 +++ b/drivers/net/wireguard/device.h
 @@ -0,0 +1,62 @@
@@ -22494,7 +22494,7 @@ index 0000000..43c7ceb
 +#endif /* _WG_DEVICE_H */
 diff --git a/drivers/net/wireguard/main.c b/drivers/net/wireguard/main.c
 new file mode 100644
-index 0000000..ee4da9a
+index 000000000..ee4da9ab8
 --- /dev/null
 +++ b/drivers/net/wireguard/main.c
 @@ -0,0 +1,78 @@
@@ -22578,7 +22578,7 @@ index 0000000..ee4da9a
 +MODULE_ALIAS_GENL_FAMILY(WG_GENL_NAME);
 diff --git a/drivers/net/wireguard/messages.h b/drivers/net/wireguard/messages.h
 new file mode 100644
-index 0000000..208da72
+index 000000000..208da7267
 --- /dev/null
 +++ b/drivers/net/wireguard/messages.h
 @@ -0,0 +1,128 @@
@@ -22712,7 +22712,7 @@ index 0000000..208da72
 +#endif /* _WG_MESSAGES_H */
 diff --git a/drivers/net/wireguard/netlink.c b/drivers/net/wireguard/netlink.c
 new file mode 100644
-index 0000000..1c69eb8
+index 000000000..1c69eb873
 --- /dev/null
 +++ b/drivers/net/wireguard/netlink.c
 @@ -0,0 +1,646 @@
@@ -23364,7 +23364,7 @@ index 0000000..1c69eb8
 +}
 diff --git a/drivers/net/wireguard/netlink.h b/drivers/net/wireguard/netlink.h
 new file mode 100644
-index 0000000..15100d9
+index 000000000..15100d92e
 --- /dev/null
 +++ b/drivers/net/wireguard/netlink.h
 @@ -0,0 +1,12 @@
@@ -23382,7 +23382,7 @@ index 0000000..15100d9
 +#endif /* _WG_NETLINK_H */
 diff --git a/drivers/net/wireguard/noise.c b/drivers/net/wireguard/noise.c
 new file mode 100644
-index 0000000..849dda7
+index 000000000..849dda712
 --- /dev/null
 +++ b/drivers/net/wireguard/noise.c
 @@ -0,0 +1,861 @@
@@ -24249,7 +24249,7 @@ index 0000000..849dda7
 +}
 diff --git a/drivers/net/wireguard/noise.h b/drivers/net/wireguard/noise.h
 new file mode 100644
-index 0000000..c527253
+index 000000000..c527253db
 --- /dev/null
 +++ b/drivers/net/wireguard/noise.h
 @@ -0,0 +1,135 @@
@@ -24390,7 +24390,7 @@ index 0000000..c527253
 +#endif /* _WG_NOISE_H */
 diff --git a/drivers/net/wireguard/peer.c b/drivers/net/wireguard/peer.c
 new file mode 100644
-index 0000000..1acd00a
+index 000000000..1acd00ab2
 --- /dev/null
 +++ b/drivers/net/wireguard/peer.c
 @@ -0,0 +1,240 @@
@@ -24636,7 +24636,7 @@ index 0000000..1acd00a
 +}
 diff --git a/drivers/net/wireguard/peer.h b/drivers/net/wireguard/peer.h
 new file mode 100644
-index 0000000..76e4d31
+index 000000000..76e4d3128
 --- /dev/null
 +++ b/drivers/net/wireguard/peer.h
 @@ -0,0 +1,86 @@
@@ -24728,7 +24728,7 @@ index 0000000..76e4d31
 +#endif /* _WG_PEER_H */
 diff --git a/drivers/net/wireguard/peerlookup.c b/drivers/net/wireguard/peerlookup.c
 new file mode 100644
-index 0000000..f2783aa
+index 000000000..f2783aa7a
 --- /dev/null
 +++ b/drivers/net/wireguard/peerlookup.c
 @@ -0,0 +1,226 @@
@@ -24960,7 +24960,7 @@ index 0000000..f2783aa
 +}
 diff --git a/drivers/net/wireguard/peerlookup.h b/drivers/net/wireguard/peerlookup.h
 new file mode 100644
-index 0000000..ced8117
+index 000000000..ced811797
 --- /dev/null
 +++ b/drivers/net/wireguard/peerlookup.h
 @@ -0,0 +1,64 @@
@@ -25030,7 +25030,7 @@ index 0000000..ced8117
 +#endif /* _WG_PEERLOOKUP_H */
 diff --git a/drivers/net/wireguard/queueing.c b/drivers/net/wireguard/queueing.c
 new file mode 100644
-index 0000000..8084e74
+index 000000000..8084e7408
 --- /dev/null
 +++ b/drivers/net/wireguard/queueing.c
 @@ -0,0 +1,108 @@
@@ -25144,7 +25144,7 @@ index 0000000..8084e74
 +#undef STUB
 diff --git a/drivers/net/wireguard/queueing.h b/drivers/net/wireguard/queueing.h
 new file mode 100644
-index 0000000..e238810
+index 000000000..e2388107f
 --- /dev/null
 +++ b/drivers/net/wireguard/queueing.h
 @@ -0,0 +1,214 @@
@@ -25364,7 +25364,7 @@ index 0000000..e238810
 +#endif /* _WG_QUEUEING_H */
 diff --git a/drivers/net/wireguard/ratelimiter.c b/drivers/net/wireguard/ratelimiter.c
 new file mode 100644
-index 0000000..dd55e5c
+index 000000000..dd55e5c26
 --- /dev/null
 +++ b/drivers/net/wireguard/ratelimiter.c
 @@ -0,0 +1,223 @@
@@ -25593,7 +25593,7 @@ index 0000000..dd55e5c
 +#include "selftest/ratelimiter.c"
 diff --git a/drivers/net/wireguard/ratelimiter.h b/drivers/net/wireguard/ratelimiter.h
 new file mode 100644
-index 0000000..83067f7
+index 000000000..83067f71e
 --- /dev/null
 +++ b/drivers/net/wireguard/ratelimiter.h
 @@ -0,0 +1,19 @@
@@ -25618,7 +25618,7 @@ index 0000000..83067f7
 +#endif /* _WG_RATELIMITER_H */
 diff --git a/drivers/net/wireguard/receive.c b/drivers/net/wireguard/receive.c
 new file mode 100644
-index 0000000..7b8df40
+index 000000000..7b8df406c
 --- /dev/null
 +++ b/drivers/net/wireguard/receive.c
 @@ -0,0 +1,593 @@
@@ -26217,7 +26217,7 @@ index 0000000..7b8df40
 +}
 diff --git a/drivers/net/wireguard/selftest/allowedips.c b/drivers/net/wireguard/selftest/allowedips.c
 new file mode 100644
-index 0000000..e173204
+index 000000000..e173204ae
 --- /dev/null
 +++ b/drivers/net/wireguard/selftest/allowedips.c
 @@ -0,0 +1,676 @@
@@ -26899,7 +26899,7 @@ index 0000000..e173204
 +#endif
 diff --git a/drivers/net/wireguard/selftest/counter.c b/drivers/net/wireguard/selftest/counter.c
 new file mode 100644
-index 0000000..ec3c156
+index 000000000..ec3c156bf
 --- /dev/null
 +++ b/drivers/net/wireguard/selftest/counter.c
 @@ -0,0 +1,111 @@
@@ -27016,7 +27016,7 @@ index 0000000..ec3c156
 +#endif
 diff --git a/drivers/net/wireguard/selftest/ratelimiter.c b/drivers/net/wireguard/selftest/ratelimiter.c
 new file mode 100644
-index 0000000..007cd44
+index 000000000..007cd4457
 --- /dev/null
 +++ b/drivers/net/wireguard/selftest/ratelimiter.c
 @@ -0,0 +1,226 @@
@@ -27248,7 +27248,7 @@ index 0000000..007cd44
 +#endif
 diff --git a/drivers/net/wireguard/send.c b/drivers/net/wireguard/send.c
 new file mode 100644
-index 0000000..5368f7c
+index 000000000..5368f7c35
 --- /dev/null
 +++ b/drivers/net/wireguard/send.c
 @@ -0,0 +1,413 @@
@@ -27667,7 +27667,7 @@ index 0000000..5368f7c
 +}
 diff --git a/drivers/net/wireguard/socket.c b/drivers/net/wireguard/socket.c
 new file mode 100644
-index 0000000..9e0af93
+index 000000000..9e0af9320
 --- /dev/null
 +++ b/drivers/net/wireguard/socket.c
 @@ -0,0 +1,437 @@
@@ -28110,7 +28110,7 @@ index 0000000..9e0af93
 +}
 diff --git a/drivers/net/wireguard/socket.h b/drivers/net/wireguard/socket.h
 new file mode 100644
-index 0000000..bab5848
+index 000000000..bab5848ef
 --- /dev/null
 +++ b/drivers/net/wireguard/socket.h
 @@ -0,0 +1,44 @@
@@ -28160,7 +28160,7 @@ index 0000000..bab5848
 +#endif /* _WG_SOCKET_H */
 diff --git a/drivers/net/wireguard/timers.c b/drivers/net/wireguard/timers.c
 new file mode 100644
-index 0000000..d54d32a
+index 000000000..d54d32ac9
 --- /dev/null
 +++ b/drivers/net/wireguard/timers.c
 @@ -0,0 +1,243 @@
@@ -28409,7 +28409,7 @@ index 0000000..d54d32a
 +}
 diff --git a/drivers/net/wireguard/timers.h b/drivers/net/wireguard/timers.h
 new file mode 100644
-index 0000000..f0653dc
+index 000000000..f0653dcb1
 --- /dev/null
 +++ b/drivers/net/wireguard/timers.h
 @@ -0,0 +1,31 @@
@@ -28446,13 +28446,13 @@ index 0000000..f0653dc
 +#endif /* _WG_TIMERS_H */
 diff --git a/drivers/net/wireguard/version.h b/drivers/net/wireguard/version.h
 new file mode 100644
-index 0000000..a1a269a
+index 000000000..a1a269a11
 --- /dev/null
 +++ b/drivers/net/wireguard/version.h
 @@ -0,0 +1 @@
 +#define WIREGUARD_VERSION "1.0.0"
 diff --git a/fs/namei.c b/fs/namei.c
-index 038a9a4..f3819b4 100644
+index 038a9a4b9..f3819b469 100644
 --- a/fs/namei.c
 +++ b/fs/namei.c
 @@ -877,8 +877,8 @@ static inline void put_link(struct nameidata *nd)
@@ -28467,7 +28467,7 @@ index 038a9a4..f3819b4 100644
  int sysctl_protected_regular __read_mostly;
  
 diff --git a/include/crypto/chacha.h b/include/crypto/chacha.h
-index 542f896..b73c993 100644
+index 542f89611..b73c9931f 100644
 --- a/include/crypto/chacha.h
 +++ b/include/crypto/chacha.h
 @@ -15,9 +15,8 @@
@@ -28575,7 +28575,7 @@ index 542f896..b73c993 100644
  	CHACHA_CONSTANT_EXPA = 0x61707865U,
 diff --git a/include/crypto/chacha20poly1305.h b/include/crypto/chacha20poly1305.h
 new file mode 100644
-index 0000000..d2ac3ff
+index 000000000..d2ac3ff7d
 --- /dev/null
 +++ b/include/crypto/chacha20poly1305.h
 @@ -0,0 +1,50 @@
@@ -28631,7 +28631,7 @@ index 0000000..d2ac3ff
 +#endif /* __CHACHA20POLY1305_H */
 diff --git a/include/crypto/curve25519.h b/include/crypto/curve25519.h
 new file mode 100644
-index 0000000..9ecb3c1
+index 000000000..9ecb3c1f0
 --- /dev/null
 +++ b/include/crypto/curve25519.h
 @@ -0,0 +1,73 @@
@@ -28710,7 +28710,7 @@ index 0000000..9ecb3c1
 +#endif /* CURVE25519_H */
 diff --git a/include/crypto/internal/chacha.h b/include/crypto/internal/chacha.h
 new file mode 100644
-index 0000000..b085dc1
+index 000000000..b085dc1ac
 --- /dev/null
 +++ b/include/crypto/internal/chacha.h
 @@ -0,0 +1,43 @@
@@ -28759,7 +28759,7 @@ index 0000000..b085dc1
 +#endif /* _CRYPTO_CHACHA_H */
 diff --git a/include/crypto/internal/poly1305.h b/include/crypto/internal/poly1305.h
 new file mode 100644
-index 0000000..196aa76
+index 000000000..196aa769f
 --- /dev/null
 +++ b/include/crypto/internal/poly1305.h
 @@ -0,0 +1,34 @@
@@ -28798,7 +28798,7 @@ index 0000000..196aa76
 +
 +#endif
 diff --git a/include/crypto/nhpoly1305.h b/include/crypto/nhpoly1305.h
-index 53c0442..306925f 100644
+index 53c04423c..306925fea 100644
 --- a/include/crypto/nhpoly1305.h
 +++ b/include/crypto/nhpoly1305.h
 @@ -7,7 +7,7 @@
@@ -28820,7 +28820,7 @@ index 53c0442..306925f 100644
  };
  
 diff --git a/include/crypto/poly1305.h b/include/crypto/poly1305.h
-index 34317ed..090692e 100644
+index 34317ed20..090692ec3 100644
 --- a/include/crypto/poly1305.h
 +++ b/include/crypto/poly1305.h
 @@ -13,52 +13,87 @@
@@ -28942,7 +28942,7 @@ index 34317ed..090692e 100644
  
  #endif
 diff --git a/include/net/dst_cache.h b/include/net/dst_cache.h
-index 6763467..df6622a 100644
+index 67634675e..df6622a5f 100644
 --- a/include/net/dst_cache.h
 +++ b/include/net/dst_cache.h
 @@ -79,6 +79,17 @@ static inline void dst_cache_reset(struct dst_cache *dst_cache)
@@ -28964,7 +28964,7 @@ index 6763467..df6622a 100644
   *	dst_cache_init - initialize the cache, allocating the required storage
   *	@dst_cache: the cache
 diff --git a/include/net/ip_tunnels.h b/include/net/ip_tunnels.h
-index 3a04e2c..258f8dd 100644
+index 3a04e2ccf..258f8ddb0 100644
 --- a/include/net/ip_tunnels.h
 +++ b/include/net/ip_tunnels.h
 @@ -289,6 +289,9 @@ int ip_tunnel_newlink(struct net_device *dev, struct nlattr *tb[],
@@ -28979,7 +28979,7 @@ index 3a04e2c..258f8dd 100644
  	int (*build_header)(struct sk_buff *skb, struct ip_tunnel_encap *e,
 diff --git a/include/uapi/linux/wireguard.h b/include/uapi/linux/wireguard.h
 new file mode 100644
-index 0000000..ae88be1
+index 000000000..ae88be14c
 --- /dev/null
 +++ b/include/uapi/linux/wireguard.h
 @@ -0,0 +1,196 @@
@@ -29180,7 +29180,7 @@ index 0000000..ae88be1
 +
 +#endif /* _WG_UAPI_WIREGUARD_H */
 diff --git a/include/uapi/linux/xattr.h b/include/uapi/linux/xattr.h
-index c1395b5..bac6d48 100644
+index c1395b5bd..bac6d48ec 100644
 --- a/include/uapi/linux/xattr.h
 +++ b/include/uapi/linux/xattr.h
 @@ -77,5 +77,9 @@
@@ -29194,7 +29194,7 @@ index c1395b5..bac6d48 100644
  
  #endif /* _UAPI_LINUX_XATTR_H */
 diff --git a/lib/Makefile b/lib/Makefile
-index 3b8977a..d80ce6f 100644
+index 3b8977aed..d80ce6f06 100644
 --- a/lib/Makefile
 +++ b/lib/Makefile
 @@ -26,8 +26,7 @@ endif
@@ -29209,7 +29209,7 @@ index 3b8977a..d80ce6f 100644
  	 earlycpio.o seq_buf.o siphash.o dec_and_lock.o \
 diff --git a/lib/crypto/Kconfig b/lib/crypto/Kconfig
 new file mode 100644
-index 0000000..ba81659
+index 000000000..ba816599d
 --- /dev/null
 +++ b/lib/crypto/Kconfig
 @@ -0,0 +1,105 @@
@@ -29319,7 +29319,7 @@ index 0000000..ba81659
 +config CRYPTO_LIB_SHA256
 +	tristate
 diff --git a/lib/crypto/Makefile b/lib/crypto/Makefile
-index 9d7feab..68e1d20 100644
+index 9d7feabac..68e1d2031 100644
 --- a/lib/crypto/Makefile
 +++ b/lib/crypto/Makefile
 @@ -1,19 +1,41 @@
@@ -29379,7 +29379,7 @@ diff --git a/lib/chacha.c b/lib/crypto/chacha.c
 similarity index 88%
 rename from lib/chacha.c
 rename to lib/crypto/chacha.c
-index c7c9826..65ead6b 100644
+index c7c982656..65ead6b0c 100644
 --- a/lib/chacha.c
 +++ b/lib/crypto/chacha.c
 @@ -5,9 +5,11 @@
@@ -29441,7 +29441,7 @@ index c7c9826..65ead6b 100644
 +EXPORT_SYMBOL(hchacha_block_generic);
 diff --git a/lib/crypto/chacha20poly1305-selftest.c b/lib/crypto/chacha20poly1305-selftest.c
 new file mode 100644
-index 0000000..fa43ded
+index 000000000..fa43deda2
 --- /dev/null
 +++ b/lib/crypto/chacha20poly1305-selftest.c
 @@ -0,0 +1,9082 @@
@@ -38529,7 +38529,7 @@ index 0000000..fa43ded
 +}
 diff --git a/lib/crypto/chacha20poly1305.c b/lib/crypto/chacha20poly1305.c
 new file mode 100644
-index 0000000..1fec56e
+index 000000000..1fec56e5d
 --- /dev/null
 +++ b/lib/crypto/chacha20poly1305.c
 @@ -0,0 +1,375 @@
@@ -38910,7 +38910,7 @@ index 0000000..1fec56e
 +MODULE_AUTHOR("Jason A. Donenfeld <Jason@zx2c4.com>");
 diff --git a/lib/crypto/curve25519-fiat32.c b/lib/crypto/curve25519-fiat32.c
 new file mode 100644
-index 0000000..2fde0ec
+index 000000000..2fde0ec33
 --- /dev/null
 +++ b/lib/crypto/curve25519-fiat32.c
 @@ -0,0 +1,864 @@
@@ -39780,7 +39780,7 @@ index 0000000..2fde0ec
 +}
 diff --git a/lib/crypto/curve25519-generic.c b/lib/crypto/curve25519-generic.c
 new file mode 100644
-index 0000000..de7c991
+index 000000000..de7c99172
 --- /dev/null
 +++ b/lib/crypto/curve25519-generic.c
 @@ -0,0 +1,24 @@
@@ -39810,7 +39810,7 @@ index 0000000..de7c991
 +MODULE_AUTHOR("Jason A. Donenfeld <Jason@zx2c4.com>");
 diff --git a/lib/crypto/curve25519-hacl64.c b/lib/crypto/curve25519-hacl64.c
 new file mode 100644
-index 0000000..771d82d
+index 000000000..771d82dc5
 --- /dev/null
 +++ b/lib/crypto/curve25519-hacl64.c
 @@ -0,0 +1,788 @@
@@ -40604,7 +40604,7 @@ index 0000000..771d82d
 +}
 diff --git a/lib/crypto/curve25519-selftest.c b/lib/crypto/curve25519-selftest.c
 new file mode 100644
-index 0000000..c85e853
+index 000000000..c85e85381
 --- /dev/null
 +++ b/lib/crypto/curve25519-selftest.c
 @@ -0,0 +1,1321 @@
@@ -41931,7 +41931,7 @@ index 0000000..c85e853
 +}
 diff --git a/lib/crypto/curve25519.c b/lib/crypto/curve25519.c
 new file mode 100644
-index 0000000..288a62c
+index 000000000..288a62cd2
 --- /dev/null
 +++ b/lib/crypto/curve25519.c
 @@ -0,0 +1,35 @@
@@ -41972,7 +41972,7 @@ index 0000000..288a62c
 +MODULE_AUTHOR("Jason A. Donenfeld <Jason@zx2c4.com>");
 diff --git a/lib/crypto/libchacha.c b/lib/crypto/libchacha.c
 new file mode 100644
-index 0000000..dabc3ac
+index 000000000..dabc3acca
 --- /dev/null
 +++ b/lib/crypto/libchacha.c
 @@ -0,0 +1,35 @@
@@ -42013,7 +42013,7 @@ index 0000000..dabc3ac
 +MODULE_LICENSE("GPL");
 diff --git a/lib/crypto/poly1305-donna32.c b/lib/crypto/poly1305-donna32.c
 new file mode 100644
-index 0000000..7fb7184
+index 000000000..7fb71845c
 --- /dev/null
 +++ b/lib/crypto/poly1305-donna32.c
 @@ -0,0 +1,205 @@
@@ -42224,7 +42224,7 @@ index 0000000..7fb7184
 +EXPORT_SYMBOL(poly1305_core_emit);
 diff --git a/lib/crypto/poly1305-donna64.c b/lib/crypto/poly1305-donna64.c
 new file mode 100644
-index 0000000..d34cf40
+index 000000000..d34cf4053
 --- /dev/null
 +++ b/lib/crypto/poly1305-donna64.c
 @@ -0,0 +1,186 @@
@@ -42416,7 +42416,7 @@ index 0000000..d34cf40
 +EXPORT_SYMBOL(poly1305_core_emit);
 diff --git a/lib/crypto/poly1305.c b/lib/crypto/poly1305.c
 new file mode 100644
-index 0000000..26d87fc
+index 000000000..26d87fc38
 --- /dev/null
 +++ b/lib/crypto/poly1305.c
 @@ -0,0 +1,78 @@
@@ -42499,7 +42499,7 @@ index 0000000..26d87fc
 +MODULE_LICENSE("GPL");
 +MODULE_AUTHOR("Martin Willi <martin@strongswan.org>");
 diff --git a/mm/shmem.c b/mm/shmem.c
-index 8475d56..e6da8cc 100644
+index 8475d56f5..e6da8ccbf 100644
 --- a/mm/shmem.c
 +++ b/mm/shmem.c
 @@ -3246,6 +3246,14 @@ static int shmem_xattr_handler_set(const struct xattr_handler *handler,
@@ -42539,7 +42539,7 @@ index 8475d56..e6da8cc 100644
  };
  
 diff --git a/net/bluetooth/hci_conn.c b/net/bluetooth/hci_conn.c
-index d55973c..4abea9e 100644
+index d55973cb5..4abea9ec5 100644
 --- a/net/bluetooth/hci_conn.c
 +++ b/net/bluetooth/hci_conn.c
 @@ -1309,8 +1309,13 @@ int hci_conn_check_link_mode(struct hci_conn *conn)
@@ -42559,7 +42559,7 @@ index d55973c..4abea9e 100644
  
  	return 1;
 diff --git a/net/core/dst_cache.c b/net/core/dst_cache.c
-index be74ab4..0ccfd5f 100644
+index be74ab455..0ccfd5fa5 100644
 --- a/net/core/dst_cache.c
 +++ b/net/core/dst_cache.c
 @@ -162,3 +162,22 @@ void dst_cache_destroy(struct dst_cache *dst_cache)
@@ -42586,7 +42586,7 @@ index be74ab4..0ccfd5f 100644
 +}
 +EXPORT_SYMBOL_GPL(dst_cache_reset_now);
 diff --git a/net/ipv4/ip_tunnel_core.c b/net/ipv4/ip_tunnel_core.c
-index 1452a97..cfe21c3 100644
+index 1452a9791..cfe21c3dd 100644
 --- a/net/ipv4/ip_tunnel_core.c
 +++ b/net/ipv4/ip_tunnel_core.c
 @@ -446,3 +446,21 @@ void ip_tunnel_unneed_metadata(void)
@@ -42613,7 +42613,7 @@ index 1452a97..cfe21c3 100644
 +EXPORT_SYMBOL(ip_tunnel_header_ops);
 diff --git a/scripts/gcc-plugin.sh b/scripts/gcc-plugin.sh
 deleted file mode 100755
-index d3caefe..0000000
+index d3caefe53..000000000
 --- a/scripts/gcc-plugin.sh
 +++ /dev/null
 @@ -1,66 +0,0 @@
@@ -42684,7 +42684,7 @@ index d3caefe..0000000
 -fi
 -exit 1
 diff --git a/scripts/gcc-plugins/Kconfig b/scripts/gcc-plugins/Kconfig
-index e356954..162f17f 100644
+index e3569543b..162f17ff0 100644
 --- a/scripts/gcc-plugins/Kconfig
 +++ b/scripts/gcc-plugins/Kconfig
 @@ -1,12 +1,4 @@
@@ -42711,7 +42711,7 @@ index e356954..162f17f 100644
  	help
  	  GCC plugins are loadable modules that provide extra features to the
 diff --git a/scripts/gcc-plugins/Makefile b/scripts/gcc-plugins/Makefile
-index 9e95862..37dc189 100644
+index 9e95862f2..37dc18926 100644
 --- a/scripts/gcc-plugins/Makefile
 +++ b/scripts/gcc-plugins/Makefile
 @@ -1,19 +1,12 @@
@@ -42741,7 +42741,7 @@ index 9e95862..37dc189 100644
  $(obj)/randomize_layout_plugin.o: $(objtree)/$(obj)/randomize_layout_seed.h
  quiet_cmd_create_randomize_layout_seed = GENSEED $@
 diff --git a/scripts/sign-file.c b/scripts/sign-file.c
-index 12acc70..fcf3ed6 100644
+index 12acc70e5..fcf3ed62e 100644
 --- a/scripts/sign-file.c
 +++ b/scripts/sign-file.c
 @@ -48,9 +48,10 @@
@@ -42760,7 +42760,7 @@ index 12acc70..fcf3ed6 100644
  #ifndef USE_PKCS7
 diff --git a/tools/testing/selftests/wireguard/netns.sh b/tools/testing/selftests/wireguard/netns.sh
 new file mode 100644
-index 0000000..33cd289
+index 000000000..33cd28971
 --- /dev/null
 +++ b/tools/testing/selftests/wireguard/netns.sh
 @@ -0,0 +1,674 @@
@@ -43440,7 +43440,7 @@ index 0000000..33cd289
 +pretty "" "Objects that were created were also destroyed."
 diff --git a/tools/testing/selftests/wireguard/qemu/.gitignore b/tools/testing/selftests/wireguard/qemu/.gitignore
 new file mode 100644
-index 0000000..42ab9d7
+index 000000000..42ab9d72b
 --- /dev/null
 +++ b/tools/testing/selftests/wireguard/qemu/.gitignore
 @@ -0,0 +1,4 @@
@@ -43450,7 +43450,7 @@ index 0000000..42ab9d7
 +ccache/
 diff --git a/tools/testing/selftests/wireguard/qemu/Makefile b/tools/testing/selftests/wireguard/qemu/Makefile
 new file mode 100644
-index 0000000..51649cf
+index 000000000..51649cffc
 --- /dev/null
 +++ b/tools/testing/selftests/wireguard/qemu/Makefile
 @@ -0,0 +1,422 @@
@@ -43878,7 +43878,7 @@ index 0000000..51649cf
 +.DELETE_ON_ERROR:
 diff --git a/tools/testing/selftests/wireguard/qemu/arch/aarch64.config b/tools/testing/selftests/wireguard/qemu/arch/aarch64.config
 new file mode 100644
-index 0000000..0901688
+index 000000000..09016880c
 --- /dev/null
 +++ b/tools/testing/selftests/wireguard/qemu/arch/aarch64.config
 @@ -0,0 +1,8 @@
@@ -43892,7 +43892,7 @@ index 0000000..0901688
 +CONFIG_FRAME_WARN=1280
 diff --git a/tools/testing/selftests/wireguard/qemu/arch/aarch64_be.config b/tools/testing/selftests/wireguard/qemu/arch/aarch64_be.config
 new file mode 100644
-index 0000000..19ff66e
+index 000000000..19ff66e4c
 --- /dev/null
 +++ b/tools/testing/selftests/wireguard/qemu/arch/aarch64_be.config
 @@ -0,0 +1,9 @@
@@ -43907,7 +43907,7 @@ index 0000000..19ff66e
 +CONFIG_FRAME_WARN=1280
 diff --git a/tools/testing/selftests/wireguard/qemu/arch/arm.config b/tools/testing/selftests/wireguard/qemu/arch/arm.config
 new file mode 100644
-index 0000000..fc7959b
+index 000000000..fc7959bef
 --- /dev/null
 +++ b/tools/testing/selftests/wireguard/qemu/arch/arm.config
 @@ -0,0 +1,12 @@
@@ -43925,7 +43925,7 @@ index 0000000..fc7959b
 +CONFIG_FRAME_WARN=1024
 diff --git a/tools/testing/selftests/wireguard/qemu/arch/armeb.config b/tools/testing/selftests/wireguard/qemu/arch/armeb.config
 new file mode 100644
-index 0000000..f3066be
+index 000000000..f3066be81
 --- /dev/null
 +++ b/tools/testing/selftests/wireguard/qemu/arch/armeb.config
 @@ -0,0 +1,13 @@
@@ -43944,7 +43944,7 @@ index 0000000..f3066be
 +CONFIG_FRAME_WARN=1024
 diff --git a/tools/testing/selftests/wireguard/qemu/arch/i686.config b/tools/testing/selftests/wireguard/qemu/arch/i686.config
 new file mode 100644
-index 0000000..6d90892
+index 000000000..6d90892a8
 --- /dev/null
 +++ b/tools/testing/selftests/wireguard/qemu/arch/i686.config
 @@ -0,0 +1,6 @@
@@ -43956,7 +43956,7 @@ index 0000000..6d90892
 +CONFIG_FRAME_WARN=1024
 diff --git a/tools/testing/selftests/wireguard/qemu/arch/m68k.config b/tools/testing/selftests/wireguard/qemu/arch/m68k.config
 new file mode 100644
-index 0000000..82c925e
+index 000000000..82c925e49
 --- /dev/null
 +++ b/tools/testing/selftests/wireguard/qemu/arch/m68k.config
 @@ -0,0 +1,9 @@
@@ -43971,7 +43971,7 @@ index 0000000..82c925e
 +CONFIG_FRAME_WARN=1024
 diff --git a/tools/testing/selftests/wireguard/qemu/arch/mips.config b/tools/testing/selftests/wireguard/qemu/arch/mips.config
 new file mode 100644
-index 0000000..d7ec63c
+index 000000000..d7ec63c17
 --- /dev/null
 +++ b/tools/testing/selftests/wireguard/qemu/arch/mips.config
 @@ -0,0 +1,11 @@
@@ -43988,7 +43988,7 @@ index 0000000..d7ec63c
 +CONFIG_FRAME_WARN=1024
 diff --git a/tools/testing/selftests/wireguard/qemu/arch/mips64.config b/tools/testing/selftests/wireguard/qemu/arch/mips64.config
 new file mode 100644
-index 0000000..0994947
+index 000000000..0994947e3
 --- /dev/null
 +++ b/tools/testing/selftests/wireguard/qemu/arch/mips64.config
 @@ -0,0 +1,14 @@
@@ -44008,7 +44008,7 @@ index 0000000..0994947
 +CONFIG_FRAME_WARN=1280
 diff --git a/tools/testing/selftests/wireguard/qemu/arch/mips64el.config b/tools/testing/selftests/wireguard/qemu/arch/mips64el.config
 new file mode 100644
-index 0000000..5911843
+index 000000000..591184342
 --- /dev/null
 +++ b/tools/testing/selftests/wireguard/qemu/arch/mips64el.config
 @@ -0,0 +1,15 @@
@@ -44029,7 +44029,7 @@ index 0000000..5911843
 +CONFIG_FRAME_WARN=1280
 diff --git a/tools/testing/selftests/wireguard/qemu/arch/mipsel.config b/tools/testing/selftests/wireguard/qemu/arch/mipsel.config
 new file mode 100644
-index 0000000..18a4982
+index 000000000..18a498293
 --- /dev/null
 +++ b/tools/testing/selftests/wireguard/qemu/arch/mipsel.config
 @@ -0,0 +1,12 @@
@@ -44047,7 +44047,7 @@ index 0000000..18a4982
 +CONFIG_FRAME_WARN=1024
 diff --git a/tools/testing/selftests/wireguard/qemu/arch/powerpc.config b/tools/testing/selftests/wireguard/qemu/arch/powerpc.config
 new file mode 100644
-index 0000000..5e04882
+index 000000000..5e04882e8
 --- /dev/null
 +++ b/tools/testing/selftests/wireguard/qemu/arch/powerpc.config
 @@ -0,0 +1,10 @@
@@ -44063,7 +44063,7 @@ index 0000000..5e04882
 +CONFIG_FRAME_WARN=1024
 diff --git a/tools/testing/selftests/wireguard/qemu/arch/powerpc64.config b/tools/testing/selftests/wireguard/qemu/arch/powerpc64.config
 new file mode 100644
-index 0000000..737194b
+index 000000000..737194b76
 --- /dev/null
 +++ b/tools/testing/selftests/wireguard/qemu/arch/powerpc64.config
 @@ -0,0 +1,13 @@
@@ -44082,7 +44082,7 @@ index 0000000..737194b
 +CONFIG_THREAD_SHIFT=14
 diff --git a/tools/testing/selftests/wireguard/qemu/arch/powerpc64le.config b/tools/testing/selftests/wireguard/qemu/arch/powerpc64le.config
 new file mode 100644
-index 0000000..8148b9d
+index 000000000..8148b9d12
 --- /dev/null
 +++ b/tools/testing/selftests/wireguard/qemu/arch/powerpc64le.config
 @@ -0,0 +1,13 @@
@@ -44101,7 +44101,7 @@ index 0000000..8148b9d
 +CONFIG_THREAD_SHIFT=14
 diff --git a/tools/testing/selftests/wireguard/qemu/arch/s390x.config b/tools/testing/selftests/wireguard/qemu/arch/s390x.config
 new file mode 100644
-index 0000000..a7b44dc
+index 000000000..a7b44dca0
 --- /dev/null
 +++ b/tools/testing/selftests/wireguard/qemu/arch/s390x.config
 @@ -0,0 +1,6 @@
@@ -44113,7 +44113,7 @@ index 0000000..a7b44dc
 +CONFIG_CMDLINE="console=ttysclp0 wg.success=vport0p1 panic_on_warn=1"
 diff --git a/tools/testing/selftests/wireguard/qemu/arch/x86_64.config b/tools/testing/selftests/wireguard/qemu/arch/x86_64.config
 new file mode 100644
-index 0000000..efa0069
+index 000000000..efa00693e
 --- /dev/null
 +++ b/tools/testing/selftests/wireguard/qemu/arch/x86_64.config
 @@ -0,0 +1,6 @@
@@ -44125,7 +44125,7 @@ index 0000000..efa0069
 +CONFIG_FRAME_WARN=1280
 diff --git a/tools/testing/selftests/wireguard/qemu/debug.config b/tools/testing/selftests/wireguard/qemu/debug.config
 new file mode 100644
-index 0000000..80501d4
+index 000000000..80501d4e6
 --- /dev/null
 +++ b/tools/testing/selftests/wireguard/qemu/debug.config
 @@ -0,0 +1,67 @@
@@ -44198,7 +44198,7 @@ index 0000000..80501d4
 +CONFIG_DEBUG_WW_MUTEX_SLOWPATH=y
 diff --git a/tools/testing/selftests/wireguard/qemu/init.c b/tools/testing/selftests/wireguard/qemu/init.c
 new file mode 100644
-index 0000000..2a0f48f
+index 000000000..2a0f48fac
 --- /dev/null
 +++ b/tools/testing/selftests/wireguard/qemu/init.c
 @@ -0,0 +1,266 @@
@@ -44470,7 +44470,7 @@ index 0000000..2a0f48f
 +}
 diff --git a/tools/testing/selftests/wireguard/qemu/kernel.config b/tools/testing/selftests/wireguard/qemu/kernel.config
 new file mode 100644
-index 0000000..30925b7
+index 000000000..30925b799
 --- /dev/null
 +++ b/tools/testing/selftests/wireguard/qemu/kernel.config
 @@ -0,0 +1,90 @@
