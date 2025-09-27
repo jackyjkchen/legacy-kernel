@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
 # Linux kernel version: 2.6.16.62-gentoo
-# Sat Sep 27 11:42:17 2025
+# Sat Sep 27 13:49:37 2025
 #
 CONFIG_X86_64=y
 CONFIG_64BIT=y
@@ -1009,17 +1009,8 @@ CONFIG_I2C_PIIX4=m
 #
 # SPI support
 #
-CONFIG_SPI=y
-# CONFIG_SPI_DEBUG is not set
-CONFIG_SPI_MASTER=y
-
-#
-# SPI Master Controller Drivers
-#
-
-#
-# SPI Protocol Masters
-#
+# CONFIG_SPI is not set
+# CONFIG_SPI_MASTER is not set
 
 #
 # Dallas's 1-wire bus
@@ -1029,19 +1020,8 @@ CONFIG_SPI_MASTER=y
 #
 # Hardware Monitoring support
 #
-CONFIG_HWMON=m
+# CONFIG_HWMON is not set
 # CONFIG_HWMON_VID is not set
-# CONFIG_SENSORS_ADM1021 is not set
-# CONFIG_SENSORS_GL518SM is not set
-# CONFIG_SENSORS_IT87 is not set
-# CONFIG_SENSORS_LM75 is not set
-# CONFIG_SENSORS_LM83 is not set
-# CONFIG_SENSORS_LM90 is not set
-# CONFIG_SENSORS_VIA686A is not set
-# CONFIG_SENSORS_W83781D is not set
-# CONFIG_SENSORS_W83627HF is not set
-# CONFIG_SENSORS_HDAPS is not set
-# CONFIG_HWMON_DEBUG_CHIP is not set
 
 #
 # Misc devices
