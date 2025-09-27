@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
 # Linux kernel version: 2.6.16.62-gentoo
-# Sat Sep 27 13:49:37 2025
+# Sat Sep 27 21:19:30 2025
 #
 CONFIG_X86_64=y
 CONFIG_64BIT=y
@@ -575,7 +575,32 @@ CONFIG_BLK_DEV_RAM_COUNT=16
 #
 # ATA/ATAPI/MFM/RLL support
 #
-# CONFIG_IDE is not set
+CONFIG_IDE=y
+CONFIG_BLK_DEV_IDE=y
+
+#
+# Please see Documentation/ide.txt for help/info on IDE drives
+#
+# CONFIG_BLK_DEV_IDE_SATA is not set
+# CONFIG_BLK_DEV_HD_IDE is not set
+CONFIG_BLK_DEV_IDEDISK=y
+# CONFIG_IDEDISK_MULTI_MODE is not set
+CONFIG_BLK_DEV_IDECD=m
+CONFIG_BLK_DEV_IDEFLOPPY=m
+CONFIG_BLK_DEV_IDESCSI=m
+# CONFIG_IDE_TASK_IOCTL is not set
+
+#
+# IDE chipset support/bugfixes
+#
+CONFIG_IDE_GENERIC=y
+# CONFIG_BLK_DEV_CMD640 is not set
+# CONFIG_BLK_DEV_IDEPNP is not set
+# CONFIG_BLK_DEV_IDEPCI is not set
+# CONFIG_IDE_ARM is not set
+# CONFIG_BLK_DEV_IDEDMA is not set
+# CONFIG_IDEDMA_AUTO is not set
+# CONFIG_BLK_DEV_HD is not set
 
 #
 # SCSI device support
@@ -636,6 +661,7 @@ CONFIG_SCSI_ATA_PIIX=y
 # CONFIG_SCSI_SATA_PROMISE is not set
 # CONFIG_SCSI_SATA_VIA is not set
 # CONFIG_SCSI_SATA_VITESSE is not set
+CONFIG_SCSI_SATA_INTEL_COMBINED=y
 # CONFIG_SCSI_HPTIOP is not set
 CONFIG_SCSI_BUSLOGIC=y
 # CONFIG_SCSI_OMIT_FLASHPOINT is not set
@@ -1265,6 +1291,7 @@ CONFIG_USB_UHCI_HCD=m
 CONFIG_USB_STORAGE=m
 # CONFIG_USB_STORAGE_DEBUG is not set
 # CONFIG_USB_STORAGE_FREECOM is not set
+# CONFIG_USB_STORAGE_ISD200 is not set
 # CONFIG_USB_STORAGE_DPCM is not set
 # CONFIG_USB_LIBUSUAL is not set
 
