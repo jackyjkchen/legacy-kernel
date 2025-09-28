@@ -1,0 +1,49 @@
+diff --git a/.version b/.version
+index b4de394..b1bd38b 100644
+--- a/.version
++++ b/.version
+@@ -1 +1 @@
+-11
++13
+diff --git a/Makefile b/Makefile
+index 286c480..2836a1b 100644
+--- a/Makefile
++++ b/Makefile
+@@ -301,7 +301,7 @@ modules: include/linux/version.h
+ 
+ modules_install:
+ 	@( \
+-	MODLIB=/lib/modules/$(KERNELRELEASE); \
++	MODLIB=$(INSTALL_MOD_PATH)/lib/modules/$(KERNELRELEASE); \
+ 	cd modules; \
+ 	MODULES=""; \
+ 	inst_mod() { These="`cat $$1`"; MODULES="$$MODULES $$These"; \
+diff --git a/arch/i386/boot/Makefile b/arch/i386/boot/Makefile
+index 9c5227c..373763c 100644
+--- a/arch/i386/boot/Makefile
++++ b/arch/i386/boot/Makefile
+@@ -59,7 +59,7 @@ zlilo: $(CONFIGURE) $(BOOTIMAGE)
+ 	if [ -x /sbin/lilo ]; then /sbin/lilo; else /etc/lilo/install; fi
+ 
+ install: $(CONFIGURE) zImage
+-	sh ./install.sh $(VERSION).$(PATCHLEVEL).$(SUBLEVEL) zImage $(TOPDIR)/System.map "$(INSTALL_PATH)"
++	sh ./install.sh $(KERNELRELEASE) zImage $(TOPDIR)/System.map "$(INSTALL_PATH)"
+ 
+ tools/build: tools/build.c
+ 	$(HOSTCC) $(HOSTCFLAGS) -o $@ $< -I$(TOPDIR)/include
+diff --git a/scripts/Menuconfig b/scripts/Menuconfig
+index e671860..a58b576 100644
+--- a/scripts/Menuconfig
++++ b/scripts/Menuconfig
+@@ -1159,7 +1159,7 @@ Use the <TAB> key to move from the input field to the buttons below it."
+ 
+ DIALOG="${DIALOG:-./scripts/lxdialog/lxdialog}"
+ 
+-kernel_version="${VERSION}.${PATCHLEVEL}.${SUBLEVEL}"
++kernel_version="${VERSION}.${PATCHLEVEL}.${SUBLEVEL}${EXTRAVERSION}"
+ 
+ backtitle="Linux Kernel v$kernel_version Configuration"
+ 
+diff --git a/target_dir/boot/vmlinuz-2.0.40 b/target_dir/boot/vmlinuz-2.0.40
+index da17baa..d206445 100644
+Binary files a/target_dir/boot/vmlinuz-2.0.40 and b/target_dir/boot/vmlinuz-2.0.40 differ
