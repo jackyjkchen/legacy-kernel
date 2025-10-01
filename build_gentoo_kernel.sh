@@ -1,11 +1,16 @@
 #!/bin/sh
 
+source  /usr/lib/portage/*/eapi7-ver-funcs.sh
+
 arch=$(uname -m)
+path_orig=$PATH
 
 export LANG=C
 
 for ver in $@
 do
+  kver=$(ver_cut 1-2 ${ver})
+  export PATH=/usr/src/legacy-kernel/${kver}/toolchain-${arch}:${path_orig}
   gcc -v && ld -v
   cd /usr/src/linux-$ver-gentoo && \
   make clean && rm -rf target_dir && \
