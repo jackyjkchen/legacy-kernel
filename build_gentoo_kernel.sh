@@ -1,6 +1,6 @@
 #!/bin/sh
 
-source  /usr/lib/portage/*/eapi7-ver-funcs.sh
+source /usr/lib/portage/*/version-functions.sh
 
 arch=$(uname -m)
 path_orig=$PATH
