@@ -22,6 +22,7 @@ IMAGE_DICT=(
   ["sparc64"]="rootfs-gentoo-allgcc-multilib-sparc64"
   ["s390x"]="rootfs-gentoo-allgcc-ibm-s390x"
   ["hppa1.1"]="rootfs-gentoo-allgcc-generic-hppa1.1"
+  ["hppa2.0"]="rootfs-gentoo-allgcc-generic-hppa2.0"
   ["sh4"]="rootfs-gentoo-allgcc-generic-sh4"
   ["m68k"]="rootfs-gentoo-allgcc-generic-m68k"
   ["debian"]="rootfs-debian-testing-x86_64"
