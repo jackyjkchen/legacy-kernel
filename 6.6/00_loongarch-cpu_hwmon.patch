@@ -19,17 +19,17 @@ index 66128dec0..c288956e4 100644
  
  #include <asm-generic/topology.h>
 diff --git a/arch/loongarch/kernel/setup.c b/arch/loongarch/kernel/setup.c
-index 655dc2b16..b1227fdba 100644
+index 5dfd5d8df..4befce07d 100644
 --- a/arch/loongarch/kernel/setup.c
 +++ b/arch/loongarch/kernel/setup.c
-@@ -131,6 +131,7 @@ static void __init parse_cpu_table(const struct dmi_header *dm)
+@@ -132,6 +132,7 @@ static void __init parse_cpu_table(const struct dmi_header *dm)
  
  	loongson_sysconf.cpuname = (void *)dmi_string_parse(dm, dmi_data[16]);
- 	loongson_sysconf.cores_per_package = *(dmi_data + SMBIOS_THREAD_PACKAGE_OFFSET);
+ 	loongson_sysconf.cores_per_package = *(u8 *)(dmi_data + SMBIOS_THREAD_PACKAGE_OFFSET);
 +	__max_packages++;
- 
- 	pr_info("CpuClock = %llu\n", cpu_clock_freq);
- }
+ 	if (dm->length >= 0x30 && loongson_sysconf.cores_per_package == 0xff) {
+ 		/* SMBIOS 3.0+ has ThreadCount2 for more than 255 threads */
+ 		loongson_sysconf.cores_per_package =
 diff --git a/arch/loongarch/kernel/smp.c b/arch/loongarch/kernel/smp.c
 index ed6762945..eddc6fcee 100644
 --- a/arch/loongarch/kernel/smp.c

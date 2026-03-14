@@ -840,12 +840,12 @@ index 7805a66a0..22a044d93 100644
  	u32 value = readl(ioaddr + DMA_SYS_BUS_MODE);
  
 diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac5.c b/drivers/net/ethernet/stmicro/stmmac/dwmac5.c
-index 8fd167501..fecb39433 100644
+index 0afd4644a..9d7f06043 100644
 --- a/drivers/net/ethernet/stmicro/stmmac/dwmac5.c
 +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac5.c
-@@ -597,6 +597,11 @@ int dwmac5_est_configure(void __iomem *ioaddr, struct stmmac_est *cfg,
- 	int i, ret = 0x0;
- 	u32 ctrl;
+@@ -602,6 +602,11 @@ int dwmac5_est_configure(void __iomem *ioaddr, struct stmmac_est *cfg,
+ 		return -EINVAL;
+ 	}
  
 +	if (!ptp_rate) {
 +		pr_warn("Invalid PTP rate");
@@ -992,12 +992,12 @@ index 85e18f9a2..4846bf49c 100644
  #ifdef DWMAC_DMA_DEBUG
  	/* Enable it to monitor DMA rx/tx status in case of critical problems */
 diff --git a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_core.c b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_core.c
-index 0bcb378fa..a380dbf8c 100644
+index aab02328a..f99d907fd 100644
 --- a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_core.c
 +++ b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_core.c
-@@ -1537,6 +1537,11 @@ static int dwxgmac3_est_configure(void __iomem *ioaddr, struct stmmac_est *cfg,
- 	int i, ret = 0x0;
- 	u32 ctrl;
+@@ -1542,6 +1542,11 @@ static int dwxgmac3_est_configure(void __iomem *ioaddr, struct stmmac_est *cfg,
+                 return -EINVAL;
+         }
  
 +	if (!ptp_rate) {
 +		pr_warn("Invalid PTP rate");
@@ -1092,10 +1092,10 @@ index 521b1b5ff..cf83cc951 100644
  }
  
 diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index ff5389a8e..c99e75578 100644
+index 7a8861d77..d5750d1d2 100644
 --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
 +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -842,11 +842,6 @@ int stmmac_init_tstamp_counter(struct stmmac_priv *priv, u32 systime_flags)
+@@ -843,11 +843,6 @@ int stmmac_init_tstamp_counter(struct stmmac_priv *priv, u32 systime_flags)
  	if (!(priv->dma_cap.time_stamp || priv->dma_cap.atime_stamp))
  		return -EOPNOTSUPP;
  
@@ -1107,7 +1107,7 @@ index ff5389a8e..c99e75578 100644
  	stmmac_config_hw_tstamping(priv, priv->ptpaddr, systime_flags);
  	priv->systime_flags = systime_flags;
  
-@@ -941,6 +936,22 @@ static void stmmac_mac_flow_ctrl(struct stmmac_priv *priv, u32 duplex)
+@@ -942,6 +937,22 @@ static void stmmac_mac_flow_ctrl(struct stmmac_priv *priv, u32 duplex)
  			priv->pause, tx_cnt);
  }
  
@@ -1130,7 +1130,7 @@ index ff5389a8e..c99e75578 100644
  static struct phylink_pcs *stmmac_mac_select_pcs(struct phylink_config *config,
  						 phy_interface_t interface)
  {
-@@ -1110,6 +1121,7 @@ static void stmmac_mac_link_up(struct phylink_config *config,
+@@ -1111,6 +1122,7 @@ static void stmmac_mac_link_up(struct phylink_config *config,
  }
  
  static const struct phylink_mac_ops stmmac_phylink_mac_ops = {
@@ -1138,7 +1138,7 @@ index ff5389a8e..c99e75578 100644
  	.mac_select_pcs = stmmac_mac_select_pcs,
  	.mac_config = stmmac_mac_config,
  	.mac_link_down = stmmac_mac_link_down,
-@@ -1209,7 +1221,6 @@ static int stmmac_phy_setup(struct stmmac_priv *priv)
+@@ -1210,7 +1222,6 @@ static int stmmac_phy_setup(struct stmmac_priv *priv)
  	int mode = priv->plat->phy_interface;
  	struct fwnode_handle *fwnode;
  	struct phylink *phylink;
@@ -1146,7 +1146,7 @@ index ff5389a8e..c99e75578 100644
  
  	priv->phylink_config.dev = &priv->dev->dev;
  	priv->phylink_config.type = PHYLINK_NETDEV;
-@@ -1230,15 +1241,6 @@ static int stmmac_phy_setup(struct stmmac_priv *priv)
+@@ -1231,15 +1242,6 @@ static int stmmac_phy_setup(struct stmmac_priv *priv)
  		xpcs_get_interfaces(priv->hw->xpcs,
  				    priv->phylink_config.supported_interfaces);
  
@@ -1162,7 +1162,7 @@ index ff5389a8e..c99e75578 100644
  	fwnode = priv->plat->port_node;
  	if (!fwnode)
  		fwnode = dev_fwnode(priv->device);
-@@ -1931,13 +1933,18 @@ static void __free_dma_rx_desc_resources(struct stmmac_priv *priv,
+@@ -1932,13 +1934,18 @@ static void __free_dma_rx_desc_resources(struct stmmac_priv *priv,
  		dma_free_coherent(priv->device, dma_conf->dma_rx_size *
  				  sizeof(struct dma_extended_desc),
  				  rx_q->dma_erx, rx_q->dma_rx_phy);
@@ -1181,7 +1181,7 @@ index ff5389a8e..c99e75578 100644
  }
  
  static void free_dma_rx_desc_resources(struct stmmac_priv *priv,
-@@ -1983,8 +1990,14 @@ static void __free_dma_tx_desc_resources(struct stmmac_priv *priv,
+@@ -1984,8 +1991,14 @@ static void __free_dma_tx_desc_resources(struct stmmac_priv *priv,
  
  	dma_free_coherent(priv->device, size, addr, tx_q->dma_tx_phy);
  
@@ -1196,7 +1196,7 @@ index ff5389a8e..c99e75578 100644
  }
  
  static void free_dma_tx_desc_resources(struct stmmac_priv *priv,
-@@ -2500,7 +2513,7 @@ static bool stmmac_xdp_xmit_zc(struct stmmac_priv *priv, u32 queue, u32 budget)
+@@ -2501,7 +2514,7 @@ static bool stmmac_xdp_xmit_zc(struct stmmac_priv *priv, u32 queue, u32 budget)
  				       csum, priv->mode, true, true,
  				       xdp_desc.len);
  
@@ -1205,7 +1205,7 @@ index ff5389a8e..c99e75578 100644
  
  		tx_q->cur_tx = STMMAC_GET_ENTRY(tx_q->cur_tx, priv->dma_conf.dma_tx_size);
  		entry = tx_q->cur_tx;
-@@ -2932,7 +2945,6 @@ static int stmmac_init_dma_engine(struct stmmac_priv *priv)
+@@ -2933,7 +2946,6 @@ static int stmmac_init_dma_engine(struct stmmac_priv *priv)
  	struct stmmac_rx_queue *rx_q;
  	struct stmmac_tx_queue *tx_q;
  	u32 chan = 0;
@@ -1213,7 +1213,7 @@ index ff5389a8e..c99e75578 100644
  	int ret = 0;
  
  	if (!priv->plat->dma_cfg || !priv->plat->dma_cfg->pbl) {
-@@ -2941,7 +2953,7 @@ static int stmmac_init_dma_engine(struct stmmac_priv *priv)
+@@ -2942,7 +2954,7 @@ static int stmmac_init_dma_engine(struct stmmac_priv *priv)
  	}
  
  	if (priv->extend_desc && (priv->mode == STMMAC_RING_MODE))
@@ -1222,7 +1222,7 @@ index ff5389a8e..c99e75578 100644
  
  	ret = stmmac_reset(priv, priv->ioaddr);
  	if (ret) {
-@@ -2950,7 +2962,7 @@ static int stmmac_init_dma_engine(struct stmmac_priv *priv)
+@@ -2951,7 +2963,7 @@ static int stmmac_init_dma_engine(struct stmmac_priv *priv)
  	}
  
  	/* DMA Configuration */
@@ -1231,39 +1231,7 @@ index ff5389a8e..c99e75578 100644
  
  	if (priv->plat->axi)
  		stmmac_axi(priv, priv->ioaddr, priv->plat->axi);
-@@ -3516,7 +3528,6 @@ static int stmmac_request_irq_multi_msi(struct net_device *dev)
- {
- 	struct stmmac_priv *priv = netdev_priv(dev);
- 	enum request_irq_err irq_err;
--	cpumask_t cpu_mask;
- 	int irq_idx = 0;
- 	char *int_name;
- 	int ret;
-@@ -3628,9 +3639,8 @@ static int stmmac_request_irq_multi_msi(struct net_device *dev)
- 			irq_idx = i;
- 			goto irq_error;
- 		}
--		cpumask_clear(&cpu_mask);
--		cpumask_set_cpu(i % num_online_cpus(), &cpu_mask);
--		irq_set_affinity_hint(priv->rx_irq[i], &cpu_mask);
-+		irq_set_affinity_hint(priv->rx_irq[i],
-+				      cpumask_of(i % num_online_cpus()));
- 	}
- 
- 	/* Request Tx MSI irq */
-@@ -3653,9 +3663,8 @@ static int stmmac_request_irq_multi_msi(struct net_device *dev)
- 			irq_idx = i;
- 			goto irq_error;
- 		}
--		cpumask_clear(&cpu_mask);
--		cpumask_set_cpu(i % num_online_cpus(), &cpu_mask);
--		irq_set_affinity_hint(priv->tx_irq[i], &cpu_mask);
-+		irq_set_affinity_hint(priv->tx_irq[i],
-+				      cpumask_of(i % num_online_cpus()));
- 	}
- 
- 	return 0;
-@@ -4633,7 +4642,7 @@ static netdev_tx_t stmmac_xmit(struct sk_buff *skb, struct net_device *dev)
+@@ -4631,7 +4643,7 @@ static netdev_tx_t stmmac_xmit(struct sk_buff *skb, struct net_device *dev)
  
  	netdev_tx_sent_queue(netdev_get_tx_queue(dev, queue), skb->len);
  
@@ -1272,7 +1240,7 @@ index ff5389a8e..c99e75578 100644
  
  	stmmac_flush_tx_descriptors(priv, queue);
  	stmmac_tx_timer_arm(priv, queue);
-@@ -4853,7 +4862,7 @@ static int stmmac_xdp_xmit_xdpf(struct stmmac_priv *priv, int queue,
+@@ -4851,7 +4863,7 @@ static int stmmac_xdp_xmit_xdpf(struct stmmac_priv *priv, int queue,
  		u64_stats_update_end(&txq_stats->q_syncp);
  	}
  
@@ -1281,7 +1249,7 @@ index ff5389a8e..c99e75578 100644
  
  	entry = STMMAC_GET_ENTRY(entry, priv->dma_conf.dma_tx_size);
  	tx_q->cur_tx = entry;
-@@ -7220,7 +7229,6 @@ int stmmac_reinit_queues(struct net_device *dev, u32 rx_cnt, u32 tx_cnt)
+@@ -7231,7 +7243,6 @@ int stmmac_reinit_queues(struct net_device *dev, u32 rx_cnt, u32 tx_cnt)
  {
  	struct stmmac_priv *priv = netdev_priv(dev);
  	int ret = 0, i;
@@ -1289,7 +1257,7 @@ index ff5389a8e..c99e75578 100644
  
  	if (netif_running(dev))
  		stmmac_release(dev);
-@@ -7234,14 +7242,6 @@ int stmmac_reinit_queues(struct net_device *dev, u32 rx_cnt, u32 tx_cnt)
+@@ -7245,14 +7256,6 @@ int stmmac_reinit_queues(struct net_device *dev, u32 rx_cnt, u32 tx_cnt)
  			priv->rss.table[i] = ethtool_rxfh_indir_default(i,
  									rx_cnt);
  

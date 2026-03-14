@@ -1,5 +1,5 @@
 diff --git a/arch/mips/loongson2ef/lemote-2f/ec_kb3310b.c b/arch/mips/loongson2ef/lemote-2f/ec_kb3310b.c
-index d138220..377b7c0 100644
+index d138220e9..377b7c068 100644
 --- a/arch/mips/loongson2ef/lemote-2f/ec_kb3310b.c
 +++ b/arch/mips/loongson2ef/lemote-2f/ec_kb3310b.c
 @@ -10,12 +10,36 @@
@@ -61,7 +61,7 @@ index d138220..377b7c0 100644
 +
 +arch_initcall(lemote2f_ec_platform_init);
 diff --git a/arch/mips/loongson2ef/lemote-2f/ec_kb3310b.h b/arch/mips/loongson2ef/lemote-2f/ec_kb3310b.h
-index aecdbc9..73ebd90 100644
+index aecdbc9c8..73ebd90e1 100644
 --- a/arch/mips/loongson2ef/lemote-2f/ec_kb3310b.h
 +++ b/arch/mips/loongson2ef/lemote-2f/ec_kb3310b.h
 @@ -14,6 +14,7 @@ extern void ec_write(unsigned short addr, unsigned char val);
@@ -104,7 +104,7 @@ index aecdbc9..73ebd90 100644
 +
  #endif /* !_EC_KB3310B_H */
 diff --git a/drivers/platform/mips/Kconfig b/drivers/platform/mips/Kconfig
-index fb4ac4b..4f9a56b 100644
+index fb4ac4b08..4f9a56bda 100644
 --- a/drivers/platform/mips/Kconfig
 +++ b/drivers/platform/mips/Kconfig
 @@ -37,4 +37,24 @@ config LS2K_RESET
@@ -133,7 +133,7 @@ index fb4ac4b..4f9a56b 100644
 +
  endif # MIPS_PLATFORM_DEVICES
 diff --git a/drivers/platform/mips/Makefile b/drivers/platform/mips/Makefile
-index 4c71444..ec916d8 100644
+index 4c71444e4..ec916d80e 100644
 --- a/drivers/platform/mips/Makefile
 +++ b/drivers/platform/mips/Makefile
 @@ -1,4 +1,7 @@
@@ -146,7 +146,7 @@ index 4c71444..ec916d8 100644
  obj-$(CONFIG_LS2K_RESET) += ls2k-reset.o
 diff --git a/drivers/platform/mips/yeeloong_laptop.c b/drivers/platform/mips/yeeloong_laptop.c
 new file mode 100755
-index 0000000..76e7728
+index 000000000..76e7728fd
 --- /dev/null
 +++ b/drivers/platform/mips/yeeloong_laptop.c
 @@ -0,0 +1,1141 @@
