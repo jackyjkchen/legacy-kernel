@@ -41,7 +41,7 @@ if [[ $dest == "" ]]; then
 fi
 dlist=
 cd $dir && dlist=$(echo *) && cd ..
-rm -v $image.tar
+rm -v $dest/$image.tar
 tar --sort=name --numeric-owner -pcf $dest/$image.tar -C $dir $dlist
-rm -v $image.tar.xz
+rm -v $dest/$image.tar.xz
 exit 0
