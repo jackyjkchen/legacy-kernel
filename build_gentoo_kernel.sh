@@ -1,5 +1,6 @@
 #!/bin/sh
 
+source /usr/lib/portage/*/eapi.sh
 source /usr/lib/portage/*/version-functions.sh
 
 arch=$(uname -m)

@@ -1,5 +1,5 @@
 diff --git a/arch/loongarch/include/asm/topology.h b/arch/loongarch/include/asm/topology.h
-index 66128dec0..c288956e4 100644
+index 6ff4cdc3d..448884e04 100644
 --- a/arch/loongarch/include/asm/topology.h
 +++ b/arch/loongarch/include/asm/topology.h
 @@ -29,10 +29,15 @@ void numa_set_distance(int from, int to, int distance);
@@ -19,7 +19,7 @@ index 66128dec0..c288956e4 100644
  
  #include <asm-generic/topology.h>
 diff --git a/arch/loongarch/kernel/setup.c b/arch/loongarch/kernel/setup.c
-index 5dfd5d8df..4befce07d 100644
+index 2e34ece47..9eccbf98b 100644
 --- a/arch/loongarch/kernel/setup.c
 +++ b/arch/loongarch/kernel/setup.c
 @@ -132,6 +132,7 @@ static void __init parse_cpu_table(const struct dmi_header *dm)
