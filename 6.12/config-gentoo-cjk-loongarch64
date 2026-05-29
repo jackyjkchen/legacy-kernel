@@ -1,6 +1,6 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/loongarch 6.12.90-gentoo-r2 Kernel Configuration
+# Linux/loongarch 6.12.91-gentoo-r1 Kernel Configuration
 #
 CONFIG_CC_VERSION_TEXT="gcc (Gentoo 15.2.1_p20260501 p7) 15.2.1 20260501"
 CONFIG_CC_IS_GCC=y
