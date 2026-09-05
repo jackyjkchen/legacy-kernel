@@ -1,5 +1,5 @@
 diff --git a/drivers/net/ethernet/stmicro/stmmac/common.h b/drivers/net/ethernet/stmicro/stmmac/common.h
-index 5cecbe0e3..16593de44 100644
+index 5cecbe0..16593de 100644
 --- a/drivers/net/ethernet/stmicro/stmmac/common.h
 +++ b/drivers/net/ethernet/stmicro/stmmac/common.h
 @@ -29,6 +29,7 @@
@@ -11,7 +11,7 @@ index 5cecbe0e3..16593de44 100644
  #define DWMAC_CORE_4_10		0x41
  #define DWMAC_CORE_5_00		0x50
 diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-loongson.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-loongson.c
-index 40f8122ce..0489c91b3 100644
+index 40f8122..0489c91 100644
 --- a/drivers/net/ethernet/stmicro/stmmac/dwmac-loongson.c
 +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-loongson.c
 @@ -8,18 +8,93 @@
@@ -645,7 +645,7 @@ index 40f8122ce..0489c91b3 100644
 +MODULE_AUTHOR("Yanteng Si <siyanteng@loongson.cn>");
  MODULE_LICENSE("GPL v2");
 diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
-index 9377b05bf..1fa6406f2 100644
+index 9377b05..1fa6406 100644
 --- a/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
 +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
 @@ -299,7 +299,7 @@ static int sun8i_dwmac_dma_reset(void __iomem *ioaddr)
@@ -676,7 +676,7 @@ index 9377b05bf..1fa6406f2 100644
  		/* For SoCs without internal PHY the PHY selection bit should be
  		 * set to 0 (external PHY).
 diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac1000_dma.c b/drivers/net/ethernet/stmicro/stmmac/dwmac1000_dma.c
-index daf79cdbd..66c0c2290 100644
+index daf79cd..66c0c22 100644
 --- a/drivers/net/ethernet/stmicro/stmmac/dwmac1000_dma.c
 +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac1000_dma.c
 @@ -70,15 +70,17 @@ static void dwmac1000_dma_axi(void __iomem *ioaddr, struct stmmac_axi *axi)
@@ -796,7 +796,7 @@ index daf79cdbd..66c0c2290 100644
  };
 +EXPORT_SYMBOL_GPL(dwmac1000_dma_ops);
 diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac100_dma.c b/drivers/net/ethernet/stmicro/stmmac/dwmac100_dma.c
-index dea270f60..f861babc0 100644
+index dea270f..f861bab 100644
 --- a/drivers/net/ethernet/stmicro/stmmac/dwmac100_dma.c
 +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac100_dma.c
 @@ -19,7 +19,7 @@
@@ -809,7 +809,7 @@ index dea270f60..f861babc0 100644
  	/* Enable Application Access by writing to DMA CSR0 */
  	writel(DMA_BUS_MODE_DEFAULT | (dma_cfg->pbl << DMA_BUS_MODE_PBL_SHIFT),
 diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.c b/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.c
-index 7805a66a0..22a044d93 100644
+index 7805a66..22a044d 100644
 --- a/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.c
 +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.c
 @@ -153,7 +153,7 @@ static void dwmac410_dma_init_channel(struct stmmac_priv *priv,
@@ -822,7 +822,7 @@ index 7805a66a0..22a044d93 100644
  	u32 value = readl(ioaddr + DMA_SYS_BUS_MODE);
  
 diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac5.c b/drivers/net/ethernet/stmicro/stmmac/dwmac5.c
-index 0afd4644a..9d7f06043 100644
+index 0afd464..9d7f060 100644
 --- a/drivers/net/ethernet/stmicro/stmmac/dwmac5.c
 +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac5.c
 @@ -602,6 +602,11 @@ int dwmac5_est_configure(void __iomem *ioaddr, struct stmmac_est *cfg,
@@ -838,7 +838,7 @@ index 0afd4644a..9d7f06043 100644
  	ret |= dwmac5_est_write(ioaddr, BTR_HIGH, cfg->btr[1], false);
  	ret |= dwmac5_est_write(ioaddr, TER, cfg->ter, false);
 diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac_dma.h b/drivers/net/ethernet/stmicro/stmmac/dwmac_dma.h
-index 726723916..363a85469 100644
+index 7267239..363a854 100644
 --- a/drivers/net/ethernet/stmicro/stmmac/dwmac_dma.h
 +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac_dma.h
 @@ -22,6 +22,23 @@
@@ -881,7 +881,7 @@ index 726723916..363a85469 100644
 -
  #endif /* __DWMAC_DMA_H__ */
 diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac_lib.c b/drivers/net/ethernet/stmicro/stmmac/dwmac_lib.c
-index 85e18f9a2..4846bf49c 100644
+index 85e18f9..4846bf4 100644
 --- a/drivers/net/ethernet/stmicro/stmmac/dwmac_lib.c
 +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac_lib.c
 @@ -28,65 +28,65 @@ int dwmac_dma_reset(void __iomem *ioaddr)
@@ -974,7 +974,7 @@ index 85e18f9a2..4846bf49c 100644
  #ifdef DWMAC_DMA_DEBUG
  	/* Enable it to monitor DMA rx/tx status in case of critical problems */
 diff --git a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_core.c b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_core.c
-index aab02328a..f99d907fd 100644
+index aab0232..f99d907 100644
 --- a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_core.c
 +++ b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_core.c
 @@ -1542,6 +1542,11 @@ static int dwxgmac3_est_configure(void __iomem *ioaddr, struct stmmac_est *cfg,
@@ -990,7 +990,7 @@ index aab02328a..f99d907fd 100644
  	ret |= dwxgmac3_est_write(ioaddr, XGMAC_BTR_HIGH, cfg->btr[1], false);
  	ret |= dwxgmac3_est_write(ioaddr, XGMAC_TER, cfg->ter, false);
 diff --git a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c
-index b2c03cb65..57d1202d8 100644
+index b2c03cb..57d1202 100644
 --- a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c
 +++ b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c
 @@ -20,7 +20,7 @@ static int dwxgmac2_dma_reset(void __iomem *ioaddr)
@@ -1034,7 +1034,7 @@ index b2c03cb65..57d1202d8 100644
  
  	/* Clear interrupts */
 diff --git a/drivers/net/ethernet/stmicro/stmmac/hwif.h b/drivers/net/ethernet/stmicro/stmmac/hwif.h
-index ee9a7d986..eb4003ca7 100644
+index ee9a7d9..eb4003c 100644
 --- a/drivers/net/ethernet/stmicro/stmmac/hwif.h
 +++ b/drivers/net/ethernet/stmicro/stmmac/hwif.h
 @@ -167,8 +167,7 @@ struct dma_features;
@@ -1057,7 +1057,7 @@ index ee9a7d986..eb4003ca7 100644
  			       u32 chan, bool rx, bool tx);
  	void (*disable_dma_irq)(struct stmmac_priv *priv, void __iomem *ioaddr,
 diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac.h b/drivers/net/ethernet/stmicro/stmmac/stmmac.h
-index 61c8fc97a..85a55f459 100644
+index 61c8fc9..85a55f4 100644
 --- a/drivers/net/ethernet/stmicro/stmmac/stmmac.h
 +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac.h
 @@ -29,6 +29,7 @@ struct stmmac_resources {
@@ -1077,7 +1077,7 @@ index 61c8fc97a..85a55f459 100644
  	int eee_active;
  	int tx_lpi_timer;
 diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
-index 521b1b5ff..cf83cc951 100644
+index 521b1b5..cf83cc9 100644
 --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
 +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
 @@ -412,6 +412,12 @@ stmmac_ethtool_set_link_ksettings(struct net_device *dev,
@@ -1094,7 +1094,7 @@ index 521b1b5ff..cf83cc951 100644
  }
  
 diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index dea3d6661..f271f742d 100644
+index 2fc0a87..6c549c0 100644
 --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
 +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
 @@ -843,11 +843,6 @@ int stmmac_init_tstamp_counter(struct stmmac_priv *priv, u32 systime_flags)
@@ -1132,7 +1132,7 @@ index dea3d6661..f271f742d 100644
  static struct phylink_pcs *stmmac_mac_select_pcs(struct phylink_config *config,
  						 phy_interface_t interface)
  {
-@@ -1111,6 +1122,7 @@ static void stmmac_mac_link_up(struct phylink_config *config,
+@@ -1093,6 +1104,7 @@ static void stmmac_mac_link_up(struct phylink_config *config,
  }
  
  static const struct phylink_mac_ops stmmac_phylink_mac_ops = {
@@ -1140,7 +1140,7 @@ index dea3d6661..f271f742d 100644
  	.mac_select_pcs = stmmac_mac_select_pcs,
  	.mac_config = stmmac_mac_config,
  	.mac_link_down = stmmac_mac_link_down,
-@@ -1210,7 +1222,6 @@ static int stmmac_phy_setup(struct stmmac_priv *priv)
+@@ -1192,7 +1204,6 @@ static int stmmac_phy_setup(struct stmmac_priv *priv)
  	int mode = priv->plat->phy_interface;
  	struct fwnode_handle *fwnode;
  	struct phylink *phylink;
@@ -1148,7 +1148,7 @@ index dea3d6661..f271f742d 100644
  
  	priv->phylink_config.dev = &priv->dev->dev;
  	priv->phylink_config.type = PHYLINK_NETDEV;
-@@ -1231,15 +1242,6 @@ static int stmmac_phy_setup(struct stmmac_priv *priv)
+@@ -1213,15 +1224,6 @@ static int stmmac_phy_setup(struct stmmac_priv *priv)
  		xpcs_get_interfaces(priv->hw->xpcs,
  				    priv->phylink_config.supported_interfaces);
  
@@ -1164,7 +1164,7 @@ index dea3d6661..f271f742d 100644
  	fwnode = priv->plat->port_node;
  	if (!fwnode)
  		fwnode = dev_fwnode(priv->device);
-@@ -1932,13 +1934,18 @@ static void __free_dma_rx_desc_resources(struct stmmac_priv *priv,
+@@ -1914,13 +1916,18 @@ static void __free_dma_rx_desc_resources(struct stmmac_priv *priv,
  		dma_free_coherent(priv->device, dma_conf->dma_rx_size *
  				  sizeof(struct dma_extended_desc),
  				  rx_q->dma_erx, rx_q->dma_rx_phy);
@@ -1183,7 +1183,7 @@ index dea3d6661..f271f742d 100644
  }
  
  static void free_dma_rx_desc_resources(struct stmmac_priv *priv,
-@@ -1984,8 +1991,14 @@ static void __free_dma_tx_desc_resources(struct stmmac_priv *priv,
+@@ -1966,8 +1973,14 @@ static void __free_dma_tx_desc_resources(struct stmmac_priv *priv,
  
  	dma_free_coherent(priv->device, size, addr, tx_q->dma_tx_phy);
  
@@ -1198,7 +1198,7 @@ index dea3d6661..f271f742d 100644
  }
  
  static void free_dma_tx_desc_resources(struct stmmac_priv *priv,
-@@ -2501,7 +2514,7 @@ static bool stmmac_xdp_xmit_zc(struct stmmac_priv *priv, u32 queue, u32 budget)
+@@ -2483,7 +2496,7 @@ static bool stmmac_xdp_xmit_zc(struct stmmac_priv *priv, u32 queue, u32 budget)
  				       csum, priv->mode, true, true,
  				       xdp_desc.len);
  
@@ -1207,7 +1207,7 @@ index dea3d6661..f271f742d 100644
  
  		tx_q->cur_tx = STMMAC_NEXT_ENTRY(tx_q->cur_tx, priv->dma_conf.dma_tx_size);
  		entry = tx_q->cur_tx;
-@@ -2933,7 +2946,6 @@ static int stmmac_init_dma_engine(struct stmmac_priv *priv)
+@@ -2915,7 +2928,6 @@ static int stmmac_init_dma_engine(struct stmmac_priv *priv)
  	struct stmmac_rx_queue *rx_q;
  	struct stmmac_tx_queue *tx_q;
  	u32 chan = 0;
@@ -1215,7 +1215,7 @@ index dea3d6661..f271f742d 100644
  	int ret = 0;
  
  	if (!priv->plat->dma_cfg || !priv->plat->dma_cfg->pbl) {
-@@ -2942,7 +2954,7 @@ static int stmmac_init_dma_engine(struct stmmac_priv *priv)
+@@ -2924,7 +2936,7 @@ static int stmmac_init_dma_engine(struct stmmac_priv *priv)
  	}
  
  	if (priv->extend_desc && (priv->mode == STMMAC_RING_MODE))
@@ -1224,7 +1224,7 @@ index dea3d6661..f271f742d 100644
  
  	ret = stmmac_reset(priv, priv->ioaddr);
  	if (ret) {
-@@ -2951,7 +2963,7 @@ static int stmmac_init_dma_engine(struct stmmac_priv *priv)
+@@ -2933,7 +2945,7 @@ static int stmmac_init_dma_engine(struct stmmac_priv *priv)
  	}
  
  	/* DMA Configuration */
@@ -1233,7 +1233,7 @@ index dea3d6661..f271f742d 100644
  
  	if (priv->plat->axi)
  		stmmac_axi(priv, priv->ioaddr, priv->plat->axi);
-@@ -4596,7 +4608,7 @@ static netdev_tx_t stmmac_xmit(struct sk_buff *skb, struct net_device *dev)
+@@ -4578,7 +4590,7 @@ static netdev_tx_t stmmac_xmit(struct sk_buff *skb, struct net_device *dev)
  
  	netdev_tx_sent_queue(netdev_get_tx_queue(dev, queue), skb->len);
  
@@ -1242,7 +1242,7 @@ index dea3d6661..f271f742d 100644
  
  	stmmac_flush_tx_descriptors(priv, queue);
  	stmmac_tx_timer_arm(priv, queue);
-@@ -4816,7 +4828,7 @@ static int stmmac_xdp_xmit_xdpf(struct stmmac_priv *priv, int queue,
+@@ -4798,7 +4810,7 @@ static int stmmac_xdp_xmit_xdpf(struct stmmac_priv *priv, int queue,
  		u64_stats_update_end(&txq_stats->q_syncp);
  	}
  
@@ -1251,7 +1251,7 @@ index dea3d6661..f271f742d 100644
  
  	entry = STMMAC_NEXT_ENTRY(entry, priv->dma_conf.dma_tx_size);
  	tx_q->cur_tx = entry;
-@@ -7211,7 +7223,6 @@ int stmmac_reinit_queues(struct net_device *dev, u32 rx_cnt, u32 tx_cnt)
+@@ -7193,7 +7205,6 @@ int stmmac_reinit_queues(struct net_device *dev, u32 rx_cnt, u32 tx_cnt)
  {
  	struct stmmac_priv *priv = netdev_priv(dev);
  	int ret = 0, i;
@@ -1259,7 +1259,7 @@ index dea3d6661..f271f742d 100644
  
  	if (netif_running(dev))
  		stmmac_release(dev);
-@@ -7225,14 +7236,6 @@ int stmmac_reinit_queues(struct net_device *dev, u32 rx_cnt, u32 tx_cnt)
+@@ -7207,14 +7218,6 @@ int stmmac_reinit_queues(struct net_device *dev, u32 rx_cnt, u32 tx_cnt)
  			priv->rss.table[i] = ethtool_rxfh_indir_default(i,
  									rx_cnt);
  
@@ -1275,7 +1275,7 @@ index dea3d6661..f271f742d 100644
  
  	if (netif_running(dev))
 diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
-index 1888a5499..2231b86e7 100644
+index 1888a54..2231b86 100644
 --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
 +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
 @@ -419,7 +419,6 @@ stmmac_probe_config_dt(struct platform_device *pdev, u8 *mac)
@@ -1304,7 +1304,7 @@ index 1888a5499..2231b86e7 100644
  	/* Default to phy auto-detection */
  	plat->phy_addr = -1;
 diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.c
-index 80ecbd733..a04bb2e42 100644
+index 80ecbd7..a04bb2e 100644
 --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.c
 +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.c
 @@ -295,7 +295,7 @@ void stmmac_ptp_register(struct stmmac_priv *priv)
@@ -1317,7 +1317,7 @@ index 80ecbd733..a04bb2e42 100644
  
  	stmmac_ptp_clock_ops.n_per_out = priv->dma_cap.pps_out_num;
 diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
-index 800e8b9eb..9628d4cc7 100644
+index 6d8ff73..e39df9f 100644
 --- a/drivers/net/phy/phylink.c
 +++ b/drivers/net/phy/phylink.c
 @@ -657,6 +657,7 @@ static int phylink_validate_mac_and_pcs(struct phylink *pl,
@@ -1350,7 +1350,7 @@ index 800e8b9eb..9628d4cc7 100644
  	return phylink_is_empty_linkmode(supported) ? -EINVAL : 0;
  }
 diff --git a/include/linux/phylink.h b/include/linux/phylink.h
-index 2b886ea65..57b63159f 100644
+index 2b886ea..57b6315 100644
 --- a/include/linux/phylink.h
 +++ b/include/linux/phylink.h
 @@ -228,6 +228,7 @@ void phylink_limit_mac_speed(struct phylink_config *config, u32 max_speed);
@@ -1371,7 +1371,7 @@ index 2b886ea65..57b63159f 100644
  					      phy_interface_t interface);
  	int (*mac_prepare)(struct phylink_config *config, unsigned int mode,
 diff --git a/include/linux/stmmac.h b/include/linux/stmmac.h
-index a0c28b8d6..5dc6b1b03 100644
+index a0c28b8..5dc6b1b 100644
 --- a/include/linux/stmmac.h
 +++ b/include/linux/stmmac.h
 @@ -100,6 +100,7 @@ struct stmmac_dma_cfg {
