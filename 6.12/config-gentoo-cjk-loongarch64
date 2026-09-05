@@ -1,6 +1,6 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/loongarch 6.12.100-gentoo Kernel Configuration
+# Linux/loongarch 6.12.107-gentoo Kernel Configuration
 #
 CONFIG_CC_VERSION_TEXT="gcc (Gentoo 15.3.1_p20260717 p8) 15.3.1 20260717"
 CONFIG_CC_IS_GCC=y
@@ -3377,6 +3377,7 @@ CONFIG_SCREEN_INFO=y
 CONFIG_VIDEO=y
 # CONFIG_AUXDISPLAY is not set
 # CONFIG_PANEL is not set
+CONFIG_GPU_BUDDY=y
 CONFIG_DRM=m
 # CONFIG_DRM_DEBUG_MM is not set
 CONFIG_DRM_KMS_HELPER=m
