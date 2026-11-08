@@ -4,7 +4,7 @@
 #
 
 #
-# Compiler: gcc (Gentoo 12.5.0-r5 p4) 12.5.0
+# Compiler: gcc (Gentoo 12.5.0-r8 p4) 12.5.0
 #
 CONFIG_CC_IS_GCC=y
 CONFIG_GCC_VERSION=120500
@@ -2203,7 +2203,7 @@ CONFIG_IAVF=m
 CONFIG_I40EVF=m
 # CONFIG_ICE is not set
 # CONFIG_FM10K is not set
-# CONFIG_IGC is not set
+CONFIG_IGC=m
 # CONFIG_JME is not set
 # CONFIG_NET_VENDOR_MARVELL is not set
 CONFIG_NET_VENDOR_MELLANOX=y
