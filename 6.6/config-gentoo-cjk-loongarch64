@@ -1,10 +1,10 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/loongarch 6.6.157-gentoo Kernel Configuration
+# Linux/loongarch 6.6.162-gentoo Kernel Configuration
 #
-CONFIG_CC_VERSION_TEXT="gcc (Gentoo 15.3.1_p20260717 p8) 15.3.1 20260717"
+CONFIG_CC_VERSION_TEXT="gcc (Gentoo 16.2.1_p20260926 p1) 16.2.1 20260926"
 CONFIG_CC_IS_GCC=y
-CONFIG_GCC_VERSION=150301
+CONFIG_GCC_VERSION=160201
 CONFIG_CLANG_VERSION=0
 CONFIG_AS_IS_GNU=y
 CONFIG_AS_VERSION=24700
@@ -2154,7 +2154,7 @@ CONFIG_I40E=m
 # CONFIG_I40EVF is not set
 # CONFIG_ICE is not set
 # CONFIG_FM10K is not set
-# CONFIG_IGC is not set
+CONFIG_IGC=m
 # CONFIG_JME is not set
 # CONFIG_NET_VENDOR_ADI is not set
 # CONFIG_NET_VENDOR_LITEX is not set
@@ -4520,6 +4520,7 @@ CONFIG_RAS=y
 # CONFIG_DAX is not set
 CONFIG_NVMEM=y
 CONFIG_NVMEM_SYSFS=y
+CONFIG_NVMEM_LAYOUTS=y
 
 #
 # Layout Types
@@ -4654,7 +4655,6 @@ CONFIG_FAT_DEFAULT_IOCHARSET="ascii"
 # CONFIG_FAT_DEFAULT_UTF8 is not set
 CONFIG_EXFAT_FS=m
 CONFIG_EXFAT_DEFAULT_IOCHARSET="utf8"
-# CONFIG_NTFS_FS is not set
 # CONFIG_NTFS3_FS is not set
 # end of DOS/FAT/EXFAT/NT Filesystems
 
@@ -5481,6 +5481,5 @@ CONFIG_GENTOO_LINUX_INIT_SCRIPT=y
 # CONFIG_GENTOO_LINUX_INIT_SYSTEMD is not set
 # end of Support for init systems, system and service managers
 
-# CONFIG_GENTOO_KERNEL_SELF_PROTECTION is not set
 CONFIG_GENTOO_PRINT_FIRMWARE_INFO=y
 # end of Gentoo Linux
